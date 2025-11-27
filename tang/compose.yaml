@@ -1,16 +1,9 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  tang:
+    image: git.mcdade.app/containers/tang-server:latest
+    container_name: tang
+    restart: always
+    ports:
+      - "9099:80"
+    volumes:
+      - ${CONTAINER_DATA}:/var/db/tang
