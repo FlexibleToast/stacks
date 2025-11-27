@@ -3,7 +3,7 @@ services:
     container_name: borgmatic
     image: ghcr.io/borgmatic-collective/borgmatic
     environment:
-      TZ: "${{TZ}}"
+      TZ: "${TZ}"
       BACKUP_CRON: "${BORGMATIC_CRON}"
     restart: unless-stopped
     volumes:
