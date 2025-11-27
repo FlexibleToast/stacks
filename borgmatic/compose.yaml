@@ -1,16 +1,15 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  borgmatic:
+    container_name: borgmatic
+    image: ghcr.io/borgmatic-collective/borgmatic
+    environment:
+      TZ: "America/Chicago"
+      BACKUP_CRON: "15 2 * * *"
+    restart: unless-stopped
+    volumes:
+      - ${CONTAINER_DATA}:${CONTAINER_DATA}:ro
+      - ${CONTAINER_DATA}/borgmatic/borgmatic.d:/etc/borgmatic.d/  # borgmatic config file(s) + crontab.txt
+      - ${CONTAINER_DATA}/borgmatic/config:/root/.config/borg      # config and keyfiles
+      - ${CONTAINER_DATA}/borgmatic/ssh:/root/.ssh                 # ssh key for remote repositories
+      - type: tmpfs
+        target: /root/.cache/borg
