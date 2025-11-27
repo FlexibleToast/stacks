@@ -3,8 +3,8 @@ services:
     container_name: borgmatic
     image: ghcr.io/borgmatic-collective/borgmatic
     environment:
-      TZ: "America/Chicago"
-      BACKUP_CRON: "15 2 * * *"
+      TZ: "[[TIMEZONE]]"
+      BACKUP_CRON: "${BORGMATIC_CRON}"
     restart: unless-stopped
     volumes:
       - ${CONTAINER_DATA}:${CONTAINER_DATA}:ro
