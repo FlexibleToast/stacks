@@ -1,0 +1,14 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:${kuma_version:-latest}
+    cpus: ${kuma_cpus:-1}
+    mem_limit: ${kuma_mem_limit:-512m}
+    container_name: uptime-kuma
+    environment:
+      SSL_KEY: ${kuma_ssl_key:-/app/data/kuma.key}
+      SSL_CERT: ${kuma_ssl_cert:-/app/data/kuma.crt}
+    ports:
+      - ${kuma_port:-3001}:3001
+    volumes:
+      - ${CONTAINER_DATA}/kuma:/app/data
+    restart: ${kuma_restart:-unless-stopped}
