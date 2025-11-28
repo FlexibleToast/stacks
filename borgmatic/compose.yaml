@@ -5,7 +5,7 @@ services:
     environment:
       TZ: "${TZ}"
       BACKUP_CRON: "${BORGMATIC_CRON}"
-    restart: unless-stopped
+    restart: ${borgmatic_restart:-unless-stopped}
     volumes:
       - ${CONTAINER_DATA}:${CONTAINER_DATA}:ro
       - ${CONTAINER_DATA}/borgmatic/borgmatic.d:/etc/borgmatic.d/  # borgmatic config file(s) + crontab.txt
