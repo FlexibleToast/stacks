@@ -1,9 +1,9 @@
 services:
   tang:
-    image: git.mcdade.app/containers/tang-server:latest
+    image: git.mcdade.app/containers/tang-server:${tang_version:-latest}
     container_name: tang
-    restart: always
+    restart: ${tang_restart:-always}
     ports:
-      - "9099:80"
+      - "${tang_port:-9099}:80"
     volumes:
-      - ${CONTAINER_DATA}:/var/db/tang
+      - ${CONTAINER_DATA}/tang:/var/db/tang
