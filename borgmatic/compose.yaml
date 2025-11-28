@@ -1,7 +1,7 @@
 services:
   borgmatic:
     container_name: borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:${borgmatic_version:-latest}
+    image: ghcr.io/borgmatic-collective/borgmatic:${borgmatic-version:-latest}
     environment:
       TZ: "${TZ}"
       BACKUP_CRON: "${BORGMATIC_CRON}"
