@@ -1,0 +1,8 @@
+services:
+  tunnel:
+    image: cloudflare/cloudflared:${tunnel_version:-latest}
+    cpus: ${tunnel_cpus:-0.25}
+    mem_limit: ${tunnel_mem_limit:-256m}
+    container_name: tunnel
+    command: tunnel --no-autoupdate run --token ${tunnel_token}
+    restart: ${tunnel_restart:-unless-stopped}
