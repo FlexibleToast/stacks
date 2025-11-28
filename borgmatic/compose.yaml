@@ -1,0 +1,15 @@
+services:
+  borgmatic:
+    container_name: borgmatic
+    image: ghcr.io/borgmatic-collective/borgmatic:${borgmatic_version:-latest}
+    environment:
+      TZ: "${TZ:-America/Chicago}"
+      BACKUP_CRON: "${BORGMATIC_CRON:-15 2 * * *}"
+    restart: ${borgmatic_restart:-unless-stopped}
+    volumes:
+      - ${CONTAINER_DATA}:${CONTAINER_DATA}:ro
+      - ${CONTAINER_DATA}/borgmatic/borgmatic.d:/etc/borgmatic.d/  # borgmatic config file(s) + crontab.txt
+      - ${CONTAINER_DATA}/borgmatic/config:/root/.config/borg      # config and keyfiles
+      - ${CONTAINER_DATA}/borgmatic/ssh:/root/.ssh                 # ssh key for remote repositories
+      - type: tmpfs
+        target: /root/.cache/borg
