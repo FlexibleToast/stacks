@@ -171,3 +171,18 @@ linked_repo = "forgejo-resources"
 resource_path = ["resources.toml"]
 managed = true
 include_variables = true
+
+##
+
+[[resource_sync]]
+name = "Github"
+description = "Only sync tagged instances synced to github"
+tags = ["sync"]
+[resource_sync.config]
+linked_repo = "resources"
+resource_path = [
+  "komodo-resources/resources.toml"
+]
+managed = true
+match_tags = ["sync"]
+pending_alert = false
