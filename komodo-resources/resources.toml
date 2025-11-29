@@ -1,1 +1,173 @@
-## Add resources to get started
+[[server]]
+name = "Docker Oracle"
+tags = ["sync"]
+[server.config]
+enabled = true
+
+##
+
+[[server]]
+name = "Unraid"
+tags = ["sync"]
+[server.config]
+address = "https://kerbol-next.lan:8120"
+enabled = true
+
+##
+
+[[stack]]
+name = "borgmatic"
+tags = ["sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "borgmatic"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "kuma"
+tags = ["sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "kuma"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "tang"
+tags = ["sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tang"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "tunnel"
+tags = ["sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tunnel"
+environment = """
+  # VARIABLE = value
+ tunnel_token = [[ORACLE_TUNNEL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "watchtower"
+tags = ["sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "watchtower"
+environment = """
+  # VARIABLE = value
+HOSTNAME = docker-oracle
+subject_tag = Docker Oracle
+EMAIL = [[EMAIL]]
+EMAIL_PASS = [[EMAIL_PASS]]
+"""
+
+##
+
+[[repo]]
+name = "forgejo-resources"
+tags = ["sync"]
+[repo.config]
+git_provider = "git.mcdade.app"
+git_account = "FlexibleToast"
+repo = "FlexibleToast/komodo"
+branch = "testing-sync"
+
+##
+
+[[repo]]
+name = "github-stacks"
+template = true
+tags = ["sync"]
+[repo.config]
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+
+##
+
+[[repo]]
+name = "stacks"
+tags = ["sync"]
+[repo.config]
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+
+##
+
+[[procedure]]
+name = "Backup Core Database"
+description = "Triggers the Core database backup at the scheduled time."
+tags = ["system", "sync"]
+config.schedule = "Every day at 01:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "BackupCoreDatabase", execution.params = {}, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Global Auto Update"
+description = "Pulls and auto updates Stacks and Deployments using 'poll_for_updates' or 'auto_update'."
+tags = ["system", "sync"]
+config.schedule = "Every day at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+]
+
+##
+
+[[builder]]
+name = "Local"
+tags = ["sync"]
+[builder.config]
+type = "Server"
+params = {}
+
+##
+
+[[resource_sync]]
+name = "Forgejo"
+description = "Full sync with secrets included"
+tags = ["sync"]
+[resource_sync.config]
+linked_repo = "forgejo-resources"
+resource_path = ["resources.toml"]
+managed = true
+include_variables = true
