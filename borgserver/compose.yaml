@@ -1,6 +1,6 @@
 services:
   borgserver:
-    container_name: borgserver
+    container_name: ${BORGSERVER_NAME:-borgserver}
     image: nold360/borgserver:${BORGSERVER_VERSION:-latest}
     restart: ${BORGSERVER_RESTART:-unless-stopped}
     environment:
