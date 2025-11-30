@@ -1,16 +1,14 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  borgserver:
+    container_name: borgserver
+    image: nold360/borgserver:${BORGSERVER_VERSION:-latest}
+    restart: ${BORGSERVER_RESTART:-unless-stopped}
+    environment:
+      TZ: ${BORGSERVER_TZ:-America/Chicago}
+      PUID: ${BORGSERVER_PUID}
+      PGID: ${BORGSERVER_PGID}
+    ports:
+      - "${BORGSERVER_SSH_PORT}:22"
+    volumes:
+      - "${CONTAINER_DATA}/borgserver:/sshkeys"
+      - "${BORGSERVER_BACKUP_DIR}:/backup"
