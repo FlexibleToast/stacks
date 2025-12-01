@@ -1,23 +1,57 @@
 [[server]]
+name = "Bookview MicroOS"
+tags = ["sync", "brookview"]
+[server.config]
+address = "https://komodo-periphery.brookview.app"
+enabled = true
+timeout_seconds = 10
+
+##
+
+[[server]]
+name = "Container Pi4 1"
+tags = ["sync", "container-pi4-1"]
+[server.config]
+address = "https://container-pi4-1.lan:8120"
+enabled = true
+timeout_seconds = 10
+
+##
+
+[[server]]
 name = "Docker Oracle"
-tags = ["sync"]
+tags = ["sync", "oracle"]
 [server.config]
 enabled = true
 
 ##
 
 [[server]]
+name = "NAS II"
+description = "TrueNAS SCALE: https://nas.brookview.app"
+tags = ["nas-ii", "sync"]
+[server.config]
+address = "https://komodo-nas-ii.brookview.app/"
+enabled = true
+timeout_seconds = 10
+mem_warning = 80.0
+
+##
+
+[[server]]
 name = "Unraid"
-tags = ["sync"]
+tags = ["sync", "unraid"]
 [server.config]
 address = "https://kerbol-next.lan:8120"
 enabled = true
+timeout_seconds = 10
+send_cpu_alerts = false
 
 ##
 
 [[stack]]
-name = "borgmatic"
-tags = ["sync"]
+name = "borgmatic-oracle"
+tags = ["sync", "oracle"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -32,7 +66,7 @@ CONTAINER_DATA = /srv/container-data
 
 [[stack]]
 name = "kuma"
-tags = ["sync"]
+tags = ["sync", "oracle"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -46,8 +80,8 @@ CONTAINER_DATA = /srv/container-data
 ##
 
 [[stack]]
-name = "tang"
-tags = ["sync"]
+name = "tang-oracle"
+tags = ["sync", "oracle"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -61,8 +95,22 @@ CONTAINER_DATA = /srv/container-data
 ##
 
 [[stack]]
-name = "tunnel"
-tags = ["sync"]
+name = "tunnel-brookview"
+tags = ["sync", "brookview"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "tunnel"
+environment = """
+  # VARIABLE = value
+tunnel_token=[[BROOKVIEW_TUNNEL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "tunnel-oracle"
+tags = ["sync", "oracle"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -76,8 +124,8 @@ environment = """
 ##
 
 [[stack]]
-name = "watchtower"
-tags = ["sync"]
+name = "watchtower-oracle"
+tags = ["sync", "oracle"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -171,6 +219,7 @@ linked_repo = "forgejo-resources"
 resource_path = ["resources.toml"]
 managed = true
 include_variables = true
+pending_alert = false
 
 ##
 
