@@ -1,0 +1,100 @@
+services:
+  quay-clair-postgresql:
+    container_name: quay-clair-postgresql
+    image: postgres:${POSTGRES_VERSION:-alpine}
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER:-clairuser}
+      POSTGRES_DB: ${POSTGRES_DB:-clair}
+    volumes:
+      - ${CONTAINER_DATA}/quay-stack/clair-postgresql:/var/lib/postgresql/data:rw
+
+  quay-clair:
+    container_name: quay-clair
+    image: quay.io/projectquay/clair:${CLAIR_VERSION:-nightly}
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      CLAIR_MODE: ${CLAIR_MODE:-combo}
+      CLAIR_CONF: ${CLAIR_CONF:-/config/config.yaml}
+    volumes:
+      - ${CONTAINER_DATA}/quay-stack/clair:/config:rw
+    tmpfs:
+      - /tmp
+    depends_on:
+      - quay-clair-postgresql
+
+  quay-mirror:
+    container_name: quay-mirror
+    image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
+    volumes:
+      - ${CONTAINER_DATA}/quay-stack/quay/config/:/conf/stack:rw
+      - ${QUAY_STORAGE}:/datastorage:rw
+    depends_on:
+      - quay
+
+  quay-postgresql:
+    container_name: quay-postgresql
+    image: postgres:${POSTGRES_VERSION:-alpine}
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER:-quayuser}
+      POSTGRES_DB: ${POSTGRES_DB:-quay}
+    volumes:
+      - ${CONTAINER_DATA}/quay-stack/quay-postgresql:/var/lib/postgresql/data:rw
+
+  quay-redis:
+    container_name: quay-redis
+    image: redis:${REDIS_VERSION:-latest}
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ${CONTAINER_DATA}/quay-stack/quay-redis:/data:rw
+    command:
+      - --save 60 1
+      - --loglevel warning
+      - --requirepass ${REDIS_PASSWORD}
+
+  quay:
+    container_name: quay
+    image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
+    volumes:
+      - ${CONTAINER_DATA}/quay-stack/quay/config/:/conf/stack:rw
+      - ${QUAY_STORAGE}:/datastorage:rw
+    depends_on:
+      - quay-postgresql
+      - quay-redis
+
+networks:
+  frontend:
+    external: ${NETWORK_EXTERNAL:-true}
+  backend:
+    external: ${NETWORK_EXTERNAL:-true}
