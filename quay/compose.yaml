@@ -1,16 +1,87 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  quay-clair-postgresql:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}          # secret – no default
+      POSTGRES_USER: ${POSTGRES_USER:-clairuser}
+      POSTGRES_DB: ${POSTGRES_DB:-clair}
+    volumes:
+      - ${CONTAINER_DATA}/quay-clair-postgresql:/var/lib/postgresql/data:rw
 
-# networks:
-#   default: {}
+  quay-clair:
+    image: quay.io/projectquay/clair:4.8.0
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      CLAIR_MODE: ${CLAIR_MODE:-combo}
+      CLAIR_CONF: ${CLAIR_CONF:-/config/config.yaml}
+    volumes:
+      - ${CONTAINER_DATA}/clair:/config:rw
+    tmpfs:
+      - /tmp
 
-# volumes:
-#   data:
+  quay-mirror:
+    image: quay.io/projectquay/quay:3.15.2
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
+    volumes:
+      - ${CONTAINER_DATA}/quay/config/:/conf/stack:rw
+      - ${CONTAINER_DATA}/quay:/datastorage:rw
+
+  quay-postgresql:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}          # secret – no default
+      POSTGRES_USER: ${POSTGRES_USER:-quayuser}
+      POSTGRES_DB: ${POSTGRES_DB:-quay}
+    volumes:
+      - ${CONTAINER_DATA}/quay-postgresql:/var/lib/postgresql/data:rw
+
+  quay-redis:
+    image: redis
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}                 # secret – no default
+    volumes:
+      - ${CONTAINER_DATA}/quay-redis:/data:rw
+    command:
+      - --save 60 1
+      - --loglevel warning
+      - --requirepass ${REDIS_PASSWORD}
+
+  quay:
+    image: quay.io/projectquay/quay:3.15.2
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
+    volumes:
+      - ${CONTAINER_DATA}/quay/config/:/conf/stack:rw
+      - ${CONTAINER_DATA}/quay:/datastorage:rw
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
