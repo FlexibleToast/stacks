@@ -104,7 +104,7 @@ tags = ["sync", "unraid"]
 [stack.config]
 server = "Unraid"
 auto_update = true
-linked_repo = "quay"
+linked_repo = "stacks"
 run_directory = "quay"
 environment = """
   # VARIABLE = value
@@ -130,6 +130,21 @@ run_directory = "tang"
 environment = """
   # VARIABLE = value
 CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "tang-unraid"
+tags = ["sync", "unraid"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tang"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /mnt/user/appdata
 """
 
 ##
