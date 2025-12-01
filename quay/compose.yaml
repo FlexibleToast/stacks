@@ -1,7 +1,7 @@
 services:
   quay-clair-postgresql:
     container_name: quay-clair-postgresql
-    image: postgres:17-alpine
+    image: postgres:${POSTGRES_VERSION:-alpine}
     restart: unless-stopped
     networks:
       - ${NETWORK_BACKEND:-backend}
@@ -15,7 +15,7 @@ services:
 
   quay-clair:
     container_name: quay-clair
-    image: quay.io/projectquay/clair:4.8.0
+    image: quay.io/projectquay/clair:${CLAIR_VERSION:-nightly}
     restart: unless-stopped
     networks:
       - ${NETWORK_BACKEND:-backend}
@@ -32,7 +32,7 @@ services:
 
   quay-mirror:
     container_name: quay-mirror
-    image: quay.io/projectquay/quay:3.15.2
+    image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
     restart: unless-stopped
     networks:
       - ${NETWORK_FRONTEND:-frontend}
@@ -48,7 +48,7 @@ services:
 
   quay-postgresql:
     container_name: quay-postgresql
-    image: postgres:17-alpine
+    image: postgres:${POSTGRES_VERSION:-alpine}
     restart: unless-stopped
     networks:
       - ${NETWORK_BACKEND:-backend}
@@ -62,7 +62,7 @@ services:
 
   quay-redis:
     container_name: quay-redis
-    image: redis
+    image: redis:${REDIS_VERSION:-latest}
     restart: unless-stopped
     networks:
       - ${NETWORK_BACKEND:-backend}
@@ -78,7 +78,7 @@ services:
 
   quay:
     container_name: quay
-    image: quay.io/projectquay/quay:3.15.2
+    image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
     restart: unless-stopped
     networks:
       - ${NETWORK_FRONTEND:-frontend}
