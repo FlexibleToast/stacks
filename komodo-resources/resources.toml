@@ -99,6 +99,27 @@ CONTAINER_DATA = /srv/container-data
 ##
 
 [[stack]]
+name = "quay"
+tags = ["sync", "unraid"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "quay"
+run_directory = "quay"
+environment = """
+  # VARIABLE = value
+POSTGRES_VERSION = 17-alpine
+CLAIR_VERSION = 4.8.0
+QUAY_VERSION = 3.15.2
+QUAY_STORAGE = /mnt/user/quay
+CONTAINER_DATA = /mnt/user/appdata
+POSTGRES_PASSWORD = [[QUAY_POSTGRES_PASSWORD]]
+REDIS_PASSWORD = [[QUAY_REDIS_PASSWORD]]
+"""
+
+##
+
+[[stack]]
 name = "tang-oracle"
 tags = ["sync", "oracle"]
 [stack.config]
