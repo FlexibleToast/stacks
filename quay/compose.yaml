@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-clairuser}
       POSTGRES_DB: ${POSTGRES_DB:-clair}
     volumes:
-      - ${CONTAINER_DATA}/quay-clair-postgresql:/var/lib/postgresql/data:rw
+      - ${CONTAINER_DATA}/quay-stack/clair-postgresql:/var/lib/postgresql/data:rw
 
   quay-clair:
     container_name: quay-clair
@@ -24,7 +24,7 @@ services:
       CLAIR_MODE: ${CLAIR_MODE:-combo}
       CLAIR_CONF: ${CLAIR_CONF:-/config/config.yaml}
     volumes:
-      - ${CONTAINER_DATA}/clair:/config:rw
+      - ${CONTAINER_DATA}/quay-stack/clair:/config:rw
     tmpfs:
       - /tmp
     depends_on:
@@ -41,8 +41,8 @@ services:
       TZ: ${TZ:-America/Chicago}
       IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
     volumes:
-      - ${CONTAINER_DATA}/quay/config/:/conf/stack:rw
-      - ${CONTAINER_DATA}/quay:/datastorage:rw
+      - ${CONTAINER_DATA}/quay-stack/quay/config/:/conf/stack:rw
+      - ${QUAY_STORAGE}:/datastorage:rw
     depends_on:
       - quay
 
@@ -58,7 +58,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-quayuser}
       POSTGRES_DB: ${POSTGRES_DB:-quay}
     volumes:
-      - ${CONTAINER_DATA}/quay-postgresql:/var/lib/postgresql/data:rw
+      - ${CONTAINER_DATA}/quay-stack/quay-postgresql:/var/lib/postgresql/data:rw
 
   quay-redis:
     container_name: quay-redis
@@ -70,7 +70,7 @@ services:
       TZ: ${TZ:-America/Chicago}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
-      - ${CONTAINER_DATA}/quay-redis:/data:rw
+      - ${CONTAINER_DATA}/quay-stack/quay-redis:/data:rw
     command:
       - --save 60 1
       - --loglevel warning
@@ -87,8 +87,8 @@ services:
       TZ: ${TZ:-America/Chicago}
       IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
     volumes:
-      - ${CONTAINER_DATA}/quay/config/:/conf/stack:rw
-      - ${CONTAINER_DATA}/quay:/datastorage:rw
+      - ${CONTAINER_DATA}/quay-stack/quay/config/:/conf/stack:rw
+      - ${QUAY_STORAGE}:/datastorage:rw
     depends_on:
       - quay-postgresql
       - quay-redis
