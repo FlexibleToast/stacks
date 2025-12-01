@@ -4,7 +4,7 @@ services:
     image: postgres:${POSTGRES_VERSION:-alpine}
     restart: unless-stopped
     networks:
-      - ${NETWORK_BACKEND:-backend}
+      - backend
     environment:
       TZ: ${TZ:-America/Chicago}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -18,7 +18,7 @@ services:
     image: quay.io/projectquay/clair:${CLAIR_VERSION:-nightly}
     restart: unless-stopped
     networks:
-      - ${NETWORK_BACKEND:-backend}
+      - backend
     environment:
       TZ: ${TZ:-America/Chicago}
       CLAIR_MODE: ${CLAIR_MODE:-combo}
@@ -35,8 +35,8 @@ services:
     image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
     restart: unless-stopped
     networks:
-      - ${NETWORK_FRONTEND:-frontend}
-      - ${NETWORK_BACKEND:-backend}
+      - frontend
+      - backend
     environment:
       TZ: ${TZ:-America/Chicago}
       IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
@@ -51,7 +51,7 @@ services:
     image: postgres:${POSTGRES_VERSION:-alpine}
     restart: unless-stopped
     networks:
-      - ${NETWORK_BACKEND:-backend}
+      - backend
     environment:
       TZ: ${TZ:-America/Chicago}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -65,7 +65,7 @@ services:
     image: redis:${REDIS_VERSION:-latest}
     restart: unless-stopped
     networks:
-      - ${NETWORK_BACKEND:-backend}
+      - backend
     environment:
       TZ: ${TZ:-America/Chicago}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -81,8 +81,8 @@ services:
     image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
     restart: unless-stopped
     networks:
-      - ${NETWORK_FRONTEND:-frontend}
-      - ${NETWORK_BACKEND:-backend}
+      - frontend
+      - backend
     environment:
       TZ: ${TZ:-America/Chicago}
       IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
@@ -94,7 +94,7 @@ services:
       - quay-redis
 
 networks:
-  ${NETWORK_FRONTEND:-frontend}:
+  frontend:
     external: ${NETWORK_EXTERNAL:-true}
-  ${NETWORK_BACKEND:-backend}:
+  backend:
     external: ${NETWORK_EXTERNAL:-true}
