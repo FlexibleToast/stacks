@@ -65,6 +65,25 @@ CONTAINER_DATA = /srv/container-data
 ##
 
 [[stack]]
+name = "borgserver-nas-ii"
+tags = ["sync", "nas-ii", "backup"]
+[stack.config]
+server = "NAS II"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "borgserver"
+environment = """
+  # VARIABLE = value
+BORGSERVER_PUID = 34
+BORGSERVER_PGID = 34
+BORGSERVER_SSH_PORT = 8822
+CONTAINER_DATA = /mnt/pool-0/container-data
+BORGSERVER_BACKUP_DIR = /mnt/pool-0/borg
+"""
+
+##
+
+[[stack]]
 name = "kuma"
 tags = ["sync", "oracle"]
 [stack.config]
@@ -159,6 +178,16 @@ tags = ["sync"]
 [repo.config]
 git_account = "FlexibleToast"
 repo = "FlexibleToast/stacks"
+
+##
+
+[[repo]]
+name = "resources"
+tags = ["sync"]
+[repo.config]
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "resources"
 
 ##
 
