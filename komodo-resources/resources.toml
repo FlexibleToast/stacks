@@ -14,7 +14,7 @@ tags = ["sync", "container-pi4-1"]
 [server.config]
 address = "https://container-pi4-1.lan:8120"
 enabled = true
-timeout_seconds = 10
+timeout_seconds = 30
 
 ##
 
@@ -44,7 +44,7 @@ tags = ["sync", "unraid"]
 [server.config]
 address = "https://kerbol-next.lan:8120"
 enabled = true
-timeout_seconds = 10
+timeout_seconds = 30
 send_cpu_alerts = false
 
 ##
