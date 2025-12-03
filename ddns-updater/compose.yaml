@@ -2,7 +2,7 @@
 services:
   ddns-updater:
     container_name: ddns-updater
-    image: qmcgaw/ddns-updater
+    image: qmcgaw/ddns-updater:${DDNS_UPDATER_VERSION:-latest}
     volumes:
       - ${CONTAINER_DATA}/ddns-updater:/updater/data:rw
     environment:
