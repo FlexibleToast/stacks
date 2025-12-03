@@ -1,16 +1,34 @@
-## Add your compose file here
+# docker-compose.yml   (Docker‑Compose v2 – no “version:” key)
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  vaultwarden:
+    container_name: vaultwarden
+    # Change the tag if you need a different image version
+    image: vaultwarden/server:${SVC_VERSION:-alpine}
+    # Default restart policy – override with SVC_RESTART if you wish
+    restart: ${SVC_RESTART:-unless-stopped}
+    networks:
+      - frontend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      HOST_OS: ${HOST_OS:-Unraid}
+      HOST_HOSTNAME: ${HOST_HOSTNAME:-Kerbol-Next}
+      HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-vaultwarden}
+      SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
+      INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED:-true}
+      WEBSOCKET_ENABLED: ${WEBSOCKET_ENABLED:-false}
+      ADMIN_TOKEN: ${ADMIN_TOKEN}
+      DOMAIN: ${DOMAIN:-https://bitwarden.mcdade.app}
+      SHOW_PASSWORD_HINT: ${SHOW_PASSWORD_HINT:-false}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURITY: ${SMTP_SECURITY:-starttls}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+    volumes:
+      - ${CONTAINER_DATA}/vaultwarden:/data:rw
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  frontend:
+    # Set NETWORK_EXTERNAL=false if you want Compose to create the network
+    external: ${NETWORK_EXTERNAL:-true}
