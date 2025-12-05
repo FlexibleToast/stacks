@@ -10,7 +10,7 @@ services:
       WATCHTOWER_SCHEDULE: ${watchtower_schedule:-* 0 7 * * THU}
       WATCHTOWER_CLEANUP: "true"
       TZ: ${tz:-America/Chicago}
-      WATCHTOWER_LABEL_ENABLE: ${WATCHTOWER_LABEL_ENABLE:=false}
+      WATCHTOWER_LABEL_ENABLE: ${watchtower_label_enable:=false}
       # SMTP Settings
       WATCHTOWER_NOTIFICATIONS: email
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER: ${watchtower_smtp:-smtp.gmail.com}
