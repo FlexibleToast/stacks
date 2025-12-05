@@ -6,6 +6,8 @@ services:
     container_name: watchtower
     hostname: ${HOSTNAME}
     restart: ${watchtower_restart:-unless-stopped}
+    security_opt:
+      - label:disable
     environment:
       WATCHTOWER_SCHEDULE: ${watchtower_schedule:-* 0 7 * * THU}
       WATCHTOWER_CLEANUP: "true"
