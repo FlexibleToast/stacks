@@ -2,17 +2,12 @@
 services:
   vaultwarden:
     container_name: vaultwarden
-    # Change the tag if you need a different image version
     image: vaultwarden/server:${SVC_VERSION:-alpine}
-    # Default restart policy – override with SVC_RESTART if you wish
     restart: ${SVC_RESTART:-unless-stopped}
     networks:
       - frontend
     environment:
       TZ: ${TZ:-America/Chicago}
-      HOST_OS: ${HOST_OS:-Unraid}
-      HOST_HOSTNAME: ${HOST_HOSTNAME:-Kerbol-Next}
-      HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-vaultwarden}
       SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
       INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED:-true}
       WEBSOCKET_ENABLED: ${WEBSOCKET_ENABLED:-false}
