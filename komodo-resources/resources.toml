@@ -89,7 +89,7 @@ name = "ddns-updater-brookview"
 tags = ["sync", "brookview"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "brookview-microos"
+linked_repo = "stacks"
 run_directory = "ddns-updater"
 environment = """
   # VARIABLE = value
@@ -103,7 +103,7 @@ name = "ddns-updater-unraid"
 tags = ["sync", "unraid"]
 [stack.config]
 server = "Unraid"
-linked_repo = "brookview-microos"
+linked_repo = "stacks"
 run_directory = "ddns-updater"
 environment = """
   # VARIABLE = value
@@ -117,7 +117,7 @@ name = "endlessh-go-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "brookview-microos"
+linked_repo = "stacks"
 run_directory = "endlessh-go"
 
 ##
@@ -127,7 +127,7 @@ name = "komodo-periphery-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "brookview-microos"
+linked_repo = "stacks"
 run_directory = "komodo-periphery"
 environment = """
   # VARIABLE = value
@@ -237,7 +237,7 @@ name = "vaultwarden-brookview"
 tags = ["sync", "brookview"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "brookview-microos"
+linked_repo = "stacks"
 run_directory = "vaultwarden"
 file_paths = [
   "compose.yaml",
@@ -270,7 +270,7 @@ name = "watchtower-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "brookview-microos"
+linked_repo = "stacks"
 run_directory = "watchtower"
 environment = """
   # VARIABLE = value
