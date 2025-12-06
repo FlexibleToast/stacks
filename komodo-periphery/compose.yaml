@@ -4,7 +4,7 @@ services:
     image: ghcr.io/moghtech/komodo-periphery
     restart: unless-stopped
     labels:
-      komodo.skip:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     security_opt:
       - label:disable
     ports:
