@@ -1,4 +1,3 @@
-# docker-compose.yml   (Docker‑Compose v2 – no “version:” key)
 services:
   vaultwarden:
     container_name: vaultwarden
