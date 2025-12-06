@@ -1,16 +1,26 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  adguardhome:
+    image: adguard/adguardhome:${ADGUARD_VERSION:-latest}
+    container_name: adguardhome
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      TCP_PORT_3000: ${TCP_PORT_3000:-3000}
+      TPC_PORT_53: ${TPC_PORT_53:-53}
+      UDP_PORT_53: ${UDP_PORT_53:-53}
+    volumes:
+      - ${ADGUARD_HOME_WORK:-/srv/container-data/adguard/adguard-home/workingdir}:/opt/adguardhome/work
+      - ${ADGUARD_HOME_CONFIG:-/srv/container-data/adguard/adguard-home/config}:/opt/adguardhome/conf
+    restart: unless-stopped
+    networks:
+      adguard-net:
+        ipv4_address: ${ADGUARD_HOME_IP}
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  adguard-net:
+    driver: ipvlan
+    driver_opts:
+      parent: ${ADGUARD_PARENT:-eth0}
+    ipam:
+      config:
+        - subnet: ${ADGUARD_SUBNET}
+          gateway: ${ADGUARD_GATEWAY}
