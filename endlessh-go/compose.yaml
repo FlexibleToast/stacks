@@ -1,16 +1,13 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  endlessh-go:
+    container_name: endlessh-go
+    image: shizunge/endlessh-go:${ENDLESSH_IMAGE_TAG:-latest}
+    pid_limit: 2048
+    ports:
+      - "${ENDLESSH_SSH_PORT:-2222}:2222/tcp"
+      - "${ENDLESSH_PROMETHEUS_PORT:-2112}:2112/tcp"
+    command:
+      - --enable_prometheus
+      - --geoip_supplier=ip-api
+      - --logtostderr
+      - -v=1
