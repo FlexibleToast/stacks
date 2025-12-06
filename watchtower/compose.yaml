@@ -1,26 +1,26 @@
 services:
   watchtower:
-    image: containrrr/watchtower:${watchtower_version:-latest}
-    cpus: ${watchtower_cpus:-0.25}
-    mem_limit: ${watchtower_mem_limit:-64m}
+    image: containrrr/watchtower:${WATCHTOWER_VERSION:-latest}
+    cpus: ${WATCHTOWER_CPUS:-0.25}
+    mem_limit: ${WATCHTOWER_MEM_LIMIT:-64m}
     container_name: watchtower
     hostname: ${HOSTNAME}
-    restart: ${watchtower_restart:-unless-stopped}
+    restart: ${WATCHTOWER_RESTART:-unless-stopped}
     security_opt:
       - label:disable
     environment:
-      WATCHTOWER_SCHEDULE: ${watchtower_schedule:-* 0 7 * * THU}
+      WATCHTOWER_SCHEDULE: ${WATCHTOWER_SCHEDULE:-"* 0 7 * * THU"}
       WATCHTOWER_CLEANUP: "true"
-      TZ: ${tz:-America/Chicago}
+      TZ: ${TZ:-America/Chicago}
       WATCHTOWER_LABEL_ENABLE: ${WATCHTOWER_LABEL_ENABLE:-false}
       # SMTP Settings
       WATCHTOWER_NOTIFICATIONS: email
-      WATCHTOWER_NOTIFICATION_EMAIL_SERVER: ${watchtower_smtp:-smtp.gmail.com}
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER: ${WATCHTOWER_SMTP:-smtp.gmail.com}
       WATCHTOWER_NOTIFICATION_EMAIL_FROM: ${EMAIL}
-      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: ${watchtower_smtp_port:-587}
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: ${WATCHTOWER_SMTP_PORT:-587}
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER: ${EMAIL}
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD: ${EMAIL_PASS}
       WATCHTOWER_NOTIFICATION_EMAIL_TO: ${EMAIL}
-      WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG: ${subject_tag}
+      WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG: ${SUBJECT_TAG}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
