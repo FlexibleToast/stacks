@@ -1,0 +1,13 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome:${ADGUARD_VERSION:-latest}
+    container_name: adguardhome
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      TCP_PORT_3000: ${TCP_PORT_3000:-3000}
+      TPC_PORT_53: ${TPC_PORT_53:-53}
+      UDP_PORT_53: ${UDP_PORT_53:-53}
+    volumes:
+      - ${CONTAINER_DATA}/adguard/adguard-home/workingdir:/opt/adguardhome/work
+      - ${CONTAINER_DATA}/adguard/adguard-home/config:/opt/adguardhome/conf
+    restart: unless-stopped

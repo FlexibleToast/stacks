@@ -1,0 +1,13 @@
+services:
+  adguardhome:
+    networks:
+      eth0:
+        ipv4_address: ${ADGUARD_HOME_IP}
+  adguardhome-sync:
+    networks:
+      eth0:
+        ipv4_address: ${ADGUARD_SYNC_IP}
+
+networks:
+  eth0:
+    external: true
