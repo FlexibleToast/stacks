@@ -6,6 +6,3 @@ services:
     volumes:
       - ${CONTAINER_DATA}/adguard/adguard-sync/config:/config
     restart: unless-stopped
-    networks:
-      adguard-net:
-        ipv4_address: ${ADGUARD_SYNC_IP}
