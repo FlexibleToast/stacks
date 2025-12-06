@@ -4,7 +4,7 @@ tags = ["sync", "brookview"]
 [server.config]
 address = "https://komodo-periphery.brookview.app"
 enabled = true
-timeout_seconds = 10
+timeout_seconds = 30
 
 ##
 
@@ -33,7 +33,8 @@ tags = ["nas-ii", "sync"]
 [server.config]
 address = "https://komodo-nas-ii.brookview.app/"
 enabled = true
-timeout_seconds = 10
+timeout_seconds = 30
+send_mem_alerts = false
 mem_warning = 80.0
 
 ##
@@ -79,6 +80,34 @@ BORGSERVER_PGID = 34
 BORGSERVER_SSH_PORT = 8822
 CONTAINER_DATA = /mnt/pool-0/container-data
 BORGSERVER_BACKUP_DIR = /mnt/pool-0/borg
+"""
+
+##
+
+[[stack]]
+name = "ddns-updater-brookview"
+tags = ["sync", "brookview"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "brookview-microos"
+run_directory = "ddns-updater"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "ddns-updater-unraid"
+tags = ["sync", "unraid"]
+[stack.config]
+server = "Unraid"
+linked_repo = "brookview-microos"
+run_directory = "ddns-updater"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA=/mnt/user/appdata
 """
 
 ##
@@ -174,6 +203,40 @@ run_directory = "tunnel"
 environment = """
   # VARIABLE = value
  tunnel_token = [[ORACLE_TUNNEL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "vaultwarden-brookview"
+tags = ["sync", "brookview"]
+[stack.config]
+server = "Bookview MicroOS"
+auto_update = true
+linked_repo = "brookview-microos"
+run_directory = "vaultwarden"
+file_paths = [
+  "compose.yaml",
+  "ports.compose.yaml"
+]
+pre_deploy.command = """
+  # Add multiple commands on new lines. Supports comments.
+  export COMPOSE_FILE=compose.yaml:ports.compose.yaml
+"""
+post_deploy.command = """
+  # Add multiple commands on new lines. Supports comments.
+  unset COMPOSE_FILE
+"""
+environment = """
+# VARIABLE = value
+ADMIN_TOKEN="[[VAULTWARDEN_ADMIN_TOKEN]]"
+DOMAIN=https://bitwarden.brookview.app
+NETWORK_EXTERNAL=false
+VAULTWARDEN_HTTP=9926
+SMTP_FROM=[[EMAIL]]
+SMTP_USERNAME=[[EMAIL]]
+SMTP_PASSWORD="[[EMAIL_PASS]]"
+CONTAINER_DATA=/srv/container-data
 """
 
 ##
