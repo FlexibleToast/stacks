@@ -1,16 +1,17 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  komodo-periphery:
+    container_name: komodo-periphery
+    image: ghcr.io/moghtech/komodo-periphery
+    restart: unless-stopped
+    security_opt:
+      - label:disable
+    ports:
+      - "${KOMODO_PERIPHERY_PORT:-8120}:8120"
+    volumes:
+      - ${COMODO_PERIPHERY_PATH}:${COMODO_PERIPHERY_PATH}
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/proc
+    environment:
+      PERIPHERY_SSL_ENABLED: ${PERIPHERY_SSL_ENABLED:-true}
+      PERIPHERY_PASSKEYS: ${KOMODO_PASSPHRASE}
+      PERIPHERY_ROOT_DIRECTORY: ${COMODO_PERIPHERY_PATH}
