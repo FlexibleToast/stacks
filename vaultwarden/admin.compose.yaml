@@ -1,0 +1,4 @@
+services:
+  vaultwarden:
+    environment:
+      ADMIN_TOKEN: ${ADMIN_TOKEN}

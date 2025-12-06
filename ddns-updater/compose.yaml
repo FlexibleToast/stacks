@@ -1,0 +1,25 @@
+# docker-compose.yml
+services:
+  ddns-updater:
+    container_name: ddns-updater
+    image: qmcgaw/ddns-updater:${DDNS_UPDATER_VERSION:-latest}
+    volumes:
+      - ${CONTAINER_DATA}/ddns-updater:/updater/data:rw
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      PUBLICIP_FETCHERS: ${PUBLICIP_FETCHERS:-all}
+      PUBLICIP_HTTP_PROVIDERS: ${PUBLICIP_HTTP_PROVIDERS:-all}
+      PUBLICIPV4_HTTP_PROVIDERS: ${PUBLICIPV4_HTTP_PROVIDERS:-all}
+      PUBLICIPV6_HTTP_PROVIDERS: ${PUBLICIPV6_HTTP_PROVIDERS:-all}
+      PUBLICIP_DNS_PROVIDERS: ${PUBLICIP_DNS_PROVIDERS:-all}
+      PUBLICIP_DNS_TIMEOUT: ${PUBLICIP_DNS_TIMEOUT:-3s}
+      UPDATE_COOLDOWN_PERIOD: ${UPDATE_COOLDOWN_PERIOD:-5m}
+      HTTP_TIMEOUT: ${HTTP_TIMEOUT:-10s}
+      BACKUP_DIRECTORY: ${BACKUP_DIRECTORY:-/updater/data/backup}
+      BACKUP_PERIOD: ${BACKUP_PERIOD:-0}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_CALLER: ${LOG_CALLER:-hidden}
+      ROOT_URL: ${ROOT_URL:-/}
+      SHOUTRRR_ADDRESSES: ${SHOUTRRR_ADDRESSES:-}
+      HEALTH_SERVER_ADDRESS: ${HEALTH_SERVER_ADDRESS:-127.0.0.1:9999}
+    restart: ${DDNS_UPDATER_RESTART:-unless-stopped}

@@ -1,0 +1,17 @@
+services:
+  komodo-periphery:
+    container_name: komodo-periphery
+    image: ghcr.io/moghtech/komodo-periphery
+    restart: unless-stopped
+    security_opt:
+      - label:disable
+    ports:
+      - "${KOMODO_PERIPHERY_PORT:-8120}:8120"
+    volumes:
+      - ${KOMODO_PERIPHERY_PATH}:${KOMODO_PERIPHERY_PATH}
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/proc
+    environment:
+      PERIPHERY_SSL_ENABLED: ${PERIPHERY_SSL_ENABLED:-true}
+      PERIPHERY_PASSKEYS: ${KOMODO_PASSKEY}
+      PERIPHERY_ROOT_DIRECTORY: ${KOMODO_PERIPHERY_PATH}
