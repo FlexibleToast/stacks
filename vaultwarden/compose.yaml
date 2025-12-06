@@ -3,8 +3,6 @@ services:
     container_name: vaultwarden
     image: vaultwarden/server:${SVC_VERSION:-alpine}
     restart: ${SVC_RESTART:-unless-stopped}
-    networks:
-      - frontend
     environment:
       TZ: ${TZ:-America/Chicago}
       SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
@@ -20,8 +18,3 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME}
     volumes:
       - ${CONTAINER_DATA}/vaultwarden:/data:rw
-
-networks:
-  frontend:
-    # Set NETWORK_EXTERNAL=false if you want Compose to create the network
-    external: ${NETWORK_EXTERNAL:-true}
