@@ -11,16 +11,3 @@ services:
       - ${CONTAINER_DATA}/adguard/adguard-home/workingdir:/opt/adguardhome/work
       - ${CONTAINER_DATA}/adguard/adguard-home/config:/opt/adguardhome/conf
     restart: unless-stopped
-    networks:
-      adguard-net:
-        ipv4_address: ${ADGUARD_HOME_IP}
-
-networks:
-  adguard-net:
-    driver: ipvlan
-    driver_opts:
-      parent: ${ADGUARD_PARENT:-eth0}
-    ipam:
-      config:
-        - subnet: ${ADGUARD_SUBNET}
-          gateway: ${ADGUARD_GATEWAY}
