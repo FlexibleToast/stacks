@@ -4,8 +4,8 @@ services:
     container_name: adguardhome-sync
     command: run --config /config/adguardhome-sync.yaml
     volumes:
-      - ${ADGUARD_SYNC_CONFIG:-/srv/container-data/adguard/adguard-sync/config/adguardhome-sync.yaml}:/config/adguardhome-sync.yaml
+      - ${CONTAINER_DATA}/adguard/adguard-sync/config:/config
     restart: unless-stopped
     networks:
       adguard-net:
-        ipv4_address: ${ADGUARD_SYNC_IP:-192.168.10.13}
+        ipv4_address: ${ADGUARD_SYNC_IP}
