@@ -10,7 +10,6 @@ services:
       SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
       INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED:-true}
       WEBSOCKET_ENABLED: ${WEBSOCKET_ENABLED:-false}
-      ADMIN_TOKEN: ${ADMIN_TOKEN}
       DOMAIN: ${DOMAIN:-https://bitwarden.mcdade.app}
       SHOW_PASSWORD_HINT: ${SHOW_PASSWORD_HINT:-false}
       SMTP_FROM: ${SMTP_FROM}
