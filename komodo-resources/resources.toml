@@ -35,7 +35,7 @@ address = "https://komodo-nas-ii.brookview.app/"
 enabled = true
 timeout_seconds = 30
 send_mem_alerts = false
-mem_warning = 80.0
+mem_warning = 85.0
 
 ##
 
@@ -108,6 +108,31 @@ run_directory = "ddns-updater"
 environment = """
   # VARIABLE = value
 CONTAINER_DATA=/mnt/user/appdata
+"""
+
+##
+
+[[stack]]
+name = "endlessh-go-brookview"
+tags = ["brookview", "sync"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "brookview-microos"
+run_directory = "endlessh-go"
+
+##
+
+[[stack]]
+name = "komodo-periphery-brookview"
+tags = ["brookview", "sync"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "brookview-microos"
+run_directory = "komodo-periphery"
+environment = """
+  # VARIABLE = value
+KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
+KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
 """
 
 ##
@@ -212,7 +237,6 @@ name = "vaultwarden-brookview"
 tags = ["sync", "brookview"]
 [stack.config]
 server = "Bookview MicroOS"
-auto_update = true
 linked_repo = "brookview-microos"
 run_directory = "vaultwarden"
 file_paths = [
@@ -237,6 +261,21 @@ SMTP_FROM=[[EMAIL]]
 SMTP_USERNAME=[[EMAIL]]
 SMTP_PASSWORD="[[EMAIL_PASS]]"
 CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "watchtower-brookview"
+tags = ["brookview", "sync"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "brookview-microos"
+run_directory = "watchtower"
+environment = """
+  # VARIABLE = value
+EMAIL=[[EMAIL]]
+EMAIL_PASS=[[EMAIL_PASS]]
 """
 
 ##
