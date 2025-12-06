@@ -1,16 +1,5 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  vaultwarden:
+    ports:
+      - ${VAULTWARDEN_HTTP:-80}:80
+      - ${VAULTWARDEN_WEBSOCKET:-3012}:3012
