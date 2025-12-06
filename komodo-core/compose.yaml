@@ -59,6 +59,8 @@ services:
     container_name: komodo-periphery
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    security_opt:
+      - label:disable
     restart: ${KOMODO_PERIPHERY_RESTART:-unless-stopped}
     env_file: ./compose.env
     volumes:
