@@ -51,6 +51,43 @@ send_cpu_alerts = false
 ##
 
 [[stack]]
+name = "adguard-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "container-pi4-1"
+run_directory = "adguard"
+file_paths = [
+  "compose.yaml",
+  "adguard-sync.compose.yaml",
+  "container-pi4-1.network.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+ADGUARD_HOME_IP=192.168.10.12
+ADGUARD_SYNC_IP=192.168.10.13
+ADGUARD_SUBNET=192.168.10.0/24
+ADGUARD_GATEWAY=192.168.10.1
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "borgmatic-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "stacks"
+run_directory = "borgmatic"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
 name = "borgmatic-oracle"
 tags = ["sync", "oracle"]
 [stack.config]
@@ -174,6 +211,25 @@ REDIS_PASSWORD = [[QUAY_REDIS_PASSWORD]]
 ##
 
 [[stack]]
+name = "tang-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "container-pi4-1"
+run_directory = "tang"
+file_paths = [
+  "compose.yaml",
+  "user.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+USER_ID = "1001:1001"
+"""
+
+##
+
+[[stack]]
 name = "tang-oracle"
 tags = ["sync", "oracle"]
 [stack.config]
@@ -276,6 +332,23 @@ environment = """
   # VARIABLE = value
 EMAIL=[[EMAIL]]
 EMAIL_PASS=[[EMAIL_PASS]]
+"""
+
+##
+
+[[stack]]
+name = "watchtower-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "container-pi4-1"
+run_directory = "watchtower"
+environment = """
+  # VARIABLE = value
+EMAIL = [[EMAIL]]
+EMAIL_PASS = [[EMAIL_PASS]]
+SCHEDULE = "* 0 7 * * MON"
+SUBJECT_TAG = "Container Pi"
 """
 
 ##
