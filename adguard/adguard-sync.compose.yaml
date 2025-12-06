@@ -1,16 +1,11 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  adguardhome-sync:
+    image: ghcr.io/bakito/adguardhome-sync:${ADGUARD_SYNC_VERSION:-latest}
+    container_name: adguardhome-sync
+    command: run --config /config/adguardhome-sync.yaml
+    volumes:
+      - ${ADGUARD_SYNC_CONFIG:-/srv/container-data/adguard/adguard-sync/config/adguardhome-sync.yaml}:/config/adguardhome-sync.yaml
+    restart: unless-stopped
+    networks:
+      adguard-net:
+        ipv4_address: ${ADGUARD_SYNC_IP:-192.168.10.13}
