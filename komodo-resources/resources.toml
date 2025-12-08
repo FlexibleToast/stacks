@@ -55,7 +55,7 @@ name = "adguard-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
-linked_repo = "container-pi4-1"
+linked_repo = "stacks"
 run_directory = "adguard"
 file_paths = [
   "compose.yaml",
@@ -89,7 +89,7 @@ CONTAINER_DATA=/srv/container-data
 
 [[stack]]
 name = "borgmatic-oracle"
-tags = ["sync", "oracle"]
+tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -175,8 +175,23 @@ KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
 ##
 
 [[stack]]
+name = "komodo-periphery-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "stacks"
+run_directory = "komodo-periphery"
+environment = """
+  # VARIABLE = value
+KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
+KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
+"""
+
+##
+
+[[stack]]
 name = "kuma"
-tags = ["sync", "oracle"]
+tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -215,7 +230,7 @@ name = "tang-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
-linked_repo = "container-pi4-1"
+linked_repo = "stacks"
 run_directory = "tang"
 file_paths = [
   "compose.yaml",
@@ -231,7 +246,7 @@ USER_ID = "1001:1001"
 
 [[stack]]
 name = "tang-oracle"
-tags = ["sync", "oracle"]
+tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -275,7 +290,7 @@ tunnel_token=[[BROOKVIEW_TUNNEL_TOKEN]]
 
 [[stack]]
 name = "tunnel-oracle"
-tags = ["sync", "oracle"]
+tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -330,8 +345,9 @@ linked_repo = "stacks"
 run_directory = "watchtower"
 environment = """
   # VARIABLE = value
-EMAIL=[[EMAIL]]
-EMAIL_PASS=[[EMAIL_PASS]]
+EMAIL = [[EMAIL]]
+EMAIL_PASS = [[EMAIL_PASS]]
+SUBJECT_TAG = Brookview MicroOS
 """
 
 ##
@@ -341,7 +357,7 @@ name = "watchtower-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
-linked_repo = "container-pi4-1"
+linked_repo = "stacks"
 run_directory = "watchtower"
 environment = """
   # VARIABLE = value
@@ -355,7 +371,7 @@ SUBJECT_TAG = "Container Pi"
 
 [[stack]]
 name = "watchtower-oracle"
-tags = ["sync", "oracle"]
+tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -363,10 +379,10 @@ linked_repo = "stacks"
 run_directory = "watchtower"
 environment = """
   # VARIABLE = value
-HOSTNAME = docker-oracle
-subject_tag = Docker Oracle
 EMAIL = [[EMAIL]]
 EMAIL_PASS = [[EMAIL_PASS]]
+HOSTNAME = docker-oracle
+SUBJECT_TAG = Docker Oracle
 """
 
 ##
