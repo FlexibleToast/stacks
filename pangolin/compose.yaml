@@ -76,7 +76,7 @@ services:
         condition: service_healthy
       pangolin:
         condition: service_healthy
-    image: docker.io/traefik:${TRAEFIK_VERSION:-v3.6}
+    image: docker.io/traefik:${TRAEFIK_VERSION:-v3}
     network_mode: service:gerbil
     restart: unless-stopped
     environment:
