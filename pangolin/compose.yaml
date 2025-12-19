@@ -62,7 +62,7 @@ services:
         - -f
         - http://localhost:3001/api/v1/
       timeout: 10s
-    image: docker.io/fosrl/pangolin:${PANGOLIN_VERSION:-1.13.1}
+    image: docker.io/fosrl/pangolin:${PANGOLIN_VERSION:-1.13}
     restart: unless-stopped
     volumes:
       - ${CONTAINER_DATA}/pangolin/config:/app/config
