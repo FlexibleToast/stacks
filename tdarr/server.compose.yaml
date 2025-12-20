@@ -1,16 +1,22 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:${TDARR_VERSION:-2.50.02}
+    restart: ${TDARR_RESTART:-unless-stopped}
+    cpus: ${TDARR_CPUS:-4}
+    mem_limit: ${TDARR_MEM_LIMIT:-8g}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr}
+      serverIP: ${SERVER_IP:-192.168.10.20}
+      internalNode: ${INTERNAL_NODE:-true}
+      nodeIP: ${NODE_IP:-192.168.10.20}
+      nodeID: ${NODE_ID:-unraid}
+      PUID: ${PUID:-99}
+      PGID: ${PGID:-100}
+    ports:
+      - "${TDARR_PORT_8266:-8266}:8266"
+      - "${TDARR_PORT_8265:-8265}:8265"
+      - "${TDARR_PORT_8264:-8264}:8264"
+    devices:
+      - "/dev/dri:/dev/dri"
