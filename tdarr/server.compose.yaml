@@ -10,8 +10,8 @@ services:
       HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr}
       serverIP: ${SERVER_IP:-192.168.10.20}
       internalNode: ${INTERNAL_NODE:-true}
-      nodeIP: ${NODE_IP:-192.168.10.20}
-      nodeID: ${NODE_ID:-unraid}
+      nodeIP: ${TDARR_NODE_IP:-192.168.10.20}
+      nodeID: ${TDARR_NODE_ID:-unraid}
       PUID: ${PUID:-99}
       PGID: ${PGID:-100}
     ports:
