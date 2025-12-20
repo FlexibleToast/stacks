@@ -10,8 +10,8 @@ services:
       HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr_node}
       serverIP: ${SERVER_IP:-192.168.10.20}
       serverPort: ${SERVER_PORT:-8266}
-      nodeIP: ${NODE_IP:-192.168.10.20}
-      nodeID: ${NODE_ID:-RTX 3090}
+      nodeIP: ${TDARR_NODE_NODE_IP:-192.168.10.20}
+      nodeID: ${TDARR_NOTE_NODE_ID:-RTX 3090}
       PUID: ${PUID:-99}
       PGID: ${PGID:-100}
       NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-GPU-9cffc19f-d73c-b282-7200-be2d0702f446}
