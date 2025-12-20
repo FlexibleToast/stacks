@@ -1,16 +1,27 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  tdarr_node:
+    container_name: tdarr_node
+    image: ghcr.io/haveagitgat/tdarr_node:${TDARR_NODE_VERSION:-2.50.02}
+    restart: unless-stopped
+    cpus: ${TDARR_NODE_CPUS:-4}
+    mem_limit: ${TDARR_NODE_MEM_LIMIT:-8g}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr_node}
+      serverIP: ${SERVER_IP:-192.168.10.20}
+      serverPort: ${SERVER_PORT:-8266}
+      nodeIP: ${NODE_IP:-192.168.10.20}
+      nodeID: ${NODE_ID:-RTX 3090}
+      PUID: ${PUID:-99}
+      PGID: ${PGID:-100}
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-GPU-9cffc19f-d73c-b282-7200-be2d0702f446}
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
+    ports:
+      - "${TDARR_NODE_PORT_8267:-8267}:8267"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
