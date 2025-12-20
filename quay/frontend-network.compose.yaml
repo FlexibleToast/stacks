@@ -1,16 +1,31 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  quay-clair-postgresql:
+    networks:
+      - backend
 
-# networks:
-#   default: {}
+  quay-clair:
+    networks:
+      - backend
 
-# volumes:
-#   data:
+  quay-mirror:
+    networks:
+      - frontend
+      - backend
+
+  quay-postgresql:
+    networks:
+      - backend
+
+  quay-redis:
+    networks:
+      - backend
+
+  quay:
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
