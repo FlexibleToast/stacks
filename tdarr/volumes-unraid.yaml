@@ -1,16 +1,19 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  tdarr:
+    volumes:
+      - "/mnt/user/appdata/tdarr/server:/app/server:rw"
+      - "/mnt/user/appdata/tdarr/configs:/app/configs:rw"
+      - "/mnt/user/appdata/tdarr/logs:/app/logs:rw"
+      - "/mnt/user/media:/mnt/media:rw"
+      - "/mnt/nvme/transcoding:/temp:rw"
+      - "/mnt/user/xxx/scenes:/mnt/xxx:rw"
+      - "/mnt/user/xxx/galleries:/mnt/galleries:rw"
+  tdarr_node:
+    volumes:
+      - "/mnt/user/appdata/tdarr/server:/app/server:rw"
+      - "/mnt/user/appdata/tdarr/configs:/app/configs:rw"
+      - "/mnt/user/appdata/tdarr/logs:/app/logs:rw"
+      - "/mnt/user/media:/mnt/media:rw"
+      - "/mnt/nvme/transcoding:/temp:rw"
+      - "/mnt/user/xxx/scenes:/mnt/xxx:rw"
+      - "/mnt/user/xxx/galleries:/mnt/galleries:rw"
