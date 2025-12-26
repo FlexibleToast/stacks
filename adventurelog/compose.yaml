@@ -35,9 +35,9 @@ services:
     environment:
       TZ: ${TZ:-America/Chicago}
       PGHOST: ${PGHOST:-adventurelog-postgis}
-      PGDATABASE: ${PGDATABASE:-adventurelog}
-      PGUSER: ${PGUSER:-adventurelog}
-      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-adventurelog}
+      PGUSER: ${POSTGRES_USER:-adventurelog}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
       SECRET_KEY: ${SECRET_KEY}
       DJANGO_ADMIN_USERNAME: ${DJANGO_ADMIN_USERNAME:-admin}
       DJANGO_ADMIN_EMAIL: ${DJANGO_ADMIN_EMAIL:-admin@example.com}
