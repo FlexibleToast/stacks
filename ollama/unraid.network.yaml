@@ -2,6 +2,9 @@ services:
   ollama:
     networks:
       - frontend
+  open-webui:
+    networks:
+      - frontend
 
 networks:
   frontend:
