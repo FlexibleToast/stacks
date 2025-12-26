@@ -17,6 +17,7 @@ services:
     restart: ${ADVENTURELOG_FRONTEND_RESTART:-unless-stopped}
     depends_on:
       - adventurelog-postgis
+      - adventurelog-backend
     environment:
       TZ: ${TZ:-America/Chicago}
       PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://adventurelog-backend:8000}
@@ -29,9 +30,8 @@ services:
     container_name: adventurelog-backend
     image: ghcr.io/seanmorley15/adventurelog-backend:${ADVENTURELOG_BACKEND_VERSION:-latest}
     restart: ${ADVENTURELOG_BACKEND_RESTART:-unless-stopped}
-    networks:
-      - frontend
-      - backend
+    depends_on:
+      - adventurelog-postgis
     environment:
       TZ: ${TZ:-America/Chicago}
       PGHOST: ${PGHOST:-adventurelog-postgis}
