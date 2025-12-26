@@ -1,16 +1,18 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:${OLLAMA_VERSION:-latest}
+    restart: ${OLLAMA_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      OLLAMA_ORIGINS: ${OLLAMA_ORIGINS:-*}
+      OLLAMA_FLASH_ATTENTION: ${OLLAMA_FLASH_ATTENTION:-true}
+      OLLAMA_KV_CACHE_TYPE: ${OLLAMA_KV_CACHE_TYPE:-q8_0}
+      OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-48000}
+      OLLAMA_HOST: ${OLLAMA_HOST:-0.0.0.0}
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ${CONTAINER_DATA}/ollama:/root/.ollama:rw"
+    mem_limit: ${OLLAMA_MEMORY:-100g}
+    gpus: all
