@@ -1,16 +1,13 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  open-webui:
+    environment:
+      ENABLE_OAUTH_SIGNUP: ${ENABLE_OAUTH_SIGNUP:-true}
+      OAUTH_MERGE_ACCOUNTS_BY_EMAIL: ${OAUTH_MERGE_ACCOUNTS_BY_EMAIL:-true}
+      OAUTH_PROVIDER_NAME: ${OAUTH_PROVIDER_NAME:-Authentik}
+      OPENID_PROVIDER_URL: ${OPENID_PROVIDER_URL:-https://auth.mcdade.app/application/o/open-webui/.well-known/openid-configuration}
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
+      OAUTH_SCOPES: ${OAUTH_SCOPES:-openid email profile groups}
+      OPENID_REDIRECT_URI: ${OPENID_REDIRECT_URI:-https://ai.mcdade.app/oauth/oidc/callback}
+      ENABLE_OAUTH_GROUP_MANAGEMENT: ${ENABLE_OAUTH_GROUP_MANAGEMENT:-true}
+      OAUTH_GROUP_CLAIM: ${OAUTH_GROUP_CLAIM:-groups}
