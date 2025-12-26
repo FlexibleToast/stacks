@@ -1,16 +1,18 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  adventurelog-postgis:
+    networks:
+      - backend
+  adventurelog-frontend:
+    networks:
+      - frontend
+      - backend
+  adventurelog-backend:
+    networks:
+      - frontend
+      - backend
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
