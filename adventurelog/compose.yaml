@@ -1,16 +1,52 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  adventurelog-postgis:
+    container_name: adventurelog-postgis
+    image: postgis/postgis:${POSTGIS_VERSION:-latest}
+    restart: ${POSTGISRESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-adventurelog}
+      POSTGRES_USER: ${POSTGRES_USER:-adventurelog}
+    volumes:
+      - "${CONTAINER_DATA}/adventurelog/db:/var/lib/postgresql/data:rw"
 
-# networks:
-#   default: {}
+  adventurelog-frontend:
+    container_name: adventurelog-frontend
+    image: ghcr.io/seanmorley15/adventurelog-frontend:${ADVENTURELOG_FRONTEND_VERSION:-latest}
+    restart: ${ADVENTURELOG_FRONTEND_RESTART:-unless-stopped}
+    depends_on:
+      - adventurelog-postgis
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://adventurelog-backend:8000}
+      ORIGIN: ${ORIGIN}
+      BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-Infinity}
+    ports:
+      - "${ADVENTURELOG_FRONTEND_PORT}:3000"
 
-# volumes:
-#   data:
+  adventurelog-backend:
+    container_name: adventurelog-backend
+    image: ghcr.io/seanmorley15/adventurelog-backend:${ADVENTURELOG_BACKEND_VERSION:-latest}
+    restart: ${ADVENTURELOG_BACKEND_RESTART:-unless-stopped}
+    networks:
+      - frontend
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      PGHOST: ${PGHOST:-adventurelog-postgis}
+      PGDATABASE: ${PGDATABASE:-adventurelog}
+      PGUSER: ${PGUSER:-adventurelog}
+      PGPASSWORD: ${PGPASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      DJANGO_ADMIN_USERNAME: ${DJANGO_ADMIN_USERNAME:-admin}
+      DJANGO_ADMIN_EMAIL: ${DJANGO_ADMIN_EMAIL:-admin@example.com}
+      DJANGO_ADMIN_PASSWORD: ${DJANGO_ADMIN_PASSWORD}
+      PUBLIC_URL: ${PUBLIC_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS}
+      DEBUG: ${DEBUG:-False}
+    ports:
+      - ${ADVENTURELOG_BACKEND_PORT:-80}:80
+    volumes:
+      - ${CONTAINER_DATA}/adventurelog/media:/code/media:rw
