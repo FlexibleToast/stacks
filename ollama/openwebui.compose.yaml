@@ -1,16 +1,18 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  open-webui:
+    container_name: open-webui
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION:-latest}
+    restart: ${OPENWEBUI_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+    volumes:
+      - "${CONTAINER_DATA}/open-webui:/app/backend/data:rw"
+    mem_limit: ${OPENWEBUI_MEMORY:-5g}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
