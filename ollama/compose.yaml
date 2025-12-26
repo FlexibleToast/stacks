@@ -15,4 +15,10 @@ services:
     volumes:
       - ${CONTAINER_DATA}/ollama:/root/.ollama:rw"
     mem_limit: ${OLLAMA_MEMORY:-100g}
-    gpus: all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
