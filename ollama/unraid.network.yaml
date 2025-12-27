@@ -9,6 +9,9 @@ services:
   searxng-ai:
     networks:
       - backend
+  tika:
+    networks:
+      -backend
 
 networks:
   frontend:
