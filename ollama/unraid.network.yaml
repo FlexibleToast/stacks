@@ -5,9 +5,12 @@ services:
   open-webui:
     networks:
       - frontend
-      - ai
+      - backend
+  searxng-ai:
+    networks:
+      - backend
 
 networks:
   frontend:
     external: true
-  ai:
+  backend:
