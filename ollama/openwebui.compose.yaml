@@ -28,3 +28,10 @@ services:
       - "${CONTAINER_DATA}/searxng-ai:/etc/searxng:rw"
     tmpfs:
       - "/var/cache/searxng"
+
+  tika:
+    container_name: tika
+    image: ghcr.io/paperless-ngx/tika:${TIKA_VERSION:-latest}
+    restart: ${TIKA_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
