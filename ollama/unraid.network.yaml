@@ -1,6 +1,7 @@
 services:
   ollama:
     networks:
+      - ai
       - frontend
   open-webui:
     networks:
@@ -14,6 +15,8 @@ services:
       -backend
 
 networks:
+  ai:
+    external: true
   frontend:
     external: true
   backend:
