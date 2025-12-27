@@ -16,3 +16,15 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  searxng-ai:
+    container_name: searxng-ai
+    image: searxng/searxng:${SEARXNG_VERSION:-latest}
+    restart: ${SEARXNG_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      INSTANCE_NAME: ${INSTANCE_NAME:-}
+    volumes:
+      - "${CONTAINER_DATA}/searxng-ai:/etc/searxng:rw"
+    tmpfs:
+      - "/var/cache/searxng"
