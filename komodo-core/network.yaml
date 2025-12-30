@@ -1,16 +1,18 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  mongo:
+    networks:
+      - backend
+  
+  core:
+    networks:
+      - pangolin
+      - backend
 
-# networks:
-#   default: {}
+  periphery:
+    networks
+      - backend
 
-# volumes:
-#   data:
+networks:
+  pangolin:
+    external: true
+  backend:
