@@ -50,6 +50,8 @@ services:
     restart: unless-stopped
     volumes:
       - ${CONTAINER_DATA}/pangolin/config/:/var/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   pangolin:
     container_name: pangolin
@@ -85,5 +87,3 @@ services:
       - ${CONTAINER_DATA}/pangolin/config/traefik:/etc/traefik:ro
       - ${CONTAINER_DATA}/pangolin/config/letsencrypt:/letsencrypt
       - ${CONTAINER_DATA}/pangolin/config/traefik/logs:/var/log/traefik
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
