@@ -1,16 +1,8 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  uptime-kuma:
+    networks:
+      - pangolin
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  pangolin:
+    external: true
