@@ -50,8 +50,6 @@ services:
     restart: unless-stopped
     volumes:
       - ${CONTAINER_DATA}/pangolin/config/:/var/config
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   pangolin:
     container_name: pangolin
