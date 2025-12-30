@@ -2,6 +2,7 @@ services:
   immich-postgresql:
     networks:
       - backend
+
   immich:
     networks:
       - frontend
