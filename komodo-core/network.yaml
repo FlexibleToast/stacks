@@ -9,7 +9,7 @@ services:
       - backend
 
   periphery:
-    networks
+    networks:
       - backend
 
 networks:
