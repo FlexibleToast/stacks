@@ -34,6 +34,7 @@ tags = ["nas-ii", "sync"]
 address = "https://komodo-nas-ii.brookview.app/"
 enabled = true
 timeout_seconds = 30
+send_cpu_alerts = false
 send_mem_alerts = false
 mem_warning = 85.0
 
@@ -69,6 +70,28 @@ ADGUARD_SYNC_IP=192.168.10.13
 ADGUARD_SUBNET=192.168.10.0/24
 ADGUARD_GATEWAY=192.168.10.1
 CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "adventurelog"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "adventurelog"
+file_paths = ["compose.yaml", "network.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+PUBLIC_SERVER_URL = http://adventurelog-backend:8000
+PUBLIC_URL = https://al-back.mcdade.app
+FRONTEND_URL = https://al.mcdade.app
+CSRF_TRUSTED_ORIGINS = https://adventurelog.mcdade.app,https://adventurelog-back.mcdade.app,https://al.mcdade.app,https://al-back.mcdade.app,http://kerbol-next.lan:8016,http://kerbol-next.lan:8015,http://192.168.10.20:8016
+DJANGO_ADMIN_PASSWORD = [[AL_DJANGO_ADMIN_PASSWORD]]
+POSTGRES_PASSWORD = [[AL_PGPASSWORD]]
+SECRET_KEY = [[AL_SECRET_KEY]]
 """
 
 ##
@@ -151,10 +174,10 @@ CONTAINER_DATA=/mnt/user/appdata
 
 [[stack]]
 name = "endlessh-go-brookview"
-tags = ["brookview", "sync"]
+tags = ["brookview", "sync", "unraid"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "endlessh-go"
 
 ##
@@ -191,15 +214,38 @@ KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
 
 [[stack]]
 name = "kuma"
-tags = ["oracle", "sync"]
+tags = ["oracle", "sync", "unraid"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "kuma"
+file_paths = ["compose.yaml", "networks.yaml"]
 environment = """
   # VARIABLE = value
 CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "ollama-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "ollama"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml",
+  "openwebui.compose.yaml",
+  "unraid.openwebui-oauth.compose.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
+OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
 """
 
 ##
@@ -275,6 +321,22 @@ environment = """
   # VARIABLE = value
 CONTAINER_DATA = /mnt/user/appdata
 """
+
+##
+
+[[stack]]
+name = "tdarr-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "tdarr"
+file_paths = [
+  "server.compose.yaml",
+  "node-nvidia.compose.yaml",
+  "network.compose.yaml",
+  "volumes-unraid.yaml"
+]
 
 ##
 
