@@ -1,16 +1,42 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  immich-postgresql:
+    container_name: immich-postgresql
+    image: ghcr.io/immich-app/postgres:16-vectorchord0.3.0-pgvectors0.3.0
+    restart: ${IMMICH_POSTGRES_RESTART:-unless-stopped}
+    networks:
+      - backend
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-immich}
+      POSTGRES_INITDB_ARGS: ${POSTGRES_INITDB_ARGS:---data-checksums}
+    volumes:
+      - ${IMMICH_POSTGRES_DATA_DIR:-/mnt/user/appdata/immich-postgresql}:/var/lib/postgresql/data:rw
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  immich:
+    container_name: immich
+    image: ghcr.io/imagegenius/immich:${IMMICH_VERSION:-latest}
+    restart: ${IMMICH_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      DB_HOSTNAME: ${DB_HOSTNAME:-immich-postgresql}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_DATABASE_NAME: ${POSTGRES_DB:-immich}
+      DB_PORT: ${DB_PORT:-5432}
+      REDIS_HOSTNAME: ${REDIS_HOSTNAME:-localhost}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      MACHINE_LEARNING_HOST: ${MACHINE_LEARNING_HOST:-0.0.0.0}
+      MACHINE_LEARNING_PORT: ${MACHINE_LEARNING_PORT:-3003}
+      MACHINE_LEARNING_WORKERS: ${MACHINE_LEARNING_WORKERS:-1}
+      MACHINE_LEARNING_WORKER_TIMEOUT: ${MACHINE_LEARNING_WORKER_TIMEOUT:-120}
+      DOCKER_MODS: ${DOCKER_MODS:-imagegenius/mods:universal-redis}
+      PUID: ${PUID:-99}
+      PGID: ${PGID:-100}
+      UMASK: ${UMASK:-022}
+    volumes:
+      - ${IMMICH_PHOTOS_DIR}:/photos:rw
+      - ${CONTAINER_DATA}/immich/libraries}:/libraries:rw
+      - ${CONTAINER_DATA}/immich/config:/config:rw
