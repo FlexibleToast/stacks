@@ -183,6 +183,23 @@ run_directory = "endlessh-go"
 ##
 
 [[stack]]
+name = "immich"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "immich"
+file_paths = ["compose.yaml", "networks.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+IMMICH_PHOTOS_DIR = /mnt/user/immich-images
+POSTGRES_PASSWORD = [[IMMICH_POSTGRES_PASSWORD]]
+REDIS_PASSWORD = ""
+"""
+
+##
+
+[[stack]]
 name = "komodo-periphery-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
@@ -280,6 +297,7 @@ name = "tang-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
+auto_update = true
 linked_repo = "stacks"
 run_directory = "tang"
 file_paths = [
