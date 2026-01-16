@@ -36,6 +36,7 @@ services:
     volumes:
       - ${CONTAINER_DATA}/quay-stack/quay/config/:/conf/stack:rw
       - ${QUAY_STORAGE}:/datastorage:rw
+      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - quay
 
@@ -75,6 +76,7 @@ services:
     volumes:
       - ${CONTAINER_DATA}/quay-stack/quay/config/:/conf/stack:rw
       - ${QUAY_STORAGE}:/datastorage:rw
+      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - quay-postgresql
       - quay-redis
