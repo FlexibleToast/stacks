@@ -47,6 +47,7 @@ services:
       - 21820:21820/udp
       - 443:443
       - 80:80
+      - 3128:3128/tcp
     restart: unless-stopped
     volumes:
       - ${CONTAINER_DATA}/pangolin/config/:/var/config
