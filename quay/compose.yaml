@@ -27,8 +27,9 @@ services:
       - quay-clair-postgresql
 
   quay-mirror:
-    container_name: quay-mirror
     image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
+    deploy:
+      replicas: ${QUAY_MIRROR_REPLICAS:-1}
     restart: unless-stopped
     command: repomirror
     environment:
