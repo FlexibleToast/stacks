@@ -30,6 +30,7 @@ services:
     container_name: quay-mirror
     image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
     restart: unless-stopped
+    command: repomirror
     environment:
       TZ: ${TZ:-America/Chicago}
       IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
