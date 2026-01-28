@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     cpus: ${TDARR_NODE_CPUS:-4}
     mem_limit: ${TDARR_NODE_MEM_LIMIT:-8g}
+    depends_on:
+      - tdarr
     environment:
       TZ: ${TZ:-America/Chicago}
       HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr_node}
