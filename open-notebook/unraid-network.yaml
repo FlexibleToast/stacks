@@ -1,16 +1,19 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  on-speaches:
+    networks:
+      - ai
+  on-surrealdb:
+    networks:
+      - backend
+  on-open-notebook:
+    networks:
+      - ai
+      - backend
+      - frontend
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  ai:
+    external: true
+  backend:
+  frontend:
+    external: true
