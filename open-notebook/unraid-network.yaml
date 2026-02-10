@@ -1,7 +1,7 @@
 services:
   on-speaches:
     networks:
-      - ai
+      - backend
   on-surrealdb:
     networks:
       - backend
