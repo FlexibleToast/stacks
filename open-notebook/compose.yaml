@@ -1,16 +1,51 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  on-speaches:
+    container_name: on-speaches
+    image: ghcr.io/speaches-ai/speaches:${SPEACHES_VERSION:-latest-cuda}
+    restart: unless-stopped
+    volumes:
+      - ${SPEACHES_CACHE_DIR:-/mnt/user/appdata/open-notebook/speaches/cache}:/home/ubuntu/.cache/huggingface/hub:rw
+    environment:
+      TZ: ${TZ:-America/Chicago}
 
-# networks:
-#   default: {}
+  on-surrealdb:
+    container_name: on-surrealdb
+    image: surrealdb/surrealdb:${SURREALDB_VERSION:-v2}
+    restart: unless-stopped
+    volumes:
+      - ${SURREALDB_DATA_DIR:-/mnt/user/appdata/open-notebook/surrealdb}:/mydata:rw
+    environment:
+      TZ: ${TZ:-America/Chicago}
+    command:
+      - start
+      - --user
+      - ${SURREAL_USER:-notebook}
+      - --pass
+      - ${SURREAL_PASS}
+      - rocksdb:${SURREALDB_FILE:-/mydata/mydatabase.db}
 
-# volumes:
-#   data:
+  on-open-notebook:
+    container_name: on-open-notebook
+    image: lfnovo/open_notebook:${NOTEBOOK_VERSION:-v1-latest}
+    restart: unless-stopped
+    networks:
+      - ai
+      - backend
+    depends_on:
+      - on-speaches
+      - on-surrealdb
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      SURREAL_ADDRESS: ${SURREAL_ADDRESS:-on-surrealdb}
+      SURREAL_PORT: ${SURREAL_PORT:-8000}
+      SURREAL_USER: ${SURREAL_USER:-notebook}
+      SURREAL_PASS: ${SURREAL_PASS}
+      SURREAL_NAMESPACE: ${SURREAL_NAMESPACE:-open_notebook}
+      SURREAL_DATABASE: ${SURREAL_DATABASE:-open_notebook}
+      OLLAMA_API_BASE: ${OLLAMA_API_BASE:-http://ollama:11434}
+      API_URL: ${API_URL:-https://on.mcdade.app}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_COMPATIBLE_BASE_URL_TTS: ${OPENAI_COMPATIBLE_BASE_URL_TTS:-http://on-speaches:8000/v1}
+      API_CLIENT_TIMEOUT: ${API_CLIENT_TIMEOUT:-900}
+    volumes:
+      - ${NOTEBOOK_DATA_DIR:-/mnt/user/appdata/open-notebook/data}:/app/data:rw
