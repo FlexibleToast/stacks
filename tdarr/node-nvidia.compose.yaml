@@ -2,7 +2,7 @@ services:
   tdarr_node:
     container_name: tdarr_node
     image: ghcr.io/haveagitgat/tdarr_node:${TDARR_NODE_VERSION:-2.50.02}
-    restart: unless-stopped
+    restart: ${TDARR_RESTART:-unless-stopped}
     cpus: ${TDARR_NODE_CPUS:-4}
     mem_limit: ${TDARR_NODE_MEM_LIMIT:-8g}
     depends_on:
