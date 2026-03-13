@@ -64,7 +64,6 @@ services:
     container_name: paperless-ai
     restart: unless-stopped
     depends_on:
-      - ollama
       - paperless
     # ports:
     #   - "3000:3000"
@@ -79,7 +78,6 @@ services:
     container_name: paperless-gpt
     restart: unless-stopped
     depends_on:
-      - ollama
       - paperless
     # ports:
     #   - "3002:8080"
