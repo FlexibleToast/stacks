@@ -1,16 +1,90 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
+  # paperless-ngx main service
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless-ngx
+    restart: unless-stopped
+    env_file: 
+      - ./paperless/.env
+    depends_on:
+      - postgres
+      - redis
+      - gotenberg
+      - tika
     # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+    #   - "8000:8000"
+    volumes:
+      - ./paperless/data:/usr/src/paperless/data
+      - ./paperless/media:/usr/src/paperless/media
+      - ./paperless/export:/usr/src/paperless/export
+      - ./paperless/consume:/usr/src/paperless/consume
+  
+  # postgres database for paperless-ngx
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    container_name: postgres
+    env_file: 
+      - ./postgres/.env
+    volumes:
+      - ./postgres/data:/var/lib/postgresql
+  
+  # redis database for paperless-ngx
+  redis:
+    image: docker.io/library/redis:8
+    container_name: redis
+    restart: unless-stopped
+    env_file: 
+      - ./redis/.env
+    volumes:
+      - ./redis/data:/data
+  
+  # gotenberg service that paperless uses for document conversion
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.25
+    container_name: gotenberg
+    env_file: 
+      - ./gotenberg/.env
+    restart: unless-stopped
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+  
+  # tika service that paperless uses for document text extraction
+  tika:
+    image: docker.io/apache/tika:latest
+    container_name: tika
+    restart: unless-stopped
+    env_file: ./tika/.env
 
-# networks:
-#   default: {}
+  # paperless-ai service
+  paperless-ai:
+    image: clusterzx/paperless-ai:latest
+    container_name: paperless-ai
+    restart: unless-stopped
+    depends_on:
+      - ollama
+      - paperless
+    # ports:
+    #   - "3000:3000"
+    env_file:
+      - ./paperless-ai/.env
+    volumes:
+      - ./paperless-ai/data:/app/data
+  
 
-# volumes:
-#   data:
+  # paperless-gpt service
+  paperless-gpt:
+    image: icereed/paperless-gpt:latest
+    container_name: paperless-gpt
+    restart: unless-stopped
+    depends_on:
+      - ollama
+      - paperless
+    # ports:
+    #   - "3002:8080"
+    env_file:
+      - ./paperless-gpt/.env
+    volumes:
+      - ./paperless-gpt/prompts:/app/prompts
