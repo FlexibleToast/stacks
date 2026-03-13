@@ -28,15 +28,19 @@ services:
   # paperless-ai service
   paperless-ai:
     networks:
+      - ai
       - backend
+      - frontend
   
-
   # paperless-gpt service
   paperless-gpt:
     networks:
+      - ai
       - backend
 
 networks:
+  ai:
+    external: true
   frontend:
     external: true
   backend:
