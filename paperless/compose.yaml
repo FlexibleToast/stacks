@@ -23,7 +23,7 @@ services:
   postgres:
     image: postgres:${POSTGRES_VERSION:-18}
     restart: unless-stopped
-    container_name: postgres
+    container_name: paperless-postgres
     env_file: 
       - ./postgres/.env
     volumes:
@@ -32,7 +32,7 @@ services:
   # redis database for paperless-ngx
   redis:
     image: docker.io/library/redis:${REDIS_VERSION:-8}
-    container_name: redis
+    container_name: paperless-redis
     restart: unless-stopped
     env_file: 
       - ./redis/.env
@@ -42,7 +42,7 @@ services:
   # gotenberg service that paperless uses for document conversion
   gotenberg:
     image: docker.io/gotenberg/gotenberg:${GOTENBERG_VERSION:-8.25}
-    container_name: gotenberg
+    container_name: paperless-gotenberg
     env_file: 
       - ./gotenberg/.env
     restart: unless-stopped
@@ -54,7 +54,7 @@ services:
   # tika service that paperless uses for document text extraction
   tika:
     image: docker.io/apache/tika:${TIKA_VERSION:-latest}
-    container_name: tika
+    container_name: paperless-tika
     restart: unless-stopped
     env_file: ./tika/.env
 
