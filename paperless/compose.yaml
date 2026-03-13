@@ -35,7 +35,7 @@ services:
     container_name: redis
     restart: unless-stopped
     env_file: 
-      - ${CONTAINER_DATA}/paperless/redis/.env
+      - ./redis/.env
     volumes:
       - ${CONTAINER_DATA}/paperless/redis/data:/data
   
