@@ -1,16 +1,42 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  # paperless-ngx main service
+  paperless:
+    networks:
+      - backend
+      - frontend
+  
+  # postgres database for paperless-ngx
+  postgres:
+    networks:
+      - backend
+  
+  # redis database for paperless-ngx
+  redis:
+    networks:
+      - backend
+  
+  # gotenberg service that paperless uses for document conversion
+  gotenberg:
+    networks:
+      - backend
+  
+  # tika service that paperless uses for document text extraction
+  tika:
+    networks:
+      - backend
 
-# networks:
-#   default: {}
+  # paperless-ai service
+  paperless-ai:
+    networks:
+      - backend
+  
 
-# volumes:
-#   data:
+  # paperless-gpt service
+  paperless-gpt:
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
