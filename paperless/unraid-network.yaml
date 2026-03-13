@@ -37,6 +37,7 @@ services:
     networks:
       - ai
       - backend
+      - frontend
 
 networks:
   ai:
