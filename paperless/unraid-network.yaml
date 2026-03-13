@@ -1,6 +1,9 @@
 services:
   # paperless-ngx main service
   paperless:
+    env_file: 
+      - ./paperless/.env
+      - ./paperless/authentik.env
     networks:
       - backend
       - frontend
