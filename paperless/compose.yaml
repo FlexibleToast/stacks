@@ -1,7 +1,7 @@
 services:
   # paperless-ngx main service
   paperless:
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_VERSION:-latest}
     container_name: paperless-ngx
     restart: unless-stopped
     env_file: 
@@ -14,34 +14,34 @@ services:
     # ports:
     #   - "8000:8000"
     volumes:
-      - ./paperless/data:/usr/src/paperless/data
-      - ./paperless/media:/usr/src/paperless/media
-      - ./paperless/export:/usr/src/paperless/export
-      - ./paperless/consume:/usr/src/paperless/consume
+      - ${CONTAINER_DATA}/paperless/paperless/data:/usr/src/paperless/data
+      - ${CONTAINER_DATA}/paperless/paperless/media:/usr/src/paperless/media
+      - ${CONTAINER_DATA}/paperless/paperless/export:/usr/src/paperless/export
+      - ${CONTAINER_DATA}/paperless/paperless/consume:/usr/src/paperless/consume
   
   # postgres database for paperless-ngx
   postgres:
-    image: postgres:18
+    image: postgres:${POSTGRES_VERSION:-18}
     restart: unless-stopped
     container_name: postgres
     env_file: 
       - ./postgres/.env
     volumes:
-      - ./postgres/data:/var/lib/postgresql
+      - ${CONTAINER_DATA}/paperless/postgres/data:/var/lib/postgresql
   
   # redis database for paperless-ngx
   redis:
-    image: docker.io/library/redis:8
+    image: docker.io/library/redis:${REDIS_VERSION:-8}
     container_name: redis
     restart: unless-stopped
     env_file: 
-      - ./redis/.env
+      - ${CONTAINER_DATA}/paperless/redis/.env
     volumes:
-      - ./redis/data:/data
+      - ${CONTAINER_DATA}/paperless/redis/data:/data
   
   # gotenberg service that paperless uses for document conversion
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.25
+    image: docker.io/gotenberg/gotenberg:${GOTENBERG_VERSION:-8.25}
     container_name: gotenberg
     env_file: 
       - ./gotenberg/.env
@@ -53,14 +53,14 @@ services:
   
   # tika service that paperless uses for document text extraction
   tika:
-    image: docker.io/apache/tika:latest
+    image: docker.io/apache/tika:${TIKA_VERSION:-latest}
     container_name: tika
     restart: unless-stopped
     env_file: ./tika/.env
 
   # paperless-ai service
   paperless-ai:
-    image: clusterzx/paperless-ai:latest
+    image: clusterzx/paperless-ai:${PAPERLESS_AI_VERSION:-latest}
     container_name: paperless-ai
     restart: unless-stopped
     depends_on:
@@ -71,12 +71,11 @@ services:
     env_file:
       - ./paperless-ai/.env
     volumes:
-      - ./paperless-ai/data:/app/data
-  
+      - ${CONTAINER_DATA}/paperless/paperless-ai/data:/app/data
 
   # paperless-gpt service
   paperless-gpt:
-    image: icereed/paperless-gpt:latest
+    image: icereed/paperless-gpt:${PAPERLESS_GPT_VERSION:-latest}
     container_name: paperless-gpt
     restart: unless-stopped
     depends_on:
@@ -87,4 +86,4 @@ services:
     env_file:
       - ./paperless-gpt/.env
     volumes:
-      - ./paperless-gpt/prompts:/app/prompts
+      - ${CONTAINER_DATA}/paperless/paperless-gpt/prompts:/app/prompts
