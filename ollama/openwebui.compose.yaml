@@ -6,16 +6,12 @@ services:
     environment:
       TZ: ${TZ:-America/Chicago}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
     volumes:
       - "${CONTAINER_DATA}/open-webui:/app/backend/data:rw"
     mem_limit: ${OPENWEBUI_MEMORY:-5g}
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    runtime: nvidia
 
   searxng-ai:
     container_name: searxng-ai
