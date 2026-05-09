@@ -191,6 +191,7 @@ tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
 poll_for_updates = true
+auto_update = true
 linked_repo = "kerbol-next"
 run_directory = "immich"
 file_paths = ["compose.yaml", "networks.yaml"]
@@ -308,9 +309,10 @@ environment = """
 CONTAINER_DATA = /srv/container-data
 CLOUDFLARE_DNS_API_TOKEN = [[CLOUDFLARE_DNS_API_TOKEN]]
 CROWDSEC_VERSION = latest
-GERBIL_VERSION = 1.3.0
-PANGOLIN_VERSION = 1.15
+GERBIL_VERSION = 1.4.0
+PANGOLIN_VERSION = ee-1.18
 TRAEFIK_VERSION = v3
+# Badger version is in /srv/container-data/pangolin/config/traefik/traefik_config.yml, currently v1.4.0
 """
 
 ##
