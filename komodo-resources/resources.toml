@@ -1,0 +1,623 @@
+[[server]]
+name = "Bookview MicroOS"
+tags = ["sync", "brookview"]
+[server.config]
+address = "https://komodo-periphery.brookview.app"
+enabled = true
+timeout_seconds = 60
+
+##
+
+[[server]]
+name = "Container Pi4 1"
+tags = ["sync", "container-pi4-1"]
+[server.config]
+address = "https://container-pi4-1.lan:8120"
+enabled = true
+timeout_seconds = 30
+
+##
+
+[[server]]
+name = "Docker Oracle"
+tags = ["sync", "oracle"]
+[server.config]
+enabled = true
+
+##
+
+[[server]]
+name = "NAS II"
+description = "TrueNAS SCALE: https://nas.brookview.app"
+tags = ["nas-ii", "sync"]
+[server.config]
+address = "https://komodo-nas-ii.brookview.app/"
+enabled = true
+timeout_seconds = 60
+send_cpu_alerts = false
+send_mem_alerts = false
+mem_warning = 85.0
+
+##
+
+[[server]]
+name = "Unraid"
+tags = ["sync", "unraid"]
+[server.config]
+address = "https://kerbol-next.lan:8120"
+enabled = true
+timeout_seconds = 30
+send_cpu_alerts = false
+
+##
+
+[[stack]]
+name = "adguard-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "stacks"
+run_directory = "adguard"
+file_paths = [
+  "compose.yaml",
+  "adguard-sync.compose.yaml",
+  "container-pi4-1.network.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+ADGUARD_HOME_IP=192.168.10.12
+ADGUARD_SYNC_IP=192.168.10.13
+ADGUARD_SUBNET=192.168.10.0/24
+ADGUARD_GATEWAY=192.168.10.1
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "adventurelog"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "adventurelog"
+file_paths = ["compose.yaml", "network.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+PUBLIC_SERVER_URL = http://adventurelog-backend:8000
+PUBLIC_URL = https://al-back.mcdade.app
+FRONTEND_URL = https://al.mcdade.app
+ORIGIN = https://al.mcdade.app
+CSRF_TRUSTED_ORIGINS = https://adventurelog.mcdade.app,https://adventurelog-back.mcdade.app,https://al.mcdade.app,https://al-back.mcdade.app,http://kerbol-next.lan:8016,http://kerbol-next.lan:8015,http://192.168.10.20:8016
+DJANGO_ADMIN_PASSWORD = [[AL_DJANGO_ADMIN_PASSWORD]]
+POSTGRES_PASSWORD = [[AL_PGPASSWORD]]
+SECRET_KEY = [[AL_SECRET_KEY]]
+ADVENTURELOG_RESTART = no
+"""
+
+##
+
+[[stack]]
+name = "borgmatic-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "borgmatic"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "borgmatic-oracle"
+tags = ["oracle", "sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "borgmatic"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "borgserver-nas-ii"
+tags = ["sync", "nas-ii", "backup"]
+[stack.config]
+server = "NAS II"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "borgserver"
+environment = """
+  # VARIABLE = value
+BORGSERVER_PUID = 34
+BORGSERVER_PGID = 34
+BORGSERVER_SSH_PORT = 8822
+CONTAINER_DATA = /mnt/pool-0/container-data
+BORGSERVER_BACKUP_DIR = /mnt/pool-0/borg
+"""
+
+##
+
+[[stack]]
+name = "ddns-updater-brookview"
+tags = ["sync", "brookview"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "ddns-updater"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "ddns-updater-unraid"
+tags = ["sync", "unraid"]
+[stack.config]
+server = "Unraid"
+linked_repo = "stacks"
+run_directory = "ddns-updater"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA=/mnt/user/appdata
+"""
+
+##
+
+[[stack]]
+name = "endlessh-go-brookview"
+tags = ["brookview", "sync", "unraid"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "kerbol-next"
+run_directory = "endlessh-go"
+
+##
+
+[[stack]]
+name = "immich"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+poll_for_updates = true
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "immich"
+file_paths = ["compose.yaml", "networks.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+IMMICH_PHOTOS_DIR = /mnt/user/immich-images
+POSTGRES_PASSWORD = [[IMMICH_POSTGRES_PASSWORD]]
+REDIS_PASSWORD = ""
+"""
+
+##
+
+[[stack]]
+name = "komodo-periphery-brookview"
+tags = ["brookview", "sync"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "komodo-periphery"
+environment = """
+  # VARIABLE = value
+KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
+KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
+"""
+
+##
+
+[[stack]]
+name = "komodo-periphery-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "stacks"
+run_directory = "komodo-periphery"
+environment = """
+  # VARIABLE = value
+KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
+KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
+"""
+
+##
+
+[[stack]]
+name = "komodo-periphery-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "komodo-periphery"
+file_paths = [
+  "compose.yaml",
+  "mounts.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+PERIPHERY_INCLUDE_DISK_MOUNTS = /mnt/user/media
+KOMODO_PERIPHERY_PATH = /mnt/user/stacks
+KOMODO_PASSKEY = [[KOMODO_PASSKEY]]
+"""
+
+##
+
+[[stack]]
+name = "kuma"
+tags = ["oracle", "sync", "unraid"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "kuma"
+file_paths = ["compose.yaml", "networks.yaml"]
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "ollama-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "ollama"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml",
+  "openwebui.compose.yaml",
+  "unraid.openwebui-oauth.compose.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
+OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
+"""
+
+##
+
+[[stack]]
+name = "pangolin"
+tags = ["oracle", "sync"]
+[stack.config]
+server = "Docker Oracle"
+poll_for_updates = true
+auto_update = true
+linked_repo = "pangolin"
+run_directory = "pangolin"
+file_paths = [
+  "compose.yaml",
+  "network.compose.yaml"
+]
+environment = """
+CONTAINER_DATA = /srv/container-data
+CLOUDFLARE_DNS_API_TOKEN = [[CLOUDFLARE_DNS_API_TOKEN]]
+CROWDSEC_VERSION = latest
+GERBIL_VERSION = 1.4.0
+PANGOLIN_VERSION = ee-1.18
+TRAEFIK_VERSION = v3
+# Badger version is in /srv/container-data/pangolin/config/traefik/traefik_config.yml, currently v1.4.0
+"""
+
+##
+
+[[stack]]
+name = "quay"
+tags = ["sync", "unraid"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "quay"
+file_paths = [
+  "compose.yaml",
+  "frontend-network.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+POSTGRES_VERSION = 17-alpine
+CLAIR_VERSION = 4.9.0
+QUAY_VERSION = 3.16.1
+QUAY_STORAGE = /mnt/user/quay
+CONTAINER_DATA = /mnt/user/appdata
+POSTGRES_PASSWORD = [[QUAY_POSTGRES_PASSWORD]]
+REDIS_PASSWORD = [[QUAY_REDIS_PASSWORD]]
+QUAY_MIRROR_REPLICAS = 1
+"""
+
+##
+
+[[stack]]
+name = "tang-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tang"
+file_paths = [
+  "compose.yaml",
+  "user.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+USER_ID = "1001:1001"
+"""
+
+##
+
+[[stack]]
+name = "tang-oracle"
+tags = ["oracle", "sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tang"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "tang-unraid"
+tags = ["sync", "unraid"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tang"
+environment = """
+  # VARIABLE = value
+CONTAINER_DATA = /mnt/user/appdata
+"""
+
+##
+
+[[stack]]
+name = "tdarr-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "tdarr"
+file_paths = [
+  "server.compose.yaml",
+  "node-nvidia.compose.yaml",
+  "network.compose.yaml",
+  "volumes-unraid.yaml"
+]
+
+##
+
+[[stack]]
+name = "tunnel-brookview"
+tags = ["sync", "brookview"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "tunnel"
+environment = """
+  # VARIABLE = value
+tunnel_token=[[BROOKVIEW_TUNNEL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "tunnel-oracle"
+tags = ["oracle", "sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "tunnel"
+environment = """
+  # VARIABLE = value
+ tunnel_token = [[ORACLE_TUNNEL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "vaultwarden-brookview"
+tags = ["sync", "brookview"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "vaultwarden"
+file_paths = [
+  "compose.yaml",
+  "ports.compose.yaml"
+]
+pre_deploy.command = """
+  # Add multiple commands on new lines. Supports comments.
+  export COMPOSE_FILE=compose.yaml:ports.compose.yaml
+"""
+post_deploy.command = """
+  # Add multiple commands on new lines. Supports comments.
+  unset COMPOSE_FILE
+"""
+environment = """
+# VARIABLE = value
+ADMIN_TOKEN="[[VAULTWARDEN_ADMIN_TOKEN]]"
+DOMAIN=https://bitwarden.brookview.app
+NETWORK_EXTERNAL=false
+VAULTWARDEN_HTTP=9926
+SMTP_FROM=[[EMAIL]]
+SMTP_USERNAME=[[EMAIL]]
+SMTP_PASSWORD="[[EMAIL_PASS]]"
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
+name = "watchtower-container-pi"
+tags = ["container-pi4-1", "sync"]
+[stack.config]
+server = "Container Pi4 1"
+linked_repo = "stacks"
+run_directory = "watchtower"
+environment = """
+  # VARIABLE = value
+EMAIL = [[EMAIL]]
+EMAIL_PASS = [[EMAIL_PASS]]
+SCHEDULE = "* 0 7 * * MON"
+SUBJECT_TAG = "Container Pi"
+"""
+
+##
+
+[[stack]]
+name = "watchtower-oracle"
+tags = ["oracle", "sync"]
+[stack.config]
+server = "Docker Oracle"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "watchtower"
+environment = """
+  # VARIABLE = value
+EMAIL = [[EMAIL]]
+EMAIL_PASS = [[EMAIL_PASS]]
+HOSTNAME = docker-oracle
+SUBJECT_TAG = Docker Oracle
+"""
+
+##
+
+[[repo]]
+name = "forgejo-resources"
+tags = ["sync"]
+[repo.config]
+git_provider = "git.mcdade.app"
+git_account = "FlexibleToast"
+repo = "FlexibleToast/komodo"
+branch = "testing-sync"
+
+##
+
+[[repo]]
+name = "github-stacks"
+template = true
+tags = ["sync"]
+[repo.config]
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+
+##
+
+[[repo]]
+name = "resources"
+tags = ["sync"]
+[repo.config]
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "resources"
+
+##
+
+[[repo]]
+name = "stacks"
+tags = ["sync"]
+[repo.config]
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+
+##
+
+[[procedure]]
+name = "Backup Core Database"
+description = "Triggers the Core database backup at the scheduled time."
+tags = ["system", "sync"]
+config.schedule_alert = false
+config.schedule = "Every day at 01:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "BackupCoreDatabase", execution.params = {}, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Global Auto Update"
+description = "Pulls and auto updates Stacks and Deployments using 'poll_for_updates' or 'auto_update'."
+tags = ["system", "sync"]
+config.schedule_alert = false
+config.schedule = "Every day at 01:15"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+]
+
+##
+
+[[builder]]
+name = "Docker Oracle"
+tags = ["sync"]
+[builder.config]
+type = "Server"
+params.server_id = "Docker Oracle"
+
+##
+
+[[builder]]
+name = "Unraid"
+tags = ["sync"]
+[builder.config]
+type = "Server"
+params.server_id = "Unraid"
+
+##
+
+[[resource_sync]]
+name = "Forgejo"
+description = "Full sync with secrets included"
+tags = ["sync"]
+[resource_sync.config]
+linked_repo = "forgejo-resources"
+resource_path = ["resources.toml"]
+managed = true
+include_variables = true
+pending_alert = false
+
+##
+
+[[resource_sync]]
+name = "Github"
+description = "Only sync tagged instances synced to github"
+tags = ["sync"]
+[resource_sync.config]
+linked_repo = "resources"
+resource_path = [
+  "komodo-resources/resources.toml"
+]
+managed = true
+match_tags = ["sync"]
+pending_alert = false
