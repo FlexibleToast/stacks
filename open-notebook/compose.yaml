@@ -28,7 +28,6 @@ services:
   on-open-notebook:
     container_name: on-open-notebook
     image: lfnovo/open_notebook:${NOTEBOOK_VERSION:-v1-latest}
-    user: "99:100"
     restart: unless-stopped
     networks:
       - ai
