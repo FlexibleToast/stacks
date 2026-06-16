@@ -47,6 +47,7 @@ services:
       API_URL: ${API_URL:-https://on.mcdade.app}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       OPENAI_COMPATIBLE_BASE_URL_TTS: ${OPENAI_COMPATIBLE_BASE_URL_TTS:-http://on-speaches:8000/v1}
+      OPEN_NOTEBOOK_ENCRYPTION_KEY: ${OPEN_NOTEBOOK_ENCRYPTION_KEY}
       API_CLIENT_TIMEOUT: ${API_CLIENT_TIMEOUT:-900}
     volumes:
       - ${NOTEBOOK_DATA_DIR:-/mnt/user/appdata/open-notebook/data}:/app/data:rw
