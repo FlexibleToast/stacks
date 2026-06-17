@@ -392,8 +392,6 @@ stacks/
 ## Related Repositories
 
 - [stacks](https://github.com/FlexibleToast/stacks) - This repository
-- [kerbol-next](https://github.com/FlexibleToast/kerbol-next) - Application source repositories
-- [pangolin](https://github.com/FlexibleToast/pangolin) - Reverse proxy configuration
 - [forgejo-resources](https://git.mcdade.app/FlexibleToast/komodo) - Internal secrets repository
 
 ---

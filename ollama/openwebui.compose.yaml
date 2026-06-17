@@ -21,7 +21,8 @@ services:
       TZ: ${TZ:-America/Chicago}
       INSTANCE_NAME: ${INSTANCE_NAME:-}
       SEARXNG_LIMITER: "false"
-      SEARXNG_PUBLIC_INSTANCE: "false"
+      SEARXNG_PUBLIC_INSTANCE: "true"
+      SEARXNG_BIND_ADDRESS: "0.0.0.0"
     volumes:
       - "${CONTAINER_DATA}/searxng-ai:/etc/searxng:rw"
     tmpfs:
