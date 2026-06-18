@@ -299,7 +299,7 @@ tags = ["oracle", "sync"]
 server = "Docker Oracle"
 poll_for_updates = true
 auto_update = true
-linked_repo = "kerbol-next"
+linked_repo = "pangolin"
 run_directory = "pangolin"
 file_paths = [
   "compose.yaml",
@@ -528,16 +528,6 @@ repo = "FlexibleToast/stacks"
 ##
 
 [[repo]]
-name = "resources"
-tags = ["sync"]
-[repo.config]
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "resources"
-
-##
-
-[[repo]]
 name = "stacks"
 tags = ["sync"]
 [repo.config]
@@ -614,7 +604,7 @@ name = "Github"
 description = "Only sync tagged instances synced to github"
 tags = ["sync"]
 [resource_sync.config]
-linked_repo = "resources"
+linked_repo = "kerbol-next"
 resource_path = [
   "komodo-resources/resources.toml"
 ]
