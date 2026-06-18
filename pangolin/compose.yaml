@@ -1,0 +1,88 @@
+services:
+  crowdsec:
+    command: -t
+    container_name: crowdsec
+    environment:
+      COLLECTIONS: crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+      ENROLL_INSTANCE_NAME: pangolin-crowdsec
+      ENROLL_TAGS: docker
+      GID: "1000"
+      PARSERS: crowdsecurity/whitelists
+    healthcheck:
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - cscli
+        - lapi
+        - status
+      timeout: 5s
+    image: docker.io/crowdsecurity/crowdsec:${CROWDSEC_VERSION:-latest}
+    labels:
+      - traefik.enable=false
+    ports:
+      - ${CROWDSEC_PORT:-6060}:6060
+    restart: unless-stopped
+    volumes:
+      - ${CONTAINER_DATA}/pangolin/config/crowdsec:/etc/crowdsec
+      - ${CONTAINER_DATA}/pangolin/config/crowdsec/db:/var/lib/crowdsec/data
+      - ${CONTAINER_DATA}/pangolin/config/traefik/logs:/var/log/traefik
+
+  gerbil:
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    command:
+      - --reachableAt=http://gerbil:3004
+      - --generateAndSaveKeyTo=/var/config/key
+      - --remoteConfig=http://pangolin:3001/api/v1/
+    container_name: gerbil
+    depends_on:
+      pangolin:
+        condition: service_healthy
+    image: docker.io/fosrl/gerbil:${GERBIL_VERSION:-1.3.0}
+    ports:
+      - 51820:51820/udp
+      - 21820:21820/udp
+      - 443:443
+      - 80:80
+      - 3128:3128/tcp
+    restart: unless-stopped
+    volumes:
+      - ${CONTAINER_DATA}/pangolin/config/:/var/config
+
+  pangolin:
+    container_name: pangolin
+    healthcheck:
+      interval: 10s
+      retries: 15
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:3001/api/v1/
+      timeout: 10s
+    image: docker.io/fosrl/pangolin:${PANGOLIN_VERSION:-1.13}
+    restart: unless-stopped
+    volumes:
+      - ${CONTAINER_DATA}/pangolin/config:/app/config
+
+  traefik:
+    command:
+      - --configFile=/etc/traefik/traefik_config.yml
+    container_name: traefik
+    depends_on:
+      crowdsec:
+        condition: service_healthy
+      pangolin:
+        condition: service_healthy
+    image: docker.io/traefik:${TRAEFIK_VERSION:-v3}
+    network_mode: service:gerbil
+    restart: unless-stopped
+    environment:
+      CLOUDFLARE_DNS_API_TOKEN: "${CLOUDFLARE_DNS_API_TOKEN}"
+    volumes:
+      - ${CONTAINER_DATA}/pangolin/config/traefik:/etc/traefik:ro
+      - ${CONTAINER_DATA}/pangolin/config/letsencrypt:/letsencrypt
+      - ${CONTAINER_DATA}/pangolin/config/traefik/logs:/var/log/traefik

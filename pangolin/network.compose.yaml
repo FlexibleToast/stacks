@@ -1,0 +1,4 @@
+networks:
+  default:
+    driver: bridge
+    name: pangolin
