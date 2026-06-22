@@ -349,7 +349,7 @@ tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
 auto_update = true
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "searxng-mcp"
 file_paths = [
   "compose.yaml",
