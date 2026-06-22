@@ -359,6 +359,7 @@ environment = """
 CONTAINER_DATA = /mnt/user/appdata
 TZ = America/Chicago
 SEARXNG_MEMORY = 512m
+SEARXNG_MCP_API_KEY = [[SEARXNG_MCP_API_KEY]]
 """
 
 ##

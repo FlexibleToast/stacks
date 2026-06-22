@@ -1,10 +1,10 @@
 services:
   searxng-mcp:
-    image: ghcr.io/whw23/searxng-http-mcp:latest
+    image: ghcr.io/whw23/searxng-http-mcp:${SEARXNG_MCP_VERSION:-latest}
     container_name: searxng-mcp
     restart: ${SVC_RESTART:-unless-stopped}
     environment:
-      - API_KEY=[[SEARXNG_MCP_API_KEY]]
+      - API_KEY=${SEARXNG_MCP_API_KEY}
       - TZ=${TZ:-America/Chicago}
     volumes:
       - ${CONTAINER_DATA}/searxng-mcp:/etc/searxng:rw
