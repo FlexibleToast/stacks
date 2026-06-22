@@ -1,0 +1,11 @@
+services:
+  searxng-mcp:
+    image: ghcr.io/whw23/searxng-http-mcp:latest
+    container_name: searxng-mcp
+    restart: ${SVC_RESTART:-unless-stopped}
+    environment:
+      - API_KEY=[[SEARXNG_MCP_API_KEY]]
+      - TZ=${TZ:-America/Chicago}
+    volumes:
+      - ${CONTAINER_DATA}/searxng-mcp:/etc/searxng:rw
+    mem_limit: ${SEARXNG_MEMORY:-512m}

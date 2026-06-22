@@ -344,6 +344,26 @@ QUAY_MIRROR_REPLICAS = 1
 ##
 
 [[stack]]
+name = "searxng-mcp-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "stacks"
+run_directory = "searxng-mcp"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+TZ = America/Chicago
+SEARXNG_MEMORY = 512m
+"""
+
+##
+
+[[stack]]
 name = "tang-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
