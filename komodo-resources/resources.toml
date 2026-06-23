@@ -223,7 +223,7 @@ environment = """
 ## so you can pass any additional environment variables to Core / Periphery directly in this file as well.
 
 ## Stick to a specific version, or use `latest`
-COMPOSE_KOMODO_IMAGE_TAG=latest
+COMPOSE_KOMODO_IMAGE_TAG=2
 ## Store dated database backups on the host - https://komo.do/docs/setup/backup
 # I manually set this in the compose.yaml
 # COMPOSE_KOMODO_BACKUPS_PATH=/srv/container-data/komodo/backups
@@ -378,6 +378,7 @@ linked_repo = "stacks"
 run_directory = "komodo-periphery"
 environment = """
   # VARIABLE = value
+CONTAINER_DATA = /srv/container-data
 KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
 KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
 """
@@ -394,6 +395,7 @@ run_directory = "komodo-periphery"
 environment = """
   # VARIABLE = value
 KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
+CONTAINER_DATA = /srv/container-data
 KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
 """
 
@@ -413,6 +415,7 @@ file_paths = [
 environment = """
   # VARIABLE = value
 PERIPHERY_INCLUDE_DISK_MOUNTS = /mnt/user/media
+CONTAINER_DATA = /mnt/user/appdata
 KOMODO_PERIPHERY_PATH = /mnt/user/stacks
 KOMODO_PASSKEY = [[KOMODO_PASSKEY]]
 """
