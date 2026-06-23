@@ -348,7 +348,7 @@ name = "redhat-knowledge"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
-auto_update = true
+auto_update = false
 linked_repo = "kerbol-next"
 run_directory = "redhat-knowledge"
 file_paths = [
