@@ -355,6 +355,7 @@ file_paths = [
   "compose.yaml",
   "unraid.network.yaml"
 ]
+config_files = [{ path = "Containerfile" }]
 environment = """
 CONTAINER_DATA = /mnt/user/appdata
 TZ = America/Chicago
@@ -565,6 +566,25 @@ quay.expires-after=4w
 ##
 
 [[build]]
+name = "redhat-knowledge"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "redhat-knowledge"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
+[[build]]
 name = "tvcleanup"
 tags = ["unraid", "build", "sync"]
 [build.config]
@@ -580,27 +600,6 @@ image_registry = [
 ]
 labels = """
   # your.docker.label: value
-quay.expires-after=4w
-"""
-
-##
-
-[[build]]
-name = "redhat-knowledge"
-tags = ["unraid", "build", "sync"]
-[build.config]
-builder = "Unraid"
-version = "0.0.1"
-auto_increment_version = true
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "kerbol-next"
-build_path = "redhat-knowledge"
-dockerfile_path = "Containerfile"
-image_registry = [
-  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
-]
-labels = """
 quay.expires-after=4w
 """
 
@@ -637,22 +636,6 @@ repo = "FlexibleToast/stacks"
 ##
 
 [[procedure]]
-name = "Rebuild redhat-knowledge"
-description = "Rebuilds the redhat-knowledge Docker image from source, pushing to Quay with auto-cleanup."
-tags = ["unraid", "build", "sync"]
-config.schedule_alert = false
-config.schedule = "Every week on Sunday at 03:00"
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [
-  { execution.type = "RunBuild", execution.params = { build = "redhat-knowledge" }, enabled = true }
-]
-
-##
-
-[[procedure]]
 name = "Backup Core Database"
 description = "Triggers the Core database backup at the scheduled time."
 tags = ["system", "sync"]
@@ -680,6 +663,30 @@ name = "Stage 1"
 enabled = true
 executions = [
   { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Rebuild redhat-knowledge"
+description = "Rebuilds the redhat-knowledge Docker image from source, pushing to Quay with auto-cleanup."
+tags = ["unraid", "build", "sync"]
+config.schedule_alert = false
+config.schedule = "Every week on Sunday at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "redhat-knowledge", enabled = true }
+]
+
+[[procedure.config.stage]]
+name = "Stage 2"
+enabled = true
+executions = [
+  { execution.type = "PullStack", execution.params.stack = "redhat-knowledge", execution.params.services = [], enabled = true },
+  { execution.type = "DeployStackIfChanged", execution.params.stack = "redhat-knowledge", enabled = true }
 ]
 
 ##
