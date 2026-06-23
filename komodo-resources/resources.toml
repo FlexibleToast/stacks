@@ -647,7 +647,7 @@ config.schedule = "Every week on Sunday at 03:00"
 name = "Stage 1"
 enabled = true
 executions = [
-  { execution.type = "RunBuild", execution.params = { build_id = "redhat-knowledge" }, enabled = true }
+  { execution.type = "RunBuild", execution.params = { build = "redhat-knowledge" }, enabled = true }
 ]
 
 ##
