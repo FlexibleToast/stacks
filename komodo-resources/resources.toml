@@ -299,7 +299,7 @@ tags = ["oracle", "sync"]
 server = "Docker Oracle"
 poll_for_updates = true
 auto_update = true
-linked_repo = "pangolin"
+linked_repo = "kerbol-next"
 run_directory = "pangolin"
 file_paths = [
   "compose.yaml",
@@ -348,7 +348,6 @@ name = "redhat-knowledge"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
-auto_update = false
 linked_repo = "kerbol-next"
 run_directory = "redhat-knowledge"
 file_paths = [
