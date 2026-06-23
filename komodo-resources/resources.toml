@@ -4,7 +4,6 @@ tags = ["sync", "brookview"]
 [server.config]
 address = "https://komodo-periphery.brookview.app"
 enabled = true
-timeout_seconds = 60
 
 ##
 
@@ -14,7 +13,6 @@ tags = ["sync", "container-pi4-1"]
 [server.config]
 address = "https://container-pi4-1.lan:8120"
 enabled = true
-timeout_seconds = 30
 
 ##
 
@@ -22,6 +20,7 @@ timeout_seconds = 30
 name = "Docker Oracle"
 tags = ["sync", "oracle"]
 [server.config]
+address = "https://periphery:8120"
 enabled = true
 
 ##
@@ -33,7 +32,6 @@ tags = ["nas-ii", "sync"]
 [server.config]
 address = "https://komodo-nas-ii.brookview.app/"
 enabled = true
-timeout_seconds = 60
 send_cpu_alerts = false
 send_mem_alerts = false
 mem_warning = 85.0
@@ -46,7 +44,6 @@ tags = ["sync", "unraid"]
 [server.config]
 address = "https://kerbol-next.lan:8120"
 enabled = true
-timeout_seconds = 30
 send_cpu_alerts = false
 
 ##
@@ -539,13 +536,13 @@ file_paths = [
   "compose.yaml"
 ]
 additional_env_files = [
-  "gotenberg/.env",
-  "paperless-ai/.env",
-  "paperless-gpt/.env",
-  "paperless/.env",
-  "postgres/.env",
-  "redis/.env",
-  "paperless/authentik.env"
+  { path = "gotenberg/.env", track = true },
+  { path = "paperless-ai/.env", track = true },
+  { path = "paperless-gpt/.env", track = true },
+  { path = "paperless/.env", track = true },
+  { path = "postgres/.env", track = true },
+  { path = "redis/.env", track = true },
+  { path = "paperless/authentik.env", track = true }
 ]
 environment = """
 CONTAINER_DATA = /mnt/user/appdata
@@ -737,10 +734,12 @@ pre_deploy.command = """
   # Add multiple commands on new lines. Supports comments.
   export COMPOSE_FILE=compose.yaml:ports.compose.yaml
 """
+pre_deploy.shell_mode = false
 post_deploy.command = """
   # Add multiple commands on new lines. Supports comments.
   unset COMPOSE_FILE
 """
+post_deploy.shell_mode = false
 environment = """
 # VARIABLE = value
 ADMIN_TOKEN="[[VAULTWARDEN_ADMIN_TOKEN]]"
@@ -904,7 +903,7 @@ config.schedule = "Every day at 01:15"
 name = "Stage 1"
 enabled = true
 executions = [
-  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+  { execution.type = "GlobalAutoUpdate", execution.params.skip_auto_update = false, enabled = true }
 ]
 
 ##
@@ -938,7 +937,7 @@ name = "Docker Oracle"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server_id = "Docker Oracle"
+params.server = "Docker Oracle"
 
 ##
 
@@ -947,7 +946,7 @@ name = "Unraid"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server_id = "Unraid"
+params.server = "Unraid"
 
 ##
 
