@@ -1,0 +1,8 @@
+services:
+  redhat-knowledge:
+    image: quay.mcdade.app/homeserver/redhat-knowledge:latest
+    container_name: redhat-knowledge
+    restart: ${SVC_RESTART:-unless-stopped}
+    environment:
+      - REDHAT_TOKEN=${REDHAT_TOKEN}
+      - TZ=${TZ:-America/Chicago}

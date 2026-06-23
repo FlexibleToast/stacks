@@ -344,6 +344,26 @@ QUAY_MIRROR_REPLICAS = 1
 ##
 
 [[stack]]
+name = "redhat-knowledge"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "redhat-knowledge"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+TZ = America/Chicago
+REDHAT_TOKEN = [[REDHAT_TOKEN]]
+"""
+
+##
+
+[[stack]]
 name = "searxng-mcp-unraid"
 tags = ["unraid", "sync"]
 [stack.config]
@@ -565,6 +585,27 @@ quay.expires-after=4w
 
 ##
 
+[[build]]
+name = "redhat-knowledge"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+version = "0.0.1"
+auto_increment_version = true
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "redhat-knowledge"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
 [[repo]]
 name = "forgejo-resources"
 tags = ["sync"]
@@ -592,6 +633,22 @@ tags = ["sync"]
 [repo.config]
 git_account = "FlexibleToast"
 repo = "FlexibleToast/stacks"
+
+##
+
+[[procedure]]
+name = "Rebuild redhat-knowledge"
+description = "Rebuilds the redhat-knowledge Docker image from source, pushing to Quay with auto-cleanup."
+tags = ["unraid", "build", "sync"]
+config.schedule_alert = false
+config.schedule = "Every week on Sunday at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params = { build_id = "redhat-knowledge" }, enabled = true }
+]
 
 ##
 
