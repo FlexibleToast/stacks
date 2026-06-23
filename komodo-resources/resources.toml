@@ -527,6 +527,44 @@ SUBJECT_TAG = Docker Oracle
 
 ##
 
+[[build]]
+name = "proxmoxmcp-plus"
+tags = ["build", "sync"]
+[build.config]
+builder = "Unraid"
+image_name = "proxmox-mcp-api"
+repo = "RekklesNA/ProxmoxMCP-Plus"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+  # your.docker.label: value
+quay.expires-after=4w
+"""
+
+##
+
+[[build]]
+name = "tvcleanup"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+version = "2.0.1"
+auto_increment_version = false
+git_provider = "git.mcdade.app"
+git_account = "FlexibleToast"
+repo = "homeserver/tvcleanup"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+  # your.docker.label: value
+quay.expires-after=4w
+"""
+
+##
+
 [[repo]]
 name = "forgejo-resources"
 tags = ["sync"]
