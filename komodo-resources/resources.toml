@@ -28,7 +28,6 @@ name = "NAS II"
 description = "TrueNAS SCALE: https://nas.brookview.app"
 tags = ["nas-ii", "sync"]
 [server.config]
-address = "https://komodo-nas-ii.brookview.app/"
 enabled = true
 send_cpu_alerts = false
 send_mem_alerts = false
