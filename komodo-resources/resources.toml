@@ -2,7 +2,6 @@
 name = "Bookview MicroOS"
 tags = ["sync", "brookview"]
 [server.config]
-address = "https://komodo-periphery.brookview.app"
 enabled = true
 
 ##
@@ -11,7 +10,6 @@ enabled = true
 name = "Container Pi4 1"
 tags = ["sync", "container-pi4-1"]
 [server.config]
-address = "https://container-pi4-1.lan:8120"
 enabled = true
 
 ##
@@ -42,7 +40,6 @@ mem_warning = 85.0
 name = "Unraid"
 tags = ["sync", "unraid"]
 [server.config]
-address = "https://kerbol-next.lan:8120"
 enabled = true
 send_cpu_alerts = false
 
@@ -377,7 +374,8 @@ environment = """
   # VARIABLE = value
 CONTAINER_DATA = /srv/container-data
 KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
-KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
+PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
+PERIPHERY_CONNECT_AS = Bookview MicroOS
 """
 
 ##
@@ -391,9 +389,10 @@ linked_repo = "stacks"
 run_directory = "komodo-periphery"
 environment = """
   # VARIABLE = value
-KOMODO_PASSKEY=[[KOMODO_PASSKEY]]
 CONTAINER_DATA = /srv/container-data
 KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
+PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
+PERIPHERY_CONNECT_AS = Container Pi4 1
 """
 
 ##
@@ -414,7 +413,8 @@ environment = """
 PERIPHERY_INCLUDE_DISK_MOUNTS = /mnt/user/media
 CONTAINER_DATA = /mnt/user/appdata
 KOMODO_PERIPHERY_PATH = /mnt/user/stacks
-KOMODO_PASSKEY = [[KOMODO_PASSKEY]]
+PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
+PERIPHERY_CONNECT_AS = Unraid
 """
 
 ##
