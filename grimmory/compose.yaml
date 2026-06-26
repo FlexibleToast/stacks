@@ -15,8 +15,9 @@ services:
       DATABASE_PASSWORD: ${GRIMMORY_DB_PASSWORD}
     volumes:
       - ${CONTAINER_DATA}/grimmory/data:/app/data:rw
-      - ${CONTAINER_DATA}/grimmory/books:/books:rw
-      - ${CONTAINER_DATA}/grimmory/bookdrop:/bookdrop:rw
+      - /mnt/user/media/Books:/books:rw
+      - /mnt/user/media/Audio_Books:/audiobooks:rw
+      - /mnt/user/downloads/complete/books:/bookdrop:rw
     healthcheck:
       test: wget -q -O - http://localhost:6060/api/v1/healthcheck
       interval: 60s
