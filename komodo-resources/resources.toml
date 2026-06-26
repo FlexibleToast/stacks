@@ -435,6 +435,25 @@ CONTAINER_DATA = /srv/container-data
 ##
 
 [[stack]]
+name = "newt-brookview"
+tags = ["brookview", "sync"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "newt"
+file_paths = [
+  "compose.yaml",
+  "frontend.network.compose.yaml"
+]
+environment = """
+PANGOLIN_ENDPOINT = https://pangolin.mcdade.app
+NEWT_ID = [[NEWT_ID_BROOKVIEW]]
+NEWT_SECRET = [[NEWT_SECRET_BROOKVIEW]]
+"""
+
+##
+
+[[stack]]
 name = "newt-unraid"
 tags = ["unraid", "sync"]
 [stack.config]
