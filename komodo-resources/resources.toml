@@ -45,6 +45,26 @@ send_cpu_alerts = false
 ##
 
 [[stack]]
+name = "adguard-brookview"
+tags = ["brookview", "sync"]
+[stack.config]
+server = "Bookview MicroOS"
+linked_repo = "stacks"
+run_directory = "adguard"
+file_paths = [
+  "compose.yaml",
+  "brookview.ipvlan.compose.yaml"
+]
+environment = """
+ADGUARD_HOME_IP=10.10.10.2
+ADGUARD_SUBNET=10.10.10.0/24
+ADGUARD_GATEWAY=10.10.10.1
+CONTAINER_DATA=/srv/container-data
+"""
+
+##
+
+[[stack]]
 name = "adguard-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]

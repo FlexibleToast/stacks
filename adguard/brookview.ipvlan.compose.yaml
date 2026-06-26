@@ -1,0 +1,21 @@
+services:
+  adguardhome:
+    cap_add:
+      - NET_ADMIN
+    networks:
+      frontend:
+      ipvlan_ens18:
+        ipv4_address: ${ADGUARD_HOME_IP:-10.10.10.2}
+
+networks:
+  frontend:
+    external: true
+  ipvlan_ens18:
+    driver: ipvlan
+    driver_opts:
+      parent: ens18
+      ipvlan_mode: l2
+    ipam:
+      config:
+        - subnet: ${ADGUARD_SUBNET:-10.10.10.0/24}
+          gateway: ${ADGUARD_GATEWAY:-10.10.10.1}
