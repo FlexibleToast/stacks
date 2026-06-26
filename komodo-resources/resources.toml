@@ -447,7 +447,7 @@ file_paths = [
 ]
 environment = """
 PANGOLIN_ENDPOINT = https://pangolin.mcdade.app
-NEWT_ID = [[NEWT_ID_BROOKVIEW]]
+NEWT_ID = 844waaqew6v2bze
 NEWT_SECRET = [[NEWT_SECRET_BROOKVIEW]]
 """
 
