@@ -557,6 +557,25 @@ AUTHENTIK_SECRET = [[PAPERLESS_AUTHENTIK_SECRET]]
 ##
 
 [[stack]]
+name = "playwright-mcp-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "playwright-mcp"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml"
+]
+config_files = [{ path = "Containerfile" }]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+TZ = America/Chicago
+"""
+
+##
+
+[[stack]]
 name = "quay"
 tags = ["sync", "unraid"]
 [stack.config]
@@ -845,6 +864,25 @@ quay.expires-after=4w
 
 ##
 
+[[build]]
+name = "playwright-mcp"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "playwright-mcp"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
 [[repo]]
 name = "forgejo-resources"
 tags = ["sync"]
@@ -927,6 +965,30 @@ enabled = true
 executions = [
   { execution.type = "PullStack", execution.params.stack = "redhat-knowledge", execution.params.services = [], enabled = true },
   { execution.type = "DeployStackIfChanged", execution.params.stack = "redhat-knowledge", enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Rebuild playwright-mcp"
+description = "Rebuilds the playwright-mcp Docker image from source, pushes to Quay with auto-cleanup, then updates the stack."
+tags = ["unraid", "build", "sync"]
+config.schedule_alert = false
+config.schedule = "Every week on Sunday at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "playwright-mcp", enabled = true }
+]
+
+[[procedure.config.stage]]
+name = "Stage 2"
+enabled = true
+executions = [
+  { execution.type = "PullStack", execution.params.stack = "playwright-mcp-unraid", execution.params.services = [], enabled = true },
+  { execution.type = "DeployStackIfChanged", execution.params.stack = "playwright-mcp-unraid", enabled = true }
 ]
 
 ##

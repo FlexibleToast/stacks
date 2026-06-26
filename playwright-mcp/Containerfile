@@ -1,0 +1,7 @@
+FROM mcr.microsoft.com/playwright/mcp:latest
+USER root
+RUN npm install -g supergateway
+EXPOSE 9525
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:9525/mcp || exit 1
+CMD ["supergateway", "--stdio", "node cli.js --headless --browser chromium --no-sandbox", "--port", "9525", "--outputTransport", "streamableHttp"]
