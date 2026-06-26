@@ -1,6 +1,6 @@
 [[server]]
 name = "Bookview MicroOS"
-tags = ["sync", "brookview"]
+tags = ["brookview", "sync"]
 [server.config]
 enabled = true
 
@@ -8,7 +8,7 @@ enabled = true
 
 [[server]]
 name = "Container Pi4 1"
-tags = ["sync", "container-pi4-1"]
+tags = ["container-pi4-1", "sync"]
 [server.config]
 enabled = true
 
@@ -16,7 +16,7 @@ enabled = true
 
 [[server]]
 name = "Docker Oracle"
-tags = ["sync", "oracle"]
+tags = ["oracle", "sync"]
 [server.config]
 address = "https://periphery:8120"
 enabled = true
@@ -37,7 +37,7 @@ mem_warning = 85.0
 
 [[server]]
 name = "Unraid"
-tags = ["sync", "unraid"]
+tags = ["unraid", "sync"]
 [server.config]
 enabled = true
 send_cpu_alerts = false
@@ -144,7 +144,7 @@ CONTAINER_DATA = /srv/container-data
 
 [[stack]]
 name = "borgserver-nas-ii"
-tags = ["sync", "nas-ii", "backup"]
+tags = ["nas-ii", "backup", "sync"]
 [stack.config]
 server = "NAS II"
 auto_update = true
@@ -163,7 +163,7 @@ BORGSERVER_BACKUP_DIR = /mnt/pool-0/borg
 
 [[stack]]
 name = "ddns-updater-brookview"
-tags = ["sync", "brookview"]
+tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
 linked_repo = "stacks"
@@ -177,7 +177,7 @@ CONTAINER_DATA=/srv/container-data
 
 [[stack]]
 name = "ddns-updater-unraid"
-tags = ["sync", "unraid"]
+tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
 linked_repo = "stacks"
@@ -191,7 +191,7 @@ CONTAINER_DATA=/mnt/user/appdata
 
 [[stack]]
 name = "endlessh-go-brookview"
-tags = ["brookview", "sync", "unraid"]
+tags = ["brookview", "unraid", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
 linked_repo = "kerbol-next"
@@ -441,7 +441,7 @@ PERIPHERY_CONNECT_AS = Unraid
 
 [[stack]]
 name = "kuma"
-tags = ["oracle", "sync", "unraid"]
+tags = ["oracle", "unraid", "sync"]
 [stack.config]
 server = "Docker Oracle"
 auto_update = true
@@ -617,7 +617,7 @@ TZ = America/Chicago
 
 [[stack]]
 name = "quay"
-tags = ["sync", "unraid"]
+tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
 auto_update = true
@@ -719,7 +719,7 @@ CONTAINER_DATA = /srv/container-data
 
 [[stack]]
 name = "tang-unraid"
-tags = ["sync", "unraid"]
+tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
 auto_update = true
@@ -750,7 +750,7 @@ file_paths = [
 
 [[stack]]
 name = "tunnel-brookview"
-tags = ["sync", "brookview"]
+tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
 linked_repo = "stacks"
@@ -779,7 +779,7 @@ environment = """
 
 [[stack]]
 name = "vaultwarden-brookview"
-tags = ["sync", "brookview"]
+tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
 linked_repo = "stacks"
@@ -843,6 +843,23 @@ EMAIL = [[EMAIL]]
 EMAIL_PASS = [[EMAIL_PASS]]
 HOSTNAME = docker-oracle
 SUBJECT_TAG = Docker Oracle
+"""
+
+##
+
+[[stack]]
+name = "grimmory-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "grimmory"
+file_paths = ["compose.yaml", "unraid.network.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+GRIMMORY_DB_PASSWORD = [[GRIMMORY_DB_PASSWORD]]
+GRIMMORY_MYSQL_ROOT_PASSWORD = [[GRIMMORY_MYSQL_ROOT_PASSWORD]]
 """
 
 ##

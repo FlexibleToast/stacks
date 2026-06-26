@@ -1,0 +1,45 @@
+services:
+  grimmory:
+    container_name: grimmory
+    image: grimmory/grimmory:${GRIMMORY_VERSION:-latest}
+    restart: ${GRIMMORY_RESTART:-unless-stopped}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      USER_ID: ${GRIMMORY_USER_ID:-99}
+      GROUP_ID: ${GRIMMORY_GROUP_ID:-100}
+      DATABASE_URL: jdbc:mariadb://mariadb:3306/grimmory
+      DATABASE_USERNAME: ${GRIMMORY_DB_USER:-grimmory}
+      DATABASE_PASSWORD: ${GRIMMORY_DB_PASSWORD}
+    volumes:
+      - ${CONTAINER_DATA}/grimmory/data:/app/data:rw
+      - ${CONTAINER_DATA}/grimmory/books:/books:rw
+      - ${CONTAINER_DATA}/grimmory/bookdrop:/bookdrop:rw
+    healthcheck:
+      test: wget -q -O - http://localhost:6060/api/v1/healthcheck
+      interval: 60s
+      retries: 5
+      start_period: 60s
+      timeout: 10s
+
+  mariadb:
+    container_name: grimmory-mariadb
+    image: lscr.io/linuxserver/mariadb:${GRIMMORY_MARIADB_VERSION:-latest}
+    restart: ${GRIMMORY_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      PUID: ${GRIMMORY_DB_USER_ID:-99}
+      PGID: ${GRIMMORY_DB_GROUP_ID:-100}
+      MYSQL_ROOT_PASSWORD: ${GRIMMORY_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: grimmory
+      MYSQL_USER: ${GRIMMORY_DB_USER:-grimmory}
+      MYSQL_PASSWORD: ${GRIMMORY_DB_PASSWORD}
+    volumes:
+      - ${CONTAINER_DATA}/grimmory/mariadb/config:/config:rw
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

@@ -1,0 +1,13 @@
+services:
+  grimmory:
+    networks:
+      - frontend
+      - backend
+  mariadb:
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
