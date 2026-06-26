@@ -2,6 +2,9 @@ services:
   adguardhome:
     cap_add:
       - NET_ADMIN
+    ports:
+      - "${ADGUARD_DNS_PORT:-53}:53/tcp"
+      - "${ADGUARD_DNS_PORT:-53}:53/udp"
     networks:
       frontend:
       ipvlan_ens18:
