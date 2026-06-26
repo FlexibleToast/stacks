@@ -591,7 +591,7 @@ environment = """
   # VARIABLE = value
 POSTGRES_VERSION = 17-alpine
 CLAIR_VERSION = 4.9.0
-QUAY_VERSION = 3.16.1
+QUAY_VERSION = 3.16.4
 QUAY_STORAGE = /mnt/user/quay
 CONTAINER_DATA = /mnt/user/appdata
 POSTGRES_PASSWORD = [[QUAY_POSTGRES_PASSWORD]]
@@ -808,6 +808,25 @@ SUBJECT_TAG = Docker Oracle
 ##
 
 [[build]]
+name = "playwright-mcp"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "playwright-mcp"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
+[[build]]
 name = "proxmoxmcp-plus"
 tags = ["build", "sync"]
 [build.config]
@@ -864,25 +883,6 @@ quay.expires-after=4w
 
 ##
 
-[[build]]
-name = "playwright-mcp"
-tags = ["unraid", "build", "sync"]
-[build.config]
-builder = "Unraid"
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "kerbol-next"
-build_path = "playwright-mcp"
-dockerfile_path = "Containerfile"
-image_registry = [
-  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
-]
-labels = """
-quay.expires-after=4w
-"""
-
-##
-
 [[repo]]
 name = "forgejo-resources"
 tags = ["sync"]
@@ -934,37 +934,13 @@ name = "Global Auto Update"
 description = "Pulls and auto updates Stacks and Deployments using 'poll_for_updates' or 'auto_update'."
 tags = ["system", "sync"]
 config.schedule_alert = false
-config.schedule = "Every day at 01:15"
+config.schedule = "Every Friday at 01:15"
 
 [[procedure.config.stage]]
 name = "Stage 1"
 enabled = true
 executions = [
   { execution.type = "GlobalAutoUpdate", execution.params.skip_auto_update = false, enabled = true }
-]
-
-##
-
-[[procedure]]
-name = "Rebuild redhat-knowledge"
-description = "Rebuilds the redhat-knowledge Docker image from source, pushing to Quay with auto-cleanup."
-tags = ["unraid", "build", "sync"]
-config.schedule_alert = false
-config.schedule = "Every week on Sunday at 03:00"
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [
-  { execution.type = "RunBuild", execution.params.build = "redhat-knowledge", enabled = true }
-]
-
-[[procedure.config.stage]]
-name = "Stage 2"
-enabled = true
-executions = [
-  { execution.type = "PullStack", execution.params.stack = "redhat-knowledge", execution.params.services = [], enabled = true },
-  { execution.type = "DeployStackIfChanged", execution.params.stack = "redhat-knowledge", enabled = true }
 ]
 
 ##
@@ -989,6 +965,30 @@ enabled = true
 executions = [
   { execution.type = "PullStack", execution.params.stack = "playwright-mcp-unraid", execution.params.services = [], enabled = true },
   { execution.type = "DeployStackIfChanged", execution.params.stack = "playwright-mcp-unraid", enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Rebuild redhat-knowledge"
+description = "Rebuilds the redhat-knowledge Docker image from source, pushing to Quay with auto-cleanup."
+tags = ["unraid", "build", "sync"]
+config.schedule_alert = false
+config.schedule = "Every week on Sunday at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "redhat-knowledge", enabled = true }
+]
+
+[[procedure.config.stage]]
+name = "Stage 2"
+enabled = true
+executions = [
+  { execution.type = "PullStack", execution.params.stack = "redhat-knowledge", execution.params.services = [], enabled = true },
+  { execution.type = "DeployStackIfChanged", execution.params.stack = "redhat-knowledge", enabled = true }
 ]
 
 ##
