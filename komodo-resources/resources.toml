@@ -56,6 +56,7 @@ file_paths = [
   "brookview.ipvlan.compose.yaml"
 ]
 environment = """
+ADGUARD_FRONTEND_IP=172.25.0.2
 ADGUARD_HOME_IP=10.10.10.2
 ADGUARD_SUBNET=10.10.10.0/24
 ADGUARD_GATEWAY=10.10.10.1
