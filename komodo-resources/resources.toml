@@ -49,7 +49,7 @@ name = "adguard-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "adguard"
 file_paths = [
   "compose.yaml",
@@ -459,7 +459,7 @@ name = "newt-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "newt"
 file_paths = [
   "compose.yaml",
