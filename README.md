@@ -329,7 +329,7 @@ The validation script ([`scripts/validate.py`](scripts/validate.py)) performs fo
 
 1. **YAML syntax** — every `.yaml`/`.yml` file in the repo must parse cleanly
 2. **TOML syntax** — every `.toml` file (currently just `komodo-resources/resources.toml`) must parse cleanly
-3. **Docker Compose config** — `docker compose -f <dir>/compose.yaml config --quiet` is run for every directory that has a `compose.yaml`. Stacks that reference unset env vars (e.g. secrets only available at deploy time) are skipped with a warning rather than failed. Dummy values live in [`.env.test`](.env.test).
+3. **Docker Compose config** — `docker compose config --quiet` is run for every directory that has a `compose.yaml`. All `*.yaml`/`*.yml` files in the directory are passed as `-f` flags (with `compose.yaml` first), so network/mount/port override fragments are validated together. Stacks that reference unset env vars produce an **error** listing the missing variables. Dummy values live in [`.env.test`](.env.test) — add any new required vars there.
 4. **Cross-reference check** — compares `linked_repo` in each stack's `[config]` against the current branch name:
    - On `main` → expects `linked_repo = "stacks"`
    - On any other branch → expects `linked_repo` to match the branch name
@@ -340,10 +340,12 @@ The validation script ([`scripts/validate.py`](scripts/validate.py)) performs fo
 If you are an AI assistant modifying this validation suite, follow these rules:
 
 - **Adding a new check**: Add a new function like `validate_*()` in `scripts/validate.py`, call it from `main()`, append errors/warnings to the global `errors`/`warnings` lists as appropriate, and let the existing summary logic handle exit codes.
-- **Adding a new compose file type**: The script picks up every directory with a `compose.yaml`. If a stack uses a different filename, update the `STACK_DIRS` glob or add an explicit override.
-- **Adding env vars for compose validation**: Add a dummy value to `.env.test`. Do **not** add real secrets — this file is checked into the repo.
+- **Adding a new compose file type**: Every directory with a `compose.yaml` is auto-detected. All `*.yaml`/`*.yml` files in that directory are treated as compose fragments and passed to `docker compose -f`. If a stack uses a different main filename, update `compose_files()` in the script.
+- **Adding env vars for compose validation**: Add a dummy value to `.env.test`. Missing vars now cause an **error** (not a warning) with the variable names listed. Do **not** add real secrets — this file is checked into the repo.
+- **Handling `env_file` directives**: If a compose file references `env_file: ./.env` and the file doesn't exist in the repo, the stack is skipped with a warning. Do not commit a `.env` file — Komodo manages those at deploy time.
 - **Changing ignore rules**: `IGNORE_DIRS` controls which top-level directories are skipped (e.g. `.git`, `.opencode`). Use exact directory names, not `startswith` — `.github` and `.git` are different dirs.
 - **Running locally**: `make validate` or `./scripts/validate.py`. Requires Python 3.11+, `pyyaml`, and `docker compose`.
+- **Dependabot**: `.github/dependabot.yml` keeps GitHub Actions up to date weekly. To add other ecosystems (e.g. Docker, pip), add a new `package-ecosystem` entry there.
 
 ---
 

@@ -65,16 +65,25 @@ def validate_toml():
 
 # ── Docker Compose validation ────────────────────────────────
 
+def compose_files(d):
+    """Return all compose fragment files in a stack directory, with compose.yaml first."""
+    files = sorted(d.glob("*.yaml")) + sorted(d.glob("*.yml"))
+    files = [f for f in files if f.name != "compose.yaml"]
+    return [d / "compose.yaml"] + sorted(files)
+
+
 def validate_compose():
     print("\n── Docker Compose validation ──")
     dirs = [d for d in STACK_DIRS if (d / "compose.yaml").exists()]
     passed = 0
     skipped = 0
     for d in sorted(dirs):
-        compose = d / "compose.yaml"
-        env_file = d / ".env"
+        files = compose_files(d)
         test_env = ENV_TEST if ENV_TEST.exists() else None
-        cmd = ["docker", "compose", "-f", str(compose), "config", "--quiet"]
+        cmd = ["docker", "compose"]
+        for f in files:
+            cmd.extend(["-f", str(f)])
+        cmd.extend(["config", "--quiet"])
         env = os.environ.copy()
         if test_env:
             with open(test_env) as f:
@@ -85,18 +94,22 @@ def validate_compose():
                         env[k.strip()] = v.strip()
         try:
             subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=env, check=True)
-            ok(f"{d.name}/compose.yaml")
+            ok(f"{d.name}/compose.yaml ({len(files)} file{'s' if len(files) > 1 else ''})")
             passed += 1
         except subprocess.CalledProcessError as e:
             stderr = e.stderr.strip()
-            if "variable" in stderr.lower() and ("not set" in stderr.lower() or "is not set" in stderr.lower()):
-                warn(f"{d.name}/compose.yaml: missing env vars (skipped)")
-                skipped += 1
+            vars = re.findall(
+                r'(?:variable\s+["\']?(\w+)["\']?\s+is\s+not\s+set|refers\s+to\s+an?\s+undefined\s+variable\s+["\']?(\w+)["\']?)',
+                stderr, re.IGNORECASE,
+            )
+            var_names = {v for pair in vars for v in pair if v}
+            if var_names:
+                err(f"{d.name}: missing env vars: {', '.join(sorted(var_names))}")
             elif "file" in stderr.lower() and "not found" in stderr.lower() and ".env" in stderr.lower():
-                warn(f"{d.name}/compose.yaml: missing .env files (skipped)")
+                warn(f"{d.name}: missing .env files (skipped)")
                 skipped += 1
             else:
-                err(f"{d.name}/compose.yaml: {stderr.split(chr(10))[-1]}")
+                err(f"{d.name}: {stderr.split(chr(10))[-1]}")
         except FileNotFoundError:
             warn("docker compose not available (skipped)")
             skipped += 1
