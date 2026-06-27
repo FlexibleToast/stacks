@@ -16,8 +16,14 @@ API_SECRET = os.environ.get("KOMODO_API_SECRET", "")
 GIT_BASE = os.environ.get("GIT_BASE", "HEAD~1")
 
 
+NULL_SHA = "0000000000000000000000000000000000000000"
+
+
 def get_changed_dirs():
     """Return set of top-level directories changed since GIT_BASE."""
+    if not GIT_BASE or GIT_BASE == NULL_SHA:
+        print(f"  ⚠ no previous commit to diff against (first push)")
+        return None
     r = subprocess.run(
         ["git", "diff", "--name-only", f"{GIT_BASE}...HEAD"],
         capture_output=True, text=True, cwd=REPO_ROOT,
