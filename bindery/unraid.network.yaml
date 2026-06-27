@@ -2,7 +2,10 @@ services:
   bindery:
     networks:
       - frontend
+      - download
 
 networks:
   frontend:
+    external: true
+  download:
     external: true
