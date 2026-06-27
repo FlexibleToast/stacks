@@ -1,4 +1,3 @@
-## test-trigger - remove me after verification
 services:
   bindery:
     container_name: bindery
