@@ -335,15 +335,35 @@ The validation script ([`scripts/validate.py`](scripts/validate.py)) performs fo
    - On any other branch → expects `linked_repo` to match the branch name
    - Only stacks whose `linked_repo` changed since `origin/main` are checked
 
-### Updating the tests
+### Auto-deploy pipeline
 
-If you are an AI assistant modifying this validation suite, follow these rules:
+On every push to `main`, after validation passes, the [`trigger`](.github/workflows/validate.yml) job runs [`scripts/trigger.py`](scripts/trigger.py) to automatically deploy only the stacks that changed:
+
+1. `git diff --name-only {previous_commit}...HEAD` identifies files changed in the latest commit (in CI, `GIT_BASE` is set to `github.event.before`; locally it defaults to `HEAD~1`)
+2. Changed files are grouped by their top-level directory
+3. `resources.toml` maps directories to Komodo stack names via `run_directory` (e.g., `adguard/` → both `adguard-brookview` and `adguard-container-pi`)
+4. For each affected stack, `POST /execute/DeployStack` is called with the Komodo API key
+
+Environment variables set in the workflow:
+| Variable | Source | Purpose |
+|----------|--------|---------|
+| `KOMODO_API_KEY` | GitHub secret | API key created in Komodo user settings |
+| `KOMODO_API_SECRET` | GitHub secret | API secret paired with the key |
+| `KOMODO_API_BASE` | default | Komodo instance URL (default: `https://komodo.mcdade.app`) |
+
+Changes to files outside stack directories (e.g., `.github/`, `scripts/`, `Makefile`) are silently skipped — no API call is made.
+
+### Updating the validation & trigger suite
+
+If you are an AI assistant modifying these scripts, follow these rules:
 
 - **Adding a new check**: Add a new function like `validate_*()` in `scripts/validate.py`, call it from `main()`, append errors/warnings to the global `errors`/`warnings` lists as appropriate, and let the existing summary logic handle exit codes.
 - **Adding a new compose file type**: Every directory with a `compose.yaml` is auto-detected. All `*.yaml`/`*.yml` files in that directory are treated as compose fragments and passed to `docker compose -f`. If a stack uses a different main filename, update `compose_files()` in the script.
 - **Adding env vars for compose validation**: Add a dummy value to `.env.test`. Missing vars now cause an **error** (not a warning) with the variable names listed. Do **not** add real secrets — this file is checked into the repo.
 - **Changing ignore rules**: `IGNORE_DIRS` controls which top-level directories are skipped (e.g. `.git`, `.opencode`). Use exact directory names, not `startswith` — `.github` and `.git` are different dirs.
+- **Modifying stack detection**: `scripts/trigger.py` uses `resources.toml` `run_directory` to map changed directories to stack names. If a stack uses a directory different from `run_directory`, update the mapping entry.
 - **Running locally**: `make validate` or `./scripts/validate.py`. Requires Python 3.11+, `pyyaml`, and `docker compose`.
+- **Testing the trigger locally**: `./scripts/trigger.py` runs in dry-run mode when `KOMODO_API_KEY` / `KOMODO_API_SECRET` are not set. It will report changed stacks but not call the API.
 - **Dependabot**: `.github/dependabot.yml` keeps GitHub Actions up to date weekly. To add other ecosystems (e.g. Docker, pip), add a new `package-ecosystem` entry there.
 
 ---
@@ -398,7 +418,8 @@ stacks/
 ├── komodo-resources/      # Declarative configuration
 │   └── resources.toml
 ├── scripts/               # Tooling
-│   └── validate.py        #   Validation script
+│   ├── validate.py        #   Validation script
+│   └── trigger.py         #   Komodo auto-deploy trigger
 ├── Makefile                # Local dev commands
 ├── .env.test               # Dummy env vars for compose validation
 ├── adguard/               # DNS filtering

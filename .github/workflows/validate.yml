@@ -20,3 +20,19 @@ jobs:
 
       - name: Run validation
         run: ./scripts/validate.py
+
+  trigger:
+    needs: validate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Trigger affected stacks
+        run: ./scripts/trigger.py
+        env:
+          GIT_BASE: ${{ github.event.before }}
+          KOMODO_API_KEY: ${{ secrets.KOMODO_API_KEY }}
+          KOMODO_API_SECRET: ${{ secrets.KOMODO_API_SECRET }}
