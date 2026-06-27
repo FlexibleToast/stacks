@@ -324,8 +324,7 @@ KOMODO_MONITORING_INTERVAL="15-sec"
 ## Default: 1-hr
 KOMODO_RESOURCE_POLL_INTERVAL="1-hr"
 
-## Used to auth incoming webhooks. Alt: KOMODO_WEBHOOK_SECRET_FILE
-# KOMODO_WEBHOOK_SECRET=
+KOMODO_WEBHOOK_SECRET = [[KOMODO_WEBHOOK_SECRET]]
 ## Used to generate jwt. Alt: KOMODO_JWT_SECRET_FILE
 # KOMODO_JWT_SECRET=
 ## Time to live for jwt tokens.
