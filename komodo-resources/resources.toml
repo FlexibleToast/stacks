@@ -1109,7 +1109,6 @@ description = "Only sync tagged instances synced to github"
 tags = ["sync"]
 [resource_sync.config]
 linked_repo = "kerbol-next"
-webhook_secret = "[[GITHUB_WEBHOOK_SECRET]]"
 resource_path = [
   "komodo-resources/resources.toml"
 ]
