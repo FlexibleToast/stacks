@@ -113,6 +113,25 @@ ADVENTURELOG_RESTART = no
 ##
 
 [[stack]]
+name = "bindery-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "bindery"
+file_paths = [
+  "compose.yaml",
+  "unraid.mounts.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+"""
+
+##
+
+[[stack]]
 name = "borgmatic-container-pi"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
@@ -196,6 +215,27 @@ tags = ["brookview", "unraid", "sync"]
 server = "Bookview MicroOS"
 linked_repo = "kerbol-next"
 run_directory = "endlessh-go"
+
+##
+
+[[stack]]
+name = "grimmory-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "grimmory"
+file_paths = [
+  "compose.yaml",
+  "unraid.mounts.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+GRIMMORY_DB_PASSWORD = [[GRIMMORY_DB_PASSWORD]]
+GRIMMORY_MYSQL_ROOT_PASSWORD = [[GRIMMORY_MYSQL_ROOT_PASSWORD]]
+"""
 
 ##
 
@@ -847,38 +887,6 @@ SUBJECT_TAG = Docker Oracle
 
 ##
 
-[[stack]]
-name = "grimmory-unraid"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "grimmory"
-file_paths = ["compose.yaml", "unraid.mounts.yaml", "unraid.network.yaml"]
-environment = """
-CONTAINER_DATA = /mnt/user/appdata
-GRIMMORY_DB_PASSWORD = [[GRIMMORY_DB_PASSWORD]]
-GRIMMORY_MYSQL_ROOT_PASSWORD = [[GRIMMORY_MYSQL_ROOT_PASSWORD]]
-"""
-
-##
-
-[[stack]]
-name = "bindery-unraid"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "bindery"
-file_paths = ["compose.yaml", "unraid.mounts.yaml", "unraid.network.yaml"]
-environment = """
-CONTAINER_DATA = /mnt/user/appdata
-"""
-
-##
-
 [[build]]
 name = "playwright-mcp"
 tags = ["unraid", "build", "sync"]
@@ -1102,6 +1110,7 @@ description = "Only sync tagged instances synced to github"
 tags = ["sync"]
 [resource_sync.config]
 linked_repo = "kerbol-next"
+webhook_secret = "[[GITHUB_WEBHOOK_SECRET]]"
 resource_path = [
   "komodo-resources/resources.toml"
 ]
