@@ -7,6 +7,7 @@ services:
     environment:
       TZ: ${TZ:-America/Chicago}
       BINDERY_LOG_LEVEL: ${BINDERY_LOG_LEVEL:-info}
+      BINDERY_OIDC_EMAIL_LINK: true
       BINDERY_LIBRARY_DIR: /books
       BINDERY_AUDIOBOOK_DIR: /audiobooks
       BINDERY_DOWNLOAD_DIR: /downloads
