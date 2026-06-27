@@ -127,6 +127,7 @@ file_paths = [
 ]
 environment = """
 CONTAINER_DATA = /mnt/user/appdata
+BINDERY_OIDC_REDIRECT_BASE_URL = https://bindery.mcdade.app
 """
 
 ##
