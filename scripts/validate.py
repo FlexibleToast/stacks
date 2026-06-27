@@ -105,8 +105,6 @@ def validate_compose():
             var_names = {v for pair in vars for v in pair if v}
             if var_names:
                 err(f"{d.name}: missing env vars: {', '.join(sorted(var_names))}")
-            elif "file" in stderr.lower() and "not found" in stderr.lower() and ".env" in stderr.lower():
-                err(f"{d.name}: missing .env file referenced in compose config")
             else:
                 err(f"{d.name}: {stderr.split(chr(10))[-1]}")
         except FileNotFoundError:
