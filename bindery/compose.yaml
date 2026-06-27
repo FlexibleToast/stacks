@@ -1,0 +1,14 @@
+services:
+  bindery:
+    container_name: bindery
+    image: ghcr.io/vavallee/bindery:${BINDERY_VERSION:-latest}
+    restart: ${BINDERY_RESTART:-unless-stopped}
+    user: "99:100"
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      BINDERY_LOG_LEVEL: ${BINDERY_LOG_LEVEL:-info}
+      BINDERY_LIBRARY_DIR: /books
+      BINDERY_AUDIOBOOK_DIR: /audiobooks
+      BINDERY_DOWNLOAD_DIR: /downloads
+    volumes:
+      - ${CONTAINER_DATA}/bindery/config:/config:rw

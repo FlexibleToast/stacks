@@ -1,0 +1,6 @@
+services:
+  bindery:
+    volumes:
+      - /mnt/user/media/Books:/books:rw
+      - /mnt/user/media/Audio_Books:/audiobooks:rw
+      - /mnt/user/downloads/complete/books:/downloads:rw

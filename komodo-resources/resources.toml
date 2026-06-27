@@ -855,11 +855,26 @@ server = "Unraid"
 auto_update = true
 linked_repo = "kerbol-next"
 run_directory = "grimmory"
-file_paths = ["compose.yaml", "unraid.network.yaml"]
+file_paths = ["compose.yaml", "unraid.mounts.yaml", "unraid.network.yaml"]
 environment = """
 CONTAINER_DATA = /mnt/user/appdata
 GRIMMORY_DB_PASSWORD = [[GRIMMORY_DB_PASSWORD]]
 GRIMMORY_MYSQL_ROOT_PASSWORD = [[GRIMMORY_MYSQL_ROOT_PASSWORD]]
+"""
+
+##
+
+[[stack]]
+name = "bindery-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "bindery"
+file_paths = ["compose.yaml", "unraid.mounts.yaml", "unraid.network.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
 """
 
 ##
