@@ -321,6 +321,32 @@ Common patterns used across stacks:
 
 ---
 
+## Testing & Validation
+
+Every push to this repo runs a validation suite via [`.github/workflows/validate.yml`](.github/workflows/validate.yml). You can also run it locally with `make validate`.
+
+The validation script ([`scripts/validate.py`](scripts/validate.py)) performs four checks:
+
+1. **YAML syntax** — every `.yaml`/`.yml` file in the repo must parse cleanly
+2. **TOML syntax** — every `.toml` file (currently just `komodo-resources/resources.toml`) must parse cleanly
+3. **Docker Compose config** — `docker compose -f <dir>/compose.yaml config --quiet` is run for every directory that has a `compose.yaml`. Stacks that reference unset env vars (e.g. secrets only available at deploy time) are skipped with a warning rather than failed. Dummy values live in [`.env.test`](.env.test).
+4. **Cross-reference check** — compares `linked_repo` in each stack's `[config]` against the current branch name:
+   - On `main` → expects `linked_repo = "stacks"`
+   - On any other branch → expects `linked_repo` to match the branch name
+   - Only stacks whose `linked_repo` changed since `origin/main` are checked
+
+### Updating the tests
+
+If you are an AI assistant modifying this validation suite, follow these rules:
+
+- **Adding a new check**: Add a new function like `validate_*()` in `scripts/validate.py`, call it from `main()`, append errors/warnings to the global `errors`/`warnings` lists as appropriate, and let the existing summary logic handle exit codes.
+- **Adding a new compose file type**: The script picks up every directory with a `compose.yaml`. If a stack uses a different filename, update the `STACK_DIRS` glob or add an explicit override.
+- **Adding env vars for compose validation**: Add a dummy value to `.env.test`. Do **not** add real secrets — this file is checked into the repo.
+- **Changing ignore rules**: `IGNORE_DIRS` controls which top-level directories are skipped (e.g. `.git`, `.opencode`). Use exact directory names, not `startswith` — `.github` and `.git` are different dirs.
+- **Running locally**: `make validate` or `./scripts/validate.py`. Requires Python 3.11+, `pyyaml`, and `docker compose`.
+
+---
+
 ## Quick Reference
 
 ### Server Tags
@@ -360,31 +386,37 @@ See [Komodo Documentation](https://komo.do) for detailed setup guides.
 
 ```
 stacks/
-├── komodo-core/          # Komodo Core infrastructure
+├── .github/workflows/    # CI/CD workflows
+│   └── validate.yml      #   Push/PR validation
+├── komodo-core/           # Komodo Core infrastructure
 │   ├── compose.yaml
 │   └── network.yaml
-├── komodo-periphery/     # Periphery agent
+├── komodo-periphery/      # Periphery agent
 │   ├── compose.yaml
 │   └── mounts.compose.yaml
-├── komodo-resources/     # Declarative configuration
+├── komodo-resources/      # Declarative configuration
 │   └── resources.toml
-├── adguard/              # DNS filtering
-├── adventurelog/         # Adventure logging platform
-├── borgserver/           # Backup server
-├── borgmatic/            # Backup client
-├── ddns-updater/         # Dynamic DNS
-├── endlessh-go/          # SSH tarpit
-├── immich/               # Photo backup
-├── kuma/                 # Uptime monitoring
-├── ollama/               # LLM hosting
-├── open-notebook/        # Knowledge base
-├── paperless/            # Document management
-├── quay/                 # Docker registry
-├── tdarr/                # Video transcoder
-├── tunnel/               # Cloudflare Tunnel
-├── vaultwarden/          # Password manager
-├── watchtower/           # Auto-updater
-└── newt/                 # Event tracker
+├── scripts/               # Tooling
+│   └── validate.py        #   Validation script
+├── Makefile                # Local dev commands
+├── .env.test               # Dummy env vars for compose validation
+├── adguard/               # DNS filtering
+├── adventurelog/          # Adventure logging platform
+├── borgserver/            # Backup server
+├── borgmatic/             # Backup client
+├── ddns-updater/          # Dynamic DNS
+├── endlessh-go/           # SSH tarpit
+├── immich/                # Photo backup
+├── kuma/                  # Uptime monitoring
+├── ollama/                # LLM hosting
+├── open-notebook/         # Knowledge base
+├── paperless/             # Document management
+├── quay/                  # Docker registry
+├── tdarr/                 # Video transcoder
+├── tunnel/                # Cloudflare Tunnel
+├── vaultwarden/           # Password manager
+├── watchtower/            # Auto-updater
+└── newt/                  # Event tracker
 ```
 
 ---
