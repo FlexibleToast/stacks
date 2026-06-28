@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import re
 import subprocess
@@ -162,15 +163,15 @@ def get_repo_names():
         return []
 
 
-def get_resources(content):
-    """Return {type/name: linked_repo} for every resource with config.linked_repo."""
+def get_resource_entries(content):
+    """Return {type/name: entry_dict} for every resource with config.linked_repo."""
     data = tomllib.loads(content)
     result = {}
     for t in TOMl_TYPES_WITH_LINKED_REPO:
         for entry in data.get(t, []):
             lr = entry.get("config", {}).get("linked_repo", "")
             if lr:
-                result[f"{t}/{entry['name']}"] = lr
+                result[f"{t}/{entry['name']}"] = entry
     return result
 
 
@@ -189,6 +190,7 @@ def validate_cross_reference():
     expected_repo = expected_repo if expected_repo != "main" else "stacks"
     context = f"merge to {pr_base}" if pr_base else f"on branch \"{branch}\""
 
+    # Diff against base ref to find which resources changed
     if pr_base:
         diff_ref = f"origin/{pr_base}"
     elif git_base:
@@ -196,8 +198,6 @@ def validate_cross_reference():
     else:
         ok(f"no base ref available, skipping diff check (branch: {branch})")
         return
-
-    head_resources = get_resources(RESOURCES_TOML.read_text())
 
     r = subprocess.run(
         ["git", "show", f"{diff_ref}:komodo-resources/resources.toml"],
@@ -207,12 +207,17 @@ def validate_cross_reference():
         ok(f"base ref \"{diff_ref}\" not available, skipping diff check")
         return
 
-    base_resources = get_resources(r.stdout)
+    base_entries = get_resource_entries(r.stdout)
+    head_entries = get_resource_entries(RESOURCES_TOML.read_text())
+
+    def entry_hash(e):
+        return json.dumps(e, sort_keys=True)
 
     errors = []
-    for key, head_lr in sorted(head_resources.items()):
-        base_lr = base_resources.get(key)
-        if base_lr is None or head_lr != base_lr:
+    for key, head_entry in sorted(head_entries.items()):
+        base_entry = base_entries.get(key)
+        if base_entry is None or entry_hash(head_entry) != entry_hash(base_entry):
+            head_lr = head_entry.get("config", {}).get("linked_repo", "")
             if head_lr != expected_repo:
                 errors.append(f"{key}: linked_repo is \"{head_lr}\", expected \"{expected_repo}\" {context}")
 

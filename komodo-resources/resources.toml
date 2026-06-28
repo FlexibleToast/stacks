@@ -475,6 +475,7 @@ linked_repo = "stacks"
 run_directory = "komodo-periphery"
 environment = """
   # VARIABLE = value
+  TEST = FAIL
   CONTAINER_DATA = /srv/container-data
   KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
   PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
