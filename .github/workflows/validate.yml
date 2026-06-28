@@ -23,8 +23,8 @@ jobs:
         env:
           PR_BASE: ${{ github.base_ref }}
 
-  trigger:
-    needs: validate
+  deploy:
+    needs: [validate, sync]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: Trigger affected stacks
-        run: ./scripts/trigger.py
+        run: ./scripts/deploy.py
         env:
           GIT_BASE: ${{ github.event.before }}
           KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
