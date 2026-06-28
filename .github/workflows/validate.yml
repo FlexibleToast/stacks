@@ -22,6 +22,7 @@ jobs:
         run: ./scripts/validate.py
         env:
           PR_BASE: ${{ github.base_ref }}
+          GIT_BASE: ${{ github.event.before }}
 
   deploy:
     needs: [validate, sync]

@@ -479,7 +479,7 @@ environment = """
   KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
   PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
   PERIPHERY_CONNECT_AS = Bookview MicroOS
-  COMPOSE_KOMODO_IMAGE_TAG = 2
+  KOMODO_IMAGE_TAG = 2
 """
 
 ##
@@ -497,7 +497,7 @@ environment = """
   KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
   PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
   PERIPHERY_CONNECT_AS = Container Pi4 1
-  COMPOSE_KOMODO_IMAGE_TAG = 2
+  KOMODO_IMAGE_TAG = 2
 """
 
 ##
@@ -520,7 +520,7 @@ environment = """
   KOMODO_PERIPHERY_PATH = /mnt/user/stacks
   PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
   PERIPHERY_CONNECT_AS = Unraid
-  COMPOSE_KOMODO_IMAGE_TAG = 2
+  KOMODO_IMAGE_TAG = 2
 """
 
 ##

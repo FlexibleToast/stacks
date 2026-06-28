@@ -1,7 +1,7 @@
 services:
   komodo-periphery:
     container_name: komodo-periphery
-    image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG}
+    image: ghcr.io/moghtech/komodo-periphery:${KOMODO_IMAGE_TAG}
     init: true
     restart: unless-stopped
     labels:

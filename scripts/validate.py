@@ -146,6 +146,9 @@ def validate_compose():
 
 # ── Cross-reference check ────────────────────────────────────
 
+TOMl_TYPES_WITH_LINKED_REPO = ("stack", "build", "repo", "resource_sync", "procedure", "builder")
+
+
 def get_branch():
     r = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True, cwd=REPO_ROOT)
     return r.stdout.strip()
@@ -159,69 +162,65 @@ def get_repo_names():
         return []
 
 
-def parse_stacks(content):
-    try:
-        data = tomllib.loads(content)
-        return data.get("stack", [])
-    except Exception:
-        return []
-
-
-def get_base_stacks():
-    r = subprocess.run(
-        ["git", "show", "origin/main:komodo-resources/resources.toml"],
-        capture_output=True, text=True, cwd=REPO_ROOT,
-    )
-    if r.returncode != 0:
-        return None
-    return parse_stacks(r.stdout)
+def get_resources(content):
+    """Return {type/name: linked_repo} for every resource with config.linked_repo."""
+    data = tomllib.loads(content)
+    result = {}
+    for t in TOMl_TYPES_WITH_LINKED_REPO:
+        for entry in data.get(t, []):
+            lr = entry.get("config", {}).get("linked_repo", "")
+            if lr:
+                result[f"{t}/{entry['name']}"] = lr
+    return result
 
 
 def validate_cross_reference():
     print("\n── Cross-reference check ──")
     branch = get_branch()
     repo_names = get_repo_names()
+    git_base = os.environ.get("GIT_BASE", "")
+    pr_base = os.environ.get("PR_BASE", "")
 
     if not RESOURCES_TOML.exists():
         err("resources.toml not found")
         return
 
-    head_stacks = parse_stacks(RESOURCES_TOML.read_text())
-    base_stacks = get_base_stacks()
-
-    if base_stacks is None:
-        ok(f"origin/main not available, skipping diff check (branch: {branch})")
-        return
-
-    head_by_name = {s["name"]: s for s in head_stacks}
-    base_by_name = {s["name"]: s for s in base_stacks}
-
-    modified = set()
-    for name, s in head_by_name.items():
-        head_lr = s.get("config", {}).get("linked_repo", "")
-        base_lr = base_by_name.get(name, {}).get("config", {}).get("linked_repo", "") if name in base_by_name else None
-        if base_lr is None or head_lr != base_lr:
-            modified.add(name)
-
-    if not modified:
-        ok("no modified stack entries")
-        return
-
-    pr_base = os.environ.get("PR_BASE", "")
     expected_repo = pr_base if pr_base else branch
     expected_repo = expected_repo if expected_repo != "main" else "stacks"
     context = f"merge to {pr_base}" if pr_base else f"on branch \"{branch}\""
 
-    all_ok = True
-    for name in sorted(modified):
-        s = head_by_name[name]
-        linked_repo = s.get("config", {}).get("linked_repo", "")
-        if linked_repo != expected_repo:
-            err(f"{name}: linked_repo is \"{linked_repo}\", expected \"{expected_repo}\" {context}")
-            all_ok = False
-    if all_ok:
-        ok(f"{len(modified)} modified entries all match expected linked_repo \"{expected_repo}\" {context}")
+    if pr_base:
+        diff_ref = f"origin/{pr_base}"
+    elif git_base:
+        diff_ref = git_base
     else:
+        ok(f"no base ref available, skipping diff check (branch: {branch})")
+        return
+
+    head_resources = get_resources(RESOURCES_TOML.read_text())
+
+    r = subprocess.run(
+        ["git", "show", f"{diff_ref}:komodo-resources/resources.toml"],
+        capture_output=True, text=True, cwd=REPO_ROOT, timeout=30,
+    )
+    if r.returncode != 0:
+        ok(f"base ref \"{diff_ref}\" not available, skipping diff check")
+        return
+
+    base_resources = get_resources(r.stdout)
+
+    errors = []
+    for key, head_lr in sorted(head_resources.items()):
+        base_lr = base_resources.get(key)
+        if base_lr is None or head_lr != base_lr:
+            if head_lr != expected_repo:
+                errors.append(f"{key}: linked_repo is \"{head_lr}\", expected \"{expected_repo}\" {context}")
+
+    for e in errors:
+        err(e)
+    if not errors:
+        ok(f"all modified resources match expected linked_repo \"{expected_repo}\" {context}")
+    elif repo_names:
         ok(f"valid repos from TOML: {', '.join(repo_names)}")
 
 
