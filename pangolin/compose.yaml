@@ -18,7 +18,7 @@ services:
         - lapi
         - status
       timeout: 5s
-    image: docker.io/crowdsecurity/crowdsec:${CROWDSEC_VERSION:-latest}
+    image: docker.io/crowdsecurity/crowdsec:${CROWDSEC_VERSION}
     labels:
       - traefik.enable=false
     ports:
@@ -41,7 +41,7 @@ services:
     depends_on:
       pangolin:
         condition: service_healthy
-    image: docker.io/fosrl/gerbil:${GERBIL_VERSION:-1.3.0}
+    image: docker.io/fosrl/gerbil:${GERBIL_VERSION}
     ports:
       - 51820:51820/udp
       - 21820:21820/udp
@@ -63,7 +63,7 @@ services:
         - -f
         - http://localhost:3001/api/v1/
       timeout: 10s
-    image: docker.io/fosrl/pangolin:${PANGOLIN_VERSION:-1.13}
+    image: docker.io/fosrl/pangolin:${PANGOLIN_VERSION}
     restart: unless-stopped
     volumes:
       - ${CONTAINER_DATA}/pangolin/config:/app/config
@@ -77,7 +77,7 @@ services:
         condition: service_healthy
       pangolin:
         condition: service_healthy
-    image: docker.io/traefik:${TRAEFIK_VERSION:-v3}
+    image: docker.io/traefik:${TRAEFIK_VERSION}
     network_mode: service:gerbil
     restart: unless-stopped
     environment:

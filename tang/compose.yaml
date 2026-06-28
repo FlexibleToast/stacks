@@ -1,6 +1,6 @@
 services:
   tang:
-    image: git.mcdade.app/containers/tang-server:${tang_version:-latest}
+    image: git.mcdade.app/containers/tang-server:${tang_version}
     container_name: tang
     restart: ${tang_restart:-always}
     ports:

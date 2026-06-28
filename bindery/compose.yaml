@@ -1,7 +1,7 @@
 services:
   bindery:
     container_name: bindery
-    image: ghcr.io/vavallee/bindery:${BINDERY_VERSION:-latest}
+    image: ghcr.io/vavallee/bindery:${BINDERY_VERSION}
     restart: ${BINDERY_RESTART:-unless-stopped}
     user: "99:100"
     environment:

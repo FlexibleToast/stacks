@@ -1,6 +1,6 @@
 services:
   newt:
-    image: fosrl/newt:${NEWT_VERSION:-latest}
+    image: fosrl/newt:${NEWT_VERSION}
     container_name: newt
     restart: ${NEWT_RESTART:-unless-stopped}
     environment:

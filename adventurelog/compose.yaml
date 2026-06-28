@@ -1,7 +1,7 @@
 services:
   adventurelog-postgis:
     container_name: adventurelog-postgis
-    image: postgis/postgis:${POSTGIS_VERSION:-latest}
+    image: postgis/postgis:${POSTGIS_VERSION}
     restart: ${ADVENTURELOG_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -13,7 +13,7 @@ services:
 
   adventurelog-frontend:
     container_name: adventurelog-frontend
-    image: ghcr.io/seanmorley15/adventurelog-frontend:${ADVENTURELOG_FRONTEND_VERSION:-latest}
+    image: ghcr.io/seanmorley15/adventurelog-frontend:${ADVENTURELOG_FRONTEND_VERSION}
     restart: ${ADVENTURELOG_RESTART:-unless-stopped}
     depends_on:
       - adventurelog-postgis
@@ -28,7 +28,7 @@ services:
 
   adventurelog-backend:
     container_name: adventurelog-backend
-    image: ghcr.io/seanmorley15/adventurelog-backend:${ADVENTURELOG_BACKEND_VERSION:-latest}
+    image: ghcr.io/seanmorley15/adventurelog-backend:${ADVENTURELOG_BACKEND_VERSION}
     restart: ${ADVENTURELOG_RESTART:-unless-stopped}
     depends_on:
       - adventurelog-postgis

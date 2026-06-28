@@ -1,6 +1,6 @@
 services:
   watchtower:
-    image: containrrr/watchtower:${WATCHTOWER_VERSION:-latest}
+    image: containrrr/watchtower:${WATCHTOWER_VERSION}
     cpus: ${WATCHTOWER_CPUS:-0.25}
     mem_limit: ${WATCHTOWER_MEM_LIMIT:-64m}
     container_name: watchtower

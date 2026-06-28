@@ -1,7 +1,7 @@
 services:
   immich-postgresql:
     container_name: immich-postgresql
-    image: ghcr.io/immich-app/postgres:16-vectorchord0.3.0-pgvectors0.3.0
+    image: ghcr.io/immich-app/postgres:${IMMICH_POSTGRES_VERSION}
     restart: ${IMMICH_POSTGRES_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -14,7 +14,7 @@ services:
 
   immich:
     container_name: immich
-    image: ghcr.io/imagegenius/immich:${IMMICH_VERSION:-latest}
+    image: ghcr.io/imagegenius/immich:${IMMICH_VERSION}
     restart: ${IMMICH_RESTART:-unless-stopped}
     depends_on:
       - immich-postgresql

@@ -72,9 +72,31 @@ def compose_files(d):
     return [d / "compose.yaml"] + sorted(files)
 
 
+def get_stack_envs():
+    """Build {run_directory: {var: val}} from resources.toml environment blocks."""
+    if not RESOURCES_TOML.exists():
+        return {}
+    data = tomllib.loads(RESOURCES_TOML.read_text())
+    result = {}
+    for s in data.get("stack", []):
+        run_dir = s.get("config", {}).get("run_directory", "")
+        if not run_dir:
+            continue
+        env_block = s.get("config", {}).get("environment", "")
+        vars = {}
+        for line in env_block.splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                vars[k.strip()] = v.strip().strip('"')
+        result[run_dir] = vars
+    return result
+
+
 def validate_compose():
     print("\n── Docker Compose validation ──")
     dirs = [d for d in STACK_DIRS if (d / "compose.yaml").exists()]
+    stack_envs = get_stack_envs()
     passed = 0
     skipped = 0
     for d in sorted(dirs):
@@ -92,6 +114,10 @@ def validate_compose():
                     if line and not line.startswith("#"):
                         k, _, v = line.partition("=")
                         env[k.strip()] = v.strip()
+        # Inject env vars from resources.toml (override .env.test)
+        if d.name in stack_envs:
+            for k, v in stack_envs[d.name].items():
+                env[k] = v
         try:
             subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=env, check=True)
             ok(f"{d.name}/compose.yaml ({len(files)} file{'s' if len(files) > 1 else ''})")

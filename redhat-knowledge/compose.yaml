@@ -1,6 +1,6 @@
 services:
   redhat-knowledge:
-    image: quay.mcdade.app/homeserver/redhat-knowledge:latest
+    image: quay.mcdade.app/homeserver/redhat-knowledge:${REDHAT_KNOWLEDGE_VERSION}
     container_name: redhat-knowledge
     restart: ${SVC_RESTART:-unless-stopped}
     environment:

@@ -1,7 +1,7 @@
 services:
   open-webui:
     container_name: open-webui
-    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION:-latest}
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     restart: ${OPENWEBUI_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -15,7 +15,7 @@ services:
 
   searxng-ai:
     container_name: searxng-ai
-    image: searxng/searxng:${SEARXNG_VERSION:-latest}
+    image: searxng/searxng:${SEARXNG_VERSION}
     restart: ${SEARXNG_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -30,7 +30,7 @@ services:
 
   tika:
     container_name: tika
-    image: docker.io/apache/tika:${TIKA_VERSION:-latest}
+    image: docker.io/apache/tika:${TIKA_VERSION}
     restart: ${TIKA_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}

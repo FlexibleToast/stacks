@@ -1,6 +1,6 @@
 services:
   searxng-mcp:
-    image: ghcr.io/whw23/searxng-http-mcp:${SEARXNG_MCP_VERSION:-latest}
+    image: ghcr.io/whw23/searxng-http-mcp:${SEARXNG_MCP_VERSION}
     container_name: searxng-mcp
     restart: ${SVC_RESTART:-unless-stopped}
     environment:

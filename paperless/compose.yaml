@@ -1,7 +1,7 @@
 services:
   # paperless-ngx main service
   paperless:
-    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_VERSION:-latest}
+    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_VERSION}
     container_name: paperless-ngx
     restart: unless-stopped
     env_file: 
@@ -21,7 +21,7 @@ services:
   
   # postgres database for paperless-ngx
   postgres:
-    image: postgres:${POSTGRES_VERSION:-18}
+    image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     container_name: paperless-postgres
     env_file: 
@@ -31,7 +31,7 @@ services:
   
   # redis database for paperless-ngx
   redis:
-    image: docker.io/library/redis:${REDIS_VERSION:-8}
+    image: docker.io/library/redis:${REDIS_VERSION}
     container_name: paperless-redis
     restart: unless-stopped
     env_file: 
@@ -41,7 +41,7 @@ services:
   
   # gotenberg service that paperless uses for document conversion
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:${GOTENBERG_VERSION:-8.25}
+    image: docker.io/gotenberg/gotenberg:${GOTENBERG_VERSION}
     container_name: paperless-gotenberg
     env_file: 
       - ./gotenberg/.env
@@ -53,14 +53,14 @@ services:
   
   # tika service that paperless uses for document text extraction
   tika:
-    image: docker.io/apache/tika:${TIKA_VERSION:-latest}
+    image: docker.io/apache/tika:${TIKA_VERSION}
     container_name: paperless-tika
     restart: unless-stopped
     env_file: ./tika/.env
 
   # paperless-ai service
   paperless-ai:
-    image: clusterzx/paperless-ai:${PAPERLESS_AI_VERSION:-latest}
+    image: clusterzx/paperless-ai:${PAPERLESS_AI_VERSION}
     container_name: paperless-ai
     restart: unless-stopped
     depends_on:
@@ -74,7 +74,7 @@ services:
 
   # paperless-gpt service
   paperless-gpt:
-    image: icereed/paperless-gpt:${PAPERLESS_GPT_VERSION:-latest}
+    image: icereed/paperless-gpt:${PAPERLESS_GPT_VERSION}
     container_name: paperless-gpt
     restart: unless-stopped
     depends_on:

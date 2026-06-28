@@ -1,5 +1,5 @@
 services:
   playwright-mcp:
-    image: quay.mcdade.app/homeserver/playwright-mcp:latest
+    image: quay.mcdade.app/homeserver/playwright-mcp:${PLAYWRIGHT_MCP_VERSION}
     container_name: playwright-mcp
     restart: ${SVC_RESTART:-unless-stopped}

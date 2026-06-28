@@ -1,0 +1,28 @@
+name: Check versions
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Check for container version updates
+        id: check
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        run: ./scripts/check_versions.py

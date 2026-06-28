@@ -1,6 +1,6 @@
 services:
   tunnel:
-    image: cloudflare/cloudflared:${tunnel_version:-latest}
+    image: cloudflare/cloudflared:${tunnel_version}
     cpus: ${tunnel_cpus:-0.25}
     mem_limit: ${tunnel_mem_limit:-256m}
     container_name: tunnel

@@ -1,7 +1,7 @@
 services:
   borgserver:
     container_name: ${BORGSERVER_NAME:-borgserver}
-    image: nold360/borgserver:${BORGSERVER_VERSION:-latest}
+    image: nold360/borgserver:${BORGSERVER_VERSION}
     restart: ${BORGSERVER_RESTART:-unless-stopped}
     environment:
       TZ: ${BORGSERVER_TZ:-America/Chicago}

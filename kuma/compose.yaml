@@ -1,6 +1,6 @@
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:${kuma_version:-latest}
+    image: louislam/uptime-kuma:${kuma_version}
     cpus: ${kuma_cpus:-1}
     mem_limit: ${kuma_mem_limit:-512m}
     container_name: uptime-kuma

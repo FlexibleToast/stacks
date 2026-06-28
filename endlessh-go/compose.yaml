@@ -1,7 +1,7 @@
 services:
   endlessh-go:
     container_name: endlessh-go
-    image: shizunge/endlessh-go:${ENDLESSH_IMAGE_TAG:-latest}
+    image: shizunge/endlessh-go:${ENDLESSH_IMAGE_TAG}
     restart: ${ENDLESSH_RESTART:-unless-stopped}
     ports:
       - "${ENDLESSH_SSH_PORT:-2222}:2222/tcp"

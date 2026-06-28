@@ -1,7 +1,7 @@
 services:
   grimmory:
     container_name: grimmory
-    image: grimmory/grimmory:${GRIMMORY_VERSION:-latest}
+    image: grimmory/grimmory:${GRIMMORY_VERSION}
     restart: ${GRIMMORY_RESTART:-unless-stopped}
     depends_on:
       mariadb:
@@ -24,7 +24,7 @@ services:
 
   mariadb:
     container_name: grimmory-mariadb
-    image: lscr.io/linuxserver/mariadb:${GRIMMORY_MARIADB_VERSION:-latest}
+    image: lscr.io/linuxserver/mariadb:${GRIMMORY_MARIADB_VERSION}
     restart: ${GRIMMORY_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}

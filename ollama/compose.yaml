@@ -1,7 +1,7 @@
 services:
   ollama:
     container_name: ollama
-    image: ollama/ollama:${OLLAMA_VERSION:-latest}
+    image: ollama/ollama:${OLLAMA_VERSION}
     restart: ${OLLAMA_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}

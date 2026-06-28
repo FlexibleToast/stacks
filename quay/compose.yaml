@@ -1,7 +1,7 @@
 services:
   quay-clair-postgresql:
     container_name: quay-clair-postgresql
-    image: postgres:${POSTGRES_VERSION:-alpine}
+    image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -13,7 +13,7 @@ services:
 
   quay-clair:
     container_name: quay-clair
-    image: quay.io/projectquay/clair:${CLAIR_VERSION:-nightly}
+    image: quay.io/projectquay/clair:${CLAIR_VERSION}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -27,7 +27,7 @@ services:
       - quay-clair-postgresql
 
   quay-mirror:
-    image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
+    image: quay.io/projectquay/quay:${QUAY_VERSION}
     deploy:
       replicas: ${QUAY_MIRROR_REPLICAS:-1}
     restart: unless-stopped
@@ -44,7 +44,7 @@ services:
 
   quay-postgresql:
     container_name: quay-postgresql
-    image: postgres:${POSTGRES_VERSION:-alpine}
+    image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -56,7 +56,7 @@ services:
 
   quay-redis:
     container_name: quay-redis
-    image: redis:${REDIS_VERSION:-latest}
+    image: redis:${REDIS_VERSION}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-America/Chicago}
@@ -70,7 +70,7 @@ services:
 
   quay:
     container_name: quay
-    image: quay.io/projectquay/quay:${QUAY_VERSION:-3.15.2}
+    image: quay.io/projectquay/quay:${QUAY_VERSION}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-America/Chicago}

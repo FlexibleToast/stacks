@@ -1,7 +1,7 @@
 services:
   on-speaches:
     container_name: on-speaches
-    image: ghcr.io/speaches-ai/speaches:${SPEACHES_VERSION:-latest-cuda}
+    image: ghcr.io/speaches-ai/speaches:${SPEACHES_VERSION}
     restart: unless-stopped
     volumes:
       - ${SPEACHES_CACHE_DIR:-/mnt/user/appdata/open-notebook/speaches/cache}:/home/ubuntu/.cache/huggingface/hub:rw
@@ -10,7 +10,7 @@ services:
 
   on-surrealdb:
     container_name: on-surrealdb
-    image: surrealdb/surrealdb:${SURREALDB_VERSION:-v2}
+    image: surrealdb/surrealdb:${SURREALDB_VERSION}
     user: "99:100"
     restart: unless-stopped
     volumes:
@@ -27,7 +27,7 @@ services:
 
   on-open-notebook:
     container_name: on-open-notebook
-    image: lfnovo/open_notebook:${NOTEBOOK_VERSION:-v1-latest}
+    image: lfnovo/open_notebook:${NOTEBOOK_VERSION}
     restart: unless-stopped
     networks:
       - ai

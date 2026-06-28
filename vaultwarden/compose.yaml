@@ -1,7 +1,7 @@
 services:
   vaultwarden:
     container_name: vaultwarden
-    image: vaultwarden/server:${SVC_VERSION:-alpine}
+    image: vaultwarden/server:${SVC_VERSION}
     restart: ${SVC_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}
