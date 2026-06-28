@@ -36,5 +36,18 @@ jobs:
         run: ./scripts/trigger.py
         env:
           GIT_BASE: ${{ github.event.before }}
+          KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
           KOMODO_API_KEY: ${{ secrets.KOMODO_API_KEY }}
           KOMODO_API_SECRET: ${{ secrets.KOMODO_API_SECRET }}
+
+  sync:
+    needs: validate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Komodo resources
+        env:
+          KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
+          KOMODO_SYNC_ID: ${{ vars.KOMODO_SYNC_ID }}
+        run: |
+          curl -s -X POST "${KOMODO_API_BASE}/listener/github/sync/${KOMODO_SYNC_ID}/sync"
