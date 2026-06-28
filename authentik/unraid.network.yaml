@@ -1,0 +1,19 @@
+services:
+  authentik-postgresql:
+    networks:
+      - backend
+  authentik-redis:
+    networks:
+      - backend
+  authentik:
+    networks:
+      - frontend
+      - backend
+  authentik-worker:
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:

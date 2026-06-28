@@ -1,0 +1,90 @@
+services:
+  authentik-postgresql:
+    container_name: authentik-postgresql
+    image: postgres:${POSTGRES_VERSION}
+    restart: ${RESTART:-unless-stopped}
+    pids_limit: 2048
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: authentik
+      POSTGRES_DB: authentik
+    volumes:
+      - ${AUTHENTIK_POSTGRESQL_DATA}/authentik-postgresql:/var/lib/postgresql/data:rw
+
+  authentik-redis:
+    container_name: authentik-redis
+    image: redis:${REDIS_VERSION}
+    restart: ${RESTART:-unless-stopped}
+    pids_limit: 2048
+    environment:
+      TZ: ${TZ:-America/Chicago}
+    volumes:
+      - ${CONTAINER_DATA}/authentik-redis:/data:rw
+    command:
+      - --save
+      - "60"
+      - "1"
+      - --loglevel
+      - warning
+
+  authentik:
+    container_name: authentik
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_VERSION}
+    restart: ${RESTART:-unless-stopped}
+    pids_limit: 2048
+    privileged: true
+    depends_on:
+      - authentik-postgresql
+      - authentik-redis
+    ports:
+      - "${AUTHENTIK_PORT:-7000}:9000"
+      - "${AUTHENTIK_SSL_PORT:-7443}:9443"
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_EMAIL__HOST: smtp.gmail.com
+      AUTHENTIK_EMAIL__PORT: "587"
+      AUTHENTIK_EMAIL__USERNAME: ${AUTHENTIK_EMAIL__USERNAME}
+      AUTHENTIK_EMAIL__PASSWORD: ${AUTHENTIK_EMAIL__PASSWORD}
+      AUTHENTIK_EMAIL__USE_TLS: "true"
+      AUTHENTIK_EMAIL__TIMEOUT: "10"
+      AUTHENTIK_EMAIL__FROM: authentik@mcdade.app
+    volumes:
+      - ${CONTAINER_DATA}/authentik/templates:/templates:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${CONTAINER_DATA}/authentik/media:/media:rw
+    command:
+      - server
+
+  authentik-worker:
+    container_name: authentik-worker
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_VERSION}
+    restart: ${RESTART:-unless-stopped}
+    pids_limit: 2048
+    user: root
+    depends_on:
+      - authentik-postgresql
+      - authentik-redis
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+    volumes:
+      - ${CONTAINER_DATA}/authentik/media:/media:rw
+      - ${CONTAINER_DATA}/authentik/certs:/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - ${CONTAINER_DATA}/authentik/templates:/templates:rw
+    command:
+      - worker

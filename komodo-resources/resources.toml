@@ -45,6 +45,29 @@ send_cpu_alerts = false
 ##
 
 [[stack]]
+name = "authentik-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "authentik"
+file_paths = ["compose.yaml", "unraid.network.yaml"]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+AUTHENTIK_POSTGRESQL_DATA = /mnt/nvme/appdata
+POSTGRES_VERSION = 17-alpine
+REDIS_VERSION = 8-alpine
+AUTHENTIK_VERSION = 2025.8
+AUTHENTIK_EMAIL__USERNAME = [[EMAIL]]
+AUTHENTIK_EMAIL__PASSWORD = [[EMAIL_PASS]]
+AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
+AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRES_PASSWORD]]
+POSTGRES_PASSWORD = [[AUTHENTIK_POSTGRES_PASSWORD]]
+"""
+
+##
+
+[[stack]]
 name = "adguard-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
