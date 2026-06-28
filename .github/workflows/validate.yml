@@ -20,6 +20,8 @@ jobs:
 
       - name: Run validation
         run: ./scripts/validate.py
+        env:
+          PR_BASE: ${{ github.base_ref }}
 
   trigger:
     needs: validate

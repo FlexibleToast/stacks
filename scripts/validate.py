@@ -181,17 +181,20 @@ def validate_cross_reference():
         ok("no modified stack entries")
         return
 
-    expected_repo = branch if branch != "main" else "stacks"
+    pr_base = os.environ.get("PR_BASE", "")
+    expected_repo = pr_base if pr_base else branch
+    expected_repo = expected_repo if expected_repo != "main" else "stacks"
+    context = f"merge to {pr_base}" if pr_base else f"on branch \"{branch}\""
 
     all_ok = True
     for name in sorted(modified):
         s = head_by_name[name]
         linked_repo = s.get("config", {}).get("linked_repo", "")
         if linked_repo != expected_repo:
-            err(f"{name}: linked_repo is \"{linked_repo}\", expected \"{expected_repo}\" on branch \"{branch}\"")
+            err(f"{name}: linked_repo is \"{linked_repo}\", expected \"{expected_repo}\" {context}")
             all_ok = False
     if all_ok:
-        ok(f"{len(modified)} modified entries all match expected linked_repo \"{expected_repo}\"")
+        ok(f"{len(modified)} modified entries all match expected linked_repo \"{expected_repo}\" {context}")
     else:
         ok(f"valid repos from TOML: {', '.join(repo_names)}")
 
