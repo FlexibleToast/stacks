@@ -19,6 +19,7 @@ services:
     environment:
       - DB_URL=postgresql://mcphub:${MCPHUB_POSTGRES_PASSWORD}@mcphub-postgres:5432/mcphub
       - BETTER_AUTH_ENABLED=true
+      - BETTER_AUTH_SECRET=${MCPHUB_BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${MCPHUB_BETTER_AUTH_URL}
       - BETTER_AUTH_OIDC_ENABLED=true
       - BETTER_AUTH_OIDC_DISCOVERY_URL=${MCPHUB_OIDC_DISCOVERY_URL}

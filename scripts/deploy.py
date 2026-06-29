@@ -157,7 +157,8 @@ def main():
     for d in sorted(changed):
         if d in mapping:
             for stack_name in mapping[d]:
-                triggered.append(stack_name)
+                if stack_name not in triggered:
+                    triggered.append(stack_name)
         elif d == "komodo-resources":
             toml_affected = get_stacks_changed_in_toml(GIT_BASE)
             if toml_affected:
