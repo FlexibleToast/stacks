@@ -51,4 +51,4 @@ jobs:
           KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
           KOMODO_SYNC_ID: ${{ vars.KOMODO_SYNC_ID }}
         run: |
-          curl -s -X POST "${KOMODO_API_BASE}/listener/github/sync/${KOMODO_SYNC_ID}/sync"
+          curl -s -f -X POST "${KOMODO_API_BASE}/listener/github/sync/${KOMODO_SYNC_ID}/sync"
