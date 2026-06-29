@@ -543,6 +543,27 @@ environment = """
 ##
 
 [[stack]]
+name = "mcphub"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "mcphub"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+CONTAINER_DATA = /mnt/user/appdata
+TZ = America/Chicago
+MCPHUB_VERSION = latest
+MCPHUB_PASSWORD = [[MCPHUB_PASSWORD]]
+"""
+
+##
+
+[[stack]]
 name = "newt-brookview"
 tags = ["brookview", "sync"]
 [stack.config]

@@ -1,0 +1,9 @@
+services:
+  mcphub:
+    image: samanhappy/mcphub:${MCPHUB_VERSION}
+    container_name: mcphub
+    restart: ${SVC_RESTART:-unless-stopped}
+    environment:
+      - ADMIN_PASSWORD=${MCPHUB_PASSWORD}
+    volumes:
+      - ${CONTAINER_DATA}/mcphub:/app/data
