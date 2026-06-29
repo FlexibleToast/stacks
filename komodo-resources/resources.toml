@@ -543,7 +543,7 @@ environment = """
 ##
 
 [[stack]]
-name = "mcphub"
+name = "mcphub-unraid"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
