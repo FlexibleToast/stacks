@@ -24,6 +24,23 @@ jobs:
           PR_BASE: ${{ github.base_ref }}
           GIT_BASE: ${{ github.event.before }}
 
+  sync:
+    needs: validate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Komodo resources
+        env:
+          KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
+          KOMODO_API_KEY: ${{ secrets.KOMODO_API_KEY }}
+          KOMODO_API_SECRET: ${{ secrets.KOMODO_API_SECRET }}
+        run: |
+          curl -s -f -X POST "${KOMODO_API_BASE}/execute/RunSync" \
+            -H "Content-Type: application/json" \
+            -H "X-Api-Key: ${KOMODO_API_KEY}" \
+            -H "X-Api-Secret: ${KOMODO_API_SECRET}" \
+            -d '{"sync": "Github"}'
+
   deploy:
     needs: [validate, sync]
     if: github.event_name == 'push'
@@ -40,15 +57,3 @@ jobs:
           KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
           KOMODO_API_KEY: ${{ secrets.KOMODO_API_KEY }}
           KOMODO_API_SECRET: ${{ secrets.KOMODO_API_SECRET }}
-
-  sync:
-    needs: validate
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sync Komodo resources
-        env:
-          KOMODO_API_BASE: ${{ vars.KOMODO_API_BASE }}
-          KOMODO_SYNC_ID: ${{ vars.KOMODO_SYNC_ID }}
-        run: |
-          curl -s -f -X POST "${KOMODO_API_BASE}/listener/github/sync/${KOMODO_SYNC_ID}/sync"

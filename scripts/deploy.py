@@ -11,7 +11,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RESOURCES_TOML = REPO_ROOT / "komodo-resources" / "resources.toml"
-API_BASE = os.environ.get("KOMODO_API_BASE", "https://komodo.mcdade.app")
+API_BASE = os.environ.get("KOMODO_API_BASE", "")
 API_KEY = os.environ.get("KOMODO_API_KEY", "")
 API_SECRET = os.environ.get("KOMODO_API_SECRET", "")
 GIT_BASE = os.environ.get("GIT_BASE", "HEAD~1")
