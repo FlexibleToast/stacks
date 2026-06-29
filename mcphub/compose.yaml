@@ -8,9 +8,7 @@ services:
       POSTGRES_USER: mcphub
       POSTGRES_PASSWORD: ${MCPHUB_POSTGRES_PASSWORD}
     volumes:
-      - ${CONTAINER_DATA}/mcphub/postgres:/var/lib/postgresql/data
-    networks:
-      - backend
+      - ${CONTAINER_DATA}/mcphub/postgres:/var/lib/postgresql
 
   mcphub:
     image: samanhappy/mcphub:${MCPHUB_VERSION}
@@ -21,13 +19,10 @@ services:
     environment:
       - DB_URL=postgresql://mcphub:${MCPHUB_POSTGRES_PASSWORD}@mcphub-postgres:5432/mcphub
       - BETTER_AUTH_ENABLED=true
-      - BETTER_AUTH_URL=https://mcphub.mcdade.app
+      - BETTER_AUTH_URL=${MCPHUB_BETTER_AUTH_URL}
       - BETTER_AUTH_OIDC_ENABLED=true
-      - BETTER_AUTH_OIDC_DISCOVERY_URL=https://auth.mcdade.app/application/o/mcphub/.well-known/openid-configuration
+      - BETTER_AUTH_OIDC_DISCOVERY_URL=${MCPHUB_OIDC_DISCOVERY_URL}
       - OIDC_CLIENT_ID=${MCPHUB_OIDC_CLIENT_ID}
       - OIDC_CLIENT_SECRET=${MCPHUB_OIDC_CLIENT_SECRET}
     volumes:
       - ${CONTAINER_DATA}/mcphub:/app/data
-    networks:
-      - frontend
-      - backend
