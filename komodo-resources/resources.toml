@@ -45,29 +45,6 @@ send_cpu_alerts = false
 ##
 
 [[stack]]
-name = "authentik-unraid"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-linked_repo = "kerbol-next"
-run_directory = "authentik"
-file_paths = ["compose.yaml", "unraid.network.yaml"]
-environment = """
-  CONTAINER_DATA = /mnt/user/appdata
-  AUTHENTIK_POSTGRESQL_DATA = /mnt/nvme/appdata
-  POSTGRES_VERSION = 17-alpine
-  REDIS_VERSION = 8-alpine
-  AUTHENTIK_VERSION = 2026.5
-  AUTHENTIK_EMAIL__USERNAME = [[EMAIL]]
-  AUTHENTIK_EMAIL__PASSWORD = [[EMAIL_PASS]]
-  AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
-  AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRES_PASSWORD]]
-  POSTGRES_PASSWORD = [[AUTHENTIK_POSTGRES_PASSWORD]]
-"""
-
-##
-
-[[stack]]
 name = "adguard-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
@@ -137,6 +114,32 @@ environment = """
   POSTGIS_VERSION = latest
   ADVENTURELOG_FRONTEND_VERSION = latest
   ADVENTURELOG_BACKEND_VERSION = latest
+"""
+
+##
+
+[[stack]]
+name = "authentik-unraid"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "authentik"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  AUTHENTIK_POSTGRESQL_DATA = /mnt/nvme/appdata
+  POSTGRES_VERSION = 17-alpine
+  REDIS_VERSION = 8-alpine
+  AUTHENTIK_VERSION = 2026.5
+  AUTHENTIK_EMAIL__USERNAME = [[EMAIL]]
+  AUTHENTIK_EMAIL__PASSWORD = [[EMAIL_PASS]]
+  AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
+  AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRES_PASSWORD]]
+  POSTGRES_PASSWORD = [[AUTHENTIK_POSTGRES_PASSWORD]]
 """
 
 ##
@@ -295,8 +298,8 @@ environment = """
   IMMICH_PHOTOS_DIR = /mnt/user/immich-images
   POSTGRES_PASSWORD = [[IMMICH_POSTGRES_PASSWORD]]
   REDIS_PASSWORD = ""
-  IMMICH_POSTGRES_VERSION = 16-vectorchord0.3.0-pgvectors0.3.0
-  IMMICH_VERSION = latest
+  IMMICH_POSTGRES_VERSION = 16-vectorchord0.4.2
+  IMMICH_VERSION = 3
 """
 
 ##
@@ -1045,9 +1048,6 @@ image_registry = [
 ]
 labels = """
 quay.expires-after=4w
-"""
-environment = """
-  REDHAT_KNOWLEDGE_VERSION = latest
 """
 
 ##
