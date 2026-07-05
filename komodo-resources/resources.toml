@@ -46,6 +46,7 @@ send_cpu_alerts = false
 
 [[stack]]
 name = "adguard-brookview"
+description = "DNS-level ad blocker and content filter. Docs: https://adguard.com"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -68,6 +69,7 @@ environment = """
 
 [[stack]]
 name = "adguard-container-pi"
+description = "DNS-level ad blocker and content filter. Docs: https://adguard.com"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
@@ -93,6 +95,7 @@ environment = """
 
 [[stack]]
 name = "adventurelog"
+description = "Open-source adventure logging platform with geospatial features. Docs: https://adventurelog.app"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -120,6 +123,7 @@ environment = """
 
 [[stack]]
 name = "authentik-unraid"
+description = "OIDC/OAuth2 identity provider for authentication across all services. Docs: https://goauthentik.io"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -146,6 +150,7 @@ environment = """
 
 [[stack]]
 name = "bindery-unraid"
+description = "Automated ebook and audiobook download manager for Usenet and torrents. Modern replacement for Readarr. Github: https://github.com/vavallee/bindery"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -167,6 +172,7 @@ environment = """
 
 [[stack]]
 name = "borgmatic-container-pi"
+description = "Automated backup client using BorgBackup for data protection. Docs: https://torsion.org/borgmatic"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
@@ -183,6 +189,7 @@ environment = """
 
 [[stack]]
 name = "borgmatic-oracle"
+description = "Automated backup client using BorgBackup for data protection. Docs: https://torsion.org/borgmatic"
 tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
@@ -199,6 +206,7 @@ environment = """
 
 [[stack]]
 name = "borgserver-nas-ii"
+description = "BorgBackup server for centralized backup storage. Docs: https://www.borgbackup.org"
 tags = ["nas-ii", "backup", "sync"]
 [stack.config]
 server = "NAS II"
@@ -219,6 +227,7 @@ environment = """
 
 [[stack]]
 name = "ddns-updater-brookview"
+description = "Dynamic DNS client supporting 70+ providers for automatic domain updates. Github: https://github.com/qdm12/ddns-updater"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -234,6 +243,7 @@ environment = """
 
 [[stack]]
 name = "ddns-updater-unraid"
+description = "Dynamic DNS client supporting 70+ providers for automatic domain updates. Github: https://github.com/qdm12/ddns-updater"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -249,6 +259,7 @@ environment = """
 
 [[stack]]
 name = "endlessh-go-brookview"
+description = "SSH tarpit that slowly responds to brute force attempts, binding attackers indefinitely. Github: https://github.com/shizunge/endlessh-go"
 tags = ["brookview", "unraid", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -262,6 +273,7 @@ environment = """
 
 [[stack]]
 name = "grimmory-unraid"
+description = "Self-hosted ebook library manager with built-in reader, smart shelves, metadata lookup, device sync, and multi-user support. Docs: https://grimmory.org. Github: https://github.com/grimmory-tools/grimmory"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -307,6 +319,7 @@ environment = """
 
 [[stack]]
 name = "komodo-core"
+description = "Self-hosted infrastructure automation platform with CI/CD, builds, deployments, and server monitoring. Docs: https://komo.do. Github: https://github.com/mbecker20/komodo"
 tags = ["oracle", "unraid", "sync"]
 [stack.config]
 server = "Docker Oracle"
@@ -472,6 +485,7 @@ environment = """
 
 [[stack]]
 name = "komodo-periphery-brookview"
+description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -490,6 +504,7 @@ environment = """
 
 [[stack]]
 name = "komodo-periphery-container-pi"
+description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
@@ -508,6 +523,7 @@ environment = """
 
 [[stack]]
 name = "komodo-periphery-unraid"
+description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -531,6 +547,7 @@ environment = """
 
 [[stack]]
 name = "kuma"
+description = "Uptime monitoring dashboard for tracking service health across all infrastructure. Docs: https://uptime.kuma.pet"
 tags = ["oracle", "unraid", "sync"]
 [stack.config]
 server = "Docker Oracle"
@@ -548,6 +565,7 @@ environment = """
 
 [[stack]]
 name = "mcphub-unraid"
+description = "MCP hub providing a unified endpoint for MCP tools with OIDC auth and PostgreSQL. Github: https://github.com/0xPlayground/mcphub"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -575,6 +593,7 @@ MCPHUB_OIDC_CLIENT_SECRET = [[MCPHUB_OIDC_CLIENT_SECRET]]
 
 [[stack]]
 name = "newt-brookview"
+description = "Pangolin tunnel agent for secure reverse proxy connectivity. Docs: https://github.com/fosrl/newt"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -595,6 +614,7 @@ environment = """
 
 [[stack]]
 name = "newt-unraid"
+description = "Pangolin tunnel agent for secure reverse proxy connectivity. Docs: https://github.com/fosrl/newt"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -617,6 +637,7 @@ environment = """
 
 [[stack]]
 name = "ollama-unraid"
+description = "Local LLM hosting with OpenWebUI for interacting with AI models. Docs: https://ollama.com. Github: https://github.com/open-webui/open-webui"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -643,7 +664,7 @@ environment = """
 
 [[stack]]
 name = "open-notebook-unraid"
-description = "Current work in progress"
+description = "AI-powered personal knowledge base with speech-to-text, SurrealDB, and LLM integration. Github: https://github.com/OpenNotebook"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -666,6 +687,7 @@ environment = """
 
 [[stack]]
 name = "pangolin"
+description = "Reverse proxy and web interface for managing Traefik routes, CrowdSec protection, and WireGuard tunnels. Docs: https://docs.fosrl.io. Github: https://github.com/fosrl/pangolin"
 tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
@@ -691,6 +713,7 @@ environment = """
 
 [[stack]]
 name = "paperless-unraid"
+description = "Document management system that converts scanned documents into searchable archives. Docs: https://docs.paperless-ngx.com. Github: https://github.com/paperless-ngx/paperless-ngx"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -733,6 +756,7 @@ environment = """
 
 [[stack]]
 name = "playwright-mcp-unraid"
+description = "MCP server providing browser automation via Playwright for AI agents. Github: https://github.com/nicholasgriffintn/playwright-mcp"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -753,6 +777,7 @@ environment = """
 
 [[stack]]
 name = "quay"
+description = "Self-hosted Docker registry with built-in security scanning. Docs: https://quay.io. Github: https://github.com/quay/quay"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -780,6 +805,7 @@ environment = """
 
 [[stack]]
 name = "redhat-knowledge"
+description = "MCP server providing access to Red Hat's knowledge base for AI agents. Github: https://github.com/nicholasgriffintn/mcp-redhat-knowledge"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -801,6 +827,7 @@ environment = """
 
 [[stack]]
 name = "searxng-mcp-unraid"
+description = "MCP server providing web search via SearXNG for AI agents. Github: https://github.com/whw23/searxng-http-mcp"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -823,6 +850,7 @@ environment = """
 
 [[stack]]
 name = "tang-container-pi"
+description = "Disk encryption key server for automatic LUKS volume unlocking on reboot. Docs: https://github.com/latchset/tang"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
@@ -844,6 +872,7 @@ environment = """
 
 [[stack]]
 name = "tang-oracle"
+description = "Disk encryption key server for automatic LUKS volume unlocking on reboot. Docs: https://github.com/latchset/tang"
 tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
@@ -860,6 +889,7 @@ environment = """
 
 [[stack]]
 name = "tang-unraid"
+description = "Disk encryption key server for automatic LUKS volume unlocking on reboot. Docs: https://github.com/latchset/tang"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -876,6 +906,7 @@ environment = """
 
 [[stack]]
 name = "tdarr-unraid"
+description = "Media file transcoder for automating video optimization and format conversion. Docs: https://docs.tdarr.io"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -896,6 +927,7 @@ environment = """
 
 [[stack]]
 name = "tunnel-brookview"
+description = "Cloudflare Tunnel for secure remote access without opening firewall ports. Docs: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -911,6 +943,7 @@ environment = """
 
 [[stack]]
 name = "tunnel-oracle"
+description = "Cloudflare Tunnel for secure remote access without opening firewall ports. Docs: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks"
 tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
@@ -927,6 +960,7 @@ environment = """
 
 [[stack]]
 name = "vaultwarden-brookview"
+description = "Self-hosted Bitwarden-compatible password manager. Docs: https://github.com/dani-garcia/vaultwarden"
 tags = ["brookview", "sync"]
 [stack.config]
 server = "Bookview MicroOS"
@@ -963,6 +997,7 @@ environment = """
 
 [[stack]]
 name = "watchtower-container-pi"
+description = "Automated Docker container update manager that pulls new images and recreates containers. Docs: https://containrrr.dev/watchtower"
 tags = ["container-pi4-1", "sync"]
 [stack.config]
 server = "Container Pi4 1"
@@ -981,6 +1016,7 @@ environment = """
 
 [[stack]]
 name = "watchtower-oracle"
+description = "Automated Docker container update manager that pulls new images and recreates containers. Docs: https://containrrr.dev/watchtower"
 tags = ["oracle", "sync"]
 [stack.config]
 server = "Docker Oracle"
