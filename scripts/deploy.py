@@ -2,7 +2,6 @@
 """Detect changed stacks vs previous commit and trigger Komodo DeployStack API."""
 
 import os
-import re
 import subprocess
 import sys
 import tomllib
@@ -55,60 +54,38 @@ def get_stack_mapping():
     return mapping
 
 
-def _build_toml_sections():
-    """Return list of (name, start_line, end_line) for each [[stack]] entry."""
-    lines = RESOURCES_TOML.read_text().splitlines()
-    sections = []
-    current = None
-    for i, line in enumerate(lines, 1):
-        m = re.match(r"^\[{2}(\w+)\]", line)
-        if m:
-            if current is not None:
-                current["end"] = i - 1
-                sections.append(current)
-                current = None
-            if m.group(1) == "stack":
-                current = {"start": i, "name": None}
-        elif current is not None:
-            m = re.match(r'^name\s*=\s*"(.+)"', line)
-            if m:
-                current["name"] = m.group(1)
-    if current is not None:
-        current["end"] = len(lines)
-        sections.append(current)
-    return [(s["name"], s["start"], s["end"]) for s in sections if s["name"]]
-
-
 def get_stacks_changed_in_toml(base):
-    """Return stack names whose [[stack]] entry changed in resources.toml."""
+    """Return stack names whose environment block changed in resources.toml."""
     if not base or base == NULL_SHA:
         return []
     r = subprocess.run(
-        ["git", "diff", "--unified=0", f"{base}...HEAD", "--", str(RESOURCES_TOML)],
-        capture_output=True, text=True, cwd=REPO_ROOT,
+        ["git", "show", f"{base}:komodo-resources/resources.toml"],
+        capture_output=True, text=True, cwd=REPO_ROOT, timeout=30,
     )
-    if r.returncode != 0 or not r.stdout.strip():
+    if r.returncode != 0:
         return []
 
-    changed_lines = set()
-    for line in r.stdout.splitlines():
-        m = re.match(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", line)
-        if m:
-            start = int(m.group(1))
-            count = int(m.group(2)) if m.group(2) else 1
-            if count > 0:
-                changed_lines.update(range(start, start + count))
-
-    if not changed_lines:
+    try:
+        old_data = tomllib.loads(r.stdout)
+        new_data = tomllib.loads(RESOURCES_TOML.read_text())
+    except Exception:
         return []
 
-    sections = _build_toml_sections()
-    affected = set()
-    for ln in changed_lines:
-        for name, sec_start, sec_end in sections:
-            if sec_start <= ln <= sec_end:
-                affected.add(name)
-                break
+    old_envs = {}
+    for s in old_data.get("stack", []):
+        env = s.get("config", {}).get("environment", "")
+        old_envs[s["name"]] = env
+
+    new_envs = {}
+    for s in new_data.get("stack", []):
+        env = s.get("config", {}).get("environment", "")
+        new_envs[s["name"]] = env
+
+    affected = []
+    for name in new_envs:
+        if old_envs.get(name) != new_envs[name]:
+            affected.append(name)
+
     return sorted(affected)
 
 
