@@ -601,7 +601,8 @@ linked_repo = "kerbol-next"
 run_directory = "newt"
 file_paths = [
   "compose.yaml",
-  "frontend.network.compose.yaml"
+  "frontend.network.compose.yaml",
+  "brookview.network.compose.yaml"
 ]
 environment = """
   PANGOLIN_ENDPOINT = https://pangolin.mcdade.app

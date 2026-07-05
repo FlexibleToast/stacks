@@ -1,0 +1,5 @@
+services:
+  newt:
+    networks:
+      frontend:
+        ipv4_address: 172.25.0.2
