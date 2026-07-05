@@ -285,6 +285,7 @@ environment = """
 
 [[stack]]
 name = "immich"
+description = "Self-hosted Google Photos alternative with automatic mobile backup (iOS/Android), AI-powered face recognition + object detection + CLIP search, multi-user support, shared albums, map view, and HLS/real-time video transcoding (v3). Uses Intel QSV hardware acceleration. Docs: https://immich.app. Github: https://github.com/immich-app/immich"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
