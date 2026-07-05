@@ -11,6 +11,11 @@ services:
       POSTGRES_INITDB_ARGS: ${POSTGRES_INITDB_ARGS:---data-checksums}
     volumes:
       - ${IMMICH_POSTGRES_DATA_DIR:-/mnt/user/appdata/immich-postgresql}:/var/lib/postgresql/data:rw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   immich:
     container_name: immich
@@ -38,5 +43,11 @@ services:
       UMASK: ${UMASK:-022}
     volumes:
       - ${IMMICH_PHOTOS_DIR}:/photos:rw
-      - ${CONTAINER_DATA}/immich/libraries}:/libraries:rw
+      - ${CONTAINER_DATA}/immich/libraries:/libraries:rw
       - ${CONTAINER_DATA}/immich/config:/config:rw
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/server/ping"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3

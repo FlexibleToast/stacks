@@ -26,7 +26,7 @@ jobs:
 
   sync:
     needs: validate
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.event.head_commit.author.name != 'komodo'
     runs-on: ubuntu-latest
     steps:
       - name: Sync Komodo resources
@@ -43,7 +43,7 @@ jobs:
 
   deploy:
     needs: [validate, sync]
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.event.head_commit.author.name != 'komodo'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
