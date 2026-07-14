@@ -4,10 +4,10 @@ services:
     image: searxng/searxng:${SEARXNG_VERSION}
     restart: unless-stopped
     environment:
-      - TZ=${TZ:-America/Chicago}
-      - SEARXNG_LIMITER="false"
-      - SEARXNG_PUBLIC_INSTANCE="false"
-      - SEARXNG_BIND_ADDRESS="0.0.0.0"
+      TZ: ${TZ:-America/Chicago}
+      SEARXNG_LIMITER: "false"
+      SEARXNG_PUBLIC_INSTANCE: "false"
+      SEARXNG_BIND_ADDRESS: "0.0.0.0"
     volumes:
       - ${CONTAINER_DATA}/mcphub/searxng:/etc/searxng:rw
     networks:
