@@ -574,7 +574,8 @@ linked_repo = "kerbol-next"
 run_directory = "mcphub"
 file_paths = [
   "compose.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "searxng.unraid.yaml"
 ]
 environment = """
 CONTAINER_DATA = /mnt/user/appdata
@@ -588,6 +589,8 @@ MCPHUB_POSTGRES_PASSWORD = [[MCPHUB_POSTGRES_PASSWORD]]
 MCPHUB_OIDC_CLIENT_ID = eGSQL5GdmFL3yIXfeiQ1BOmBLmxJ249RlUZPWJHb
 MCPHUB_OIDC_CLIENT_SECRET = [[MCPHUB_OIDC_CLIENT_SECRET]]
 MCPHUB_INSTALL_BASE_URL = https://mcphub.mcdade.app
+SEARXNG_VERSION = latest
+SEARXNG_MCP_API_KEY = [[SEARXNG_MCP_API_KEY]]
 """
 
 ##
