@@ -305,7 +305,11 @@ poll_for_updates = true
 auto_update = true
 linked_repo = "kerbol-next"
 run_directory = "immich"
-file_paths = ["compose.yaml", "networks.yaml", "intel.unraid.yaml"]
+file_paths = [
+  "compose.yaml",
+  "networks.yaml",
+  "intel.unraid.yaml"
+]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
   IMMICH_PHOTOS_DIR = /mnt/user/immich-images
@@ -760,27 +764,6 @@ environment = """
 ##
 
 [[stack]]
-name = "playwright-mcp-unraid"
-description = "MCP server providing browser automation via Playwright for AI agents. Github: https://github.com/nicholasgriffintn/playwright-mcp"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-linked_repo = "kerbol-next"
-run_directory = "playwright-mcp"
-file_paths = [
-  "compose.yaml",
-  "unraid.network.yaml"
-]
-config_files = [{ path = "Containerfile" }]
-environment = """
-  CONTAINER_DATA = /mnt/user/appdata
-  TZ = America/Chicago
-  PLAYWRIGHT_MCP_VERSION = latest
-"""
-
-##
-
-[[stack]]
 name = "quay"
 description = "Self-hosted Docker registry with built-in security scanning. Docs: https://quay.io. Github: https://github.com/quay/quay"
 tags = ["unraid", "sync"]
@@ -1040,25 +1023,6 @@ environment = """
 ##
 
 [[build]]
-name = "playwright-mcp"
-tags = ["unraid", "build", "sync"]
-[build.config]
-builder = "Unraid"
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "kerbol-next"
-build_path = "playwright-mcp"
-dockerfile_path = "Containerfile"
-image_registry = [
-  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
-]
-labels = """
-quay.expires-after=4w
-"""
-
-##
-
-[[build]]
 name = "proxmoxmcp-plus"
 tags = ["build", "sync"]
 [build.config]
@@ -1173,30 +1137,6 @@ name = "Stage 1"
 enabled = true
 executions = [
   { execution.type = "GlobalAutoUpdate", execution.params.skip_auto_update = false, enabled = true }
-]
-
-##
-
-[[procedure]]
-name = "Rebuild playwright-mcp"
-description = "Rebuilds the playwright-mcp Docker image from source, pushes to Quay with auto-cleanup, then updates the stack."
-tags = ["unraid", "build", "sync"]
-config.schedule_alert = false
-config.schedule = "Every week on Sunday at 03:00"
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [
-  { execution.type = "RunBuild", execution.params.build = "playwright-mcp", enabled = true }
-]
-
-[[procedure.config.stage]]
-name = "Stage 2"
-enabled = true
-executions = [
-  { execution.type = "PullStack", execution.params.stack = "playwright-mcp-unraid", execution.params.services = [], enabled = true },
-  { execution.type = "DeployStackIfChanged", execution.params.stack = "playwright-mcp-unraid", enabled = true }
 ]
 
 ##
