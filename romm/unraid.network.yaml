@@ -1,0 +1,13 @@
+services:
+  romm:
+    networks:
+      - frontend
+      - backend
+  romm-mariadb:
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:

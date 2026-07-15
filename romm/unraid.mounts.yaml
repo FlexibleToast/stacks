@@ -1,0 +1,5 @@
+services:
+  romm:
+    volumes:
+      - /mnt/user/games:/romm/library:rw
+      - /mnt/user/games/romm-resources:/romm/resources:rw

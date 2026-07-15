@@ -1022,6 +1022,39 @@ environment = """
 
 ##
 
+[[stack]]
+name = "romm-unraid"
+description = "ROM Manager (RomM) for browsing, enriching, and playing game ROM collections with metadata scraping, OIDC auth, and a clean web UI. Docs: https://docs.romm.app. Github: https://github.com/rommapp/romm"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "romm"
+file_paths = [
+  "compose.yaml",
+  "unraid.mounts.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  ROMM_VERSION = 5
+  ROMM_MARIADB_VERSION = latest
+  ROMM_DB_PASSWORD = [[ROMM_DB_PASSWORD]]
+  ROMM_MYSQL_ROOT_PASSWORD = [[ROMM_MYSQL_ROOT_PASSWORD]]
+  ROMM_AUTH_SECRET_KEY = [[ROMM_AUTH_SECRET_KEY]]
+  ROMM_OIDC_CLIENT_ID = TYnfeW2krmfNWUZ5YTnmGJyUVw5EOReyGogH1Xvk
+  ROMM_OIDC_CLIENT_SECRET = [[ROMM_OIDC_CLIENT_SECRET]]
+  ROMM_IGDB_CLIENT_ID = 00wrgdr09m51nvdwfgvi7wbpyhs0sd
+  ROMM_IGDB_CLIENT_SECRET = [[ROMM_IGDB_CLIENT_SECRET]]
+  ROMM_STEAMGRIDDB_API_KEY = [[ROMM_STEAMGRIDDB_API_KEY]]
+  ROMM_SCREENSCRAPER_USER = FlexibleToast
+  ROMM_SCREENSCRAPER_PASSWORD = [[ROMM_SCREENSCRAPER_PASSWORD]]
+  ROMM_RETROACHIEVEMENTS_API_KEY = [[ROMM_RETROACHIEVEMENTS_API_KEY]]
+"""
+
+##
+
 [[build]]
 name = "proxmoxmcp-plus"
 tags = ["build", "sync"]
