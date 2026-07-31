@@ -1,6 +1,8 @@
 services:
   grimmory:
     volumes:
+      - /mnt/user/media/Adult_Books:/adult_books:rw
       - /mnt/user/media/Books:/books:rw
+      - /mnt/user/media/Comics:/comics:rw
       - /mnt/user/media/Audio_Books:/audiobooks:rw
       - /mnt/user/downloads/complete/books:/bookdrop:rw
