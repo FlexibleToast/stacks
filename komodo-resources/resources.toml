@@ -682,12 +682,12 @@ run_directory = "open-notebook"
 file_paths = [
   "compose.yaml",
   "unraid-network.yaml",
-  "unraid-nvidia.yaml"
+  "intel.unraid.compose.yaml"
 ]
 environment = """
   OPEN_NOTEBOOK_ENCRYPTION_KEY: [[OPEN_NOTEBOOK_ENCRYPTION_KEY]]
   SURREAL_PASS: [[OPEN_NOTEBOOK_SURREAL_PASS]]
-  SPEACHES_VERSION = latest-cuda
+  SPEACHES_VERSION = latest-cpu
   SURREALDB_VERSION = v2
   NOTEBOOK_VERSION = v1-latest
 """

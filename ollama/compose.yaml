@@ -11,11 +11,8 @@ services:
       OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-48000}
       OLLAMA_HOST: ${OLLAMA_HOST:-0.0.0.0}
       OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-0}
-      NVIDIA_VISIBLE_DEVICES: all
-      NVIDIA_DRIVER_CAPABILITIES: all
     ports:
       - "${OLLAMA_PORT:-11434}:11434"
     volumes:
       - ${CONTAINER_DATA}/ollama:/root/.ollama:rw"
     mem_limit: ${OLLAMA_MEMORY:-100g}
-    runtime: nvidia
