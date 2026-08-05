@@ -681,8 +681,7 @@ linked_repo = "kerbol-next"
 run_directory = "open-notebook"
 file_paths = [
   "compose.yaml",
-  "unraid-network.yaml",
-  "intel.unraid.compose.yaml"
+  "unraid-network.yaml"
 ]
 environment = """
   OPEN_NOTEBOOK_ENCRYPTION_KEY: [[OPEN_NOTEBOOK_ENCRYPTION_KEY]]
@@ -1135,7 +1134,7 @@ name = "Docker Oracle"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server = "Docker Oracle"
+params.servers = ["Docker Oracle"]
 
 ##
 
@@ -1144,7 +1143,7 @@ name = "Unraid"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server = "Unraid"
+params.servers = ["Unraid"]
 
 ##
 
