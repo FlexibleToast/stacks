@@ -9,7 +9,6 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
     volumes:
       - "${CONTAINER_DATA}/open-webui:/app/backend/data:rw"
-    mem_limit: ${OPENWEBUI_MEMORY:-5g}
 
   searxng-ai:
     container_name: searxng-ai
