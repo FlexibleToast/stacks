@@ -655,6 +655,7 @@ linked_repo = "kerbol-next"
 run_directory = "ollama"
 file_paths = [
   "compose.yaml",
+  "intel.unraid.compose.yaml",
   "unraid.network.yaml",
   "openwebui.compose.yaml",
   "unraid.openwebui-oauth.compose.yaml"
