@@ -568,6 +568,33 @@ environment = """
 ##
 
 [[stack]]
+name = "llamacpp-unraid"
+description = "Local LLM hosting with llama.cpp server using Intel SYCL backend"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "llamacpp"
+file_paths = [
+  "compose.yaml",
+  "intel.unraid.compose.yaml",
+  "unraid.network.yaml"
+]
+config_files = [
+  { path = "model.ini", services = ["llamacpp"] }
+]
+environment = """
+  LLAMACPP_VERSION = server-intel
+  LLAMACPP_PORT = 8080
+  LLAMACPP_MEMORY = 96g
+  LLAMACPP_API_KEY = [[LLAMACPP_API_KEY]]
+  CONTAINER_DATA = /mnt/user/appdata
+"""
+
+##
+
+[[stack]]
 name = "mcphub-unraid"
 description = "MCP hub providing a unified endpoint for MCP tools with OIDC auth and PostgreSQL. Github: https://github.com/0xPlayground/mcphub"
 tags = ["unraid", "sync"]
@@ -669,30 +696,6 @@ environment = """
   OPENWEBUI_VERSION = latest
   SEARXNG_VERSION = latest
   TIKA_VERSION = latest
-"""
-
-##
-
-[[stack]]
-name = "llamacpp-unraid"
-description = "Local LLM hosting with llama.cpp server using Intel SYCL backend"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "llamacpp"
-file_paths = [
-  "compose.yaml",
-  "intel.unraid.compose.yaml",
-  "unraid.network.yaml"
-]
-environment = """
-  LLAMACPP_VERSION = server-intel
-  LLAMACPP_PORT = 8080
-  LLAMACPP_MEMORY = 96g
-  LLAMACPP_API_KEY = [[LLAMACPP_API_KEY]]
-  CONTAINER_DATA = /mnt/user/appdata
 """
 
 ##
