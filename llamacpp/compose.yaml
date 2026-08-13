@@ -4,7 +4,7 @@ services:
     image: ghcr.io/ggml-org/llama.cpp:${LLAMACPP_VERSION:-server-intel}
     restart: ${SVC_RESTART:-unless-stopped}
     command:
-      - --model-list
+      - --models-preset
       - /app/model.ini
       - --host
       - 0.0.0.0
