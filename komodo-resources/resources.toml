@@ -691,6 +691,7 @@ environment = """
   LLAMACPP_VERSION = server-intel
   LLAMACPP_PORT = 8080
   LLAMACPP_MEMORY = 96g
+  LLAMACPP_API_KEY = [[LLAMACPP_API_KEY]]
   CONTAINER_DATA = /mnt/user/appdata
 """
 
