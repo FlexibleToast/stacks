@@ -13,9 +13,10 @@ services:
     environment:
       TZ: ${TZ:-America/Chicago}
       LLAMA_API_KEY: ${LLAMACPP_API_KEY}
+      HF_HOME: /root/.cache/huggingface
     ports:
       - "${LLAMACPP_PORT:-8080}:8080"
     volumes:
       - ./model.ini:/app/model.ini:ro
-      - ${CONTAINER_DATA}/llamacpp/cache:/root/.cache/llama.cpp
+      - ${CONTAINER_DATA}/llamacpp/cache:/root/.cache
     mem_limit: ${LLAMACPP_MEMORY:-64g}
