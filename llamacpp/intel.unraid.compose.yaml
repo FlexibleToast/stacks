@@ -1,0 +1,4 @@
+services:
+  llamacpp:
+    devices:
+      - /dev/dri:/dev/dri

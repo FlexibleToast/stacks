@@ -1,0 +1,11 @@
+services:
+  llamacpp:
+    networks:
+      - ai
+      - frontend
+
+networks:
+  ai:
+    external: true
+  frontend:
+    external: true

@@ -674,6 +674,29 @@ environment = """
 ##
 
 [[stack]]
+name = "llamacpp-unraid"
+description = "Local LLM hosting with llama.cpp server using Intel SYCL backend"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "llamacpp"
+file_paths = [
+  "compose.yaml",
+  "intel.unraid.compose.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+  LLAMACPP_VERSION = server-intel
+  LLAMACPP_PORT = 8080
+  LLAMACPP_MEMORY = 96g
+  CONTAINER_DATA = /mnt/user/appdata
+"""
+
+##
+
+[[stack]]
 name = "open-notebook-unraid"
 description = "AI-powered personal knowledge base with speech-to-text, SurrealDB, and LLM integration. Github: https://github.com/OpenNotebook"
 tags = ["unraid", "sync"]
