@@ -1,5 +1,5 @@
 [[server]]
-name = "Bookview MicroOS"
+name = "Brookview MicroOS"
 tags = ["brookview", "sync"]
 [server.config]
 enabled = true
@@ -49,7 +49,7 @@ name = "adguard-brookview"
 description = "DNS-level ad blocker and content filter. Docs: https://adguard.com"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "kerbol-next"
 run_directory = "adguard"
 file_paths = [
@@ -230,7 +230,7 @@ name = "ddns-updater-brookview"
 description = "Dynamic DNS client supporting 70+ providers for automatic domain updates. Github: https://github.com/qdm12/ddns-updater"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "stacks"
 run_directory = "ddns-updater"
 environment = """
@@ -262,7 +262,7 @@ name = "endlessh-go-brookview"
 description = "SSH tarpit that slowly responds to brute force attempts, binding attackers indefinitely. Github: https://github.com/shizunge/endlessh-go"
 tags = ["brookview", "unraid", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "kerbol-next"
 run_directory = "endlessh-go"
 environment = """
@@ -492,7 +492,7 @@ name = "komodo-periphery-brookview"
 description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "kerbol-next"
 run_directory = "komodo-periphery"
 environment = """
@@ -631,7 +631,7 @@ name = "newt-brookview"
 description = "Pangolin tunnel agent for secure reverse proxy connectivity. Docs: https://github.com/fosrl/newt"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "kerbol-next"
 run_directory = "newt"
 file_paths = [
@@ -935,7 +935,7 @@ name = "tunnel-brookview"
 description = "Cloudflare Tunnel for secure remote access without opening firewall ports. Docs: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "stacks"
 run_directory = "tunnel"
 environment = """
@@ -968,7 +968,7 @@ name = "vaultwarden-brookview"
 description = "Self-hosted Bitwarden-compatible password manager. Docs: https://github.com/dani-garcia/vaultwarden"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "stacks"
 run_directory = "vaultwarden"
 file_paths = [
