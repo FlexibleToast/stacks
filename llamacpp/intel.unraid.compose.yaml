@@ -2,3 +2,8 @@ services:
   llamacpp:
     devices:
       - /dev/dri:/dev/dri
+    environment:
+      ONEAPI_DEVICE_SELECTOR: level_zero:0
+      UR_L0_ENABLE_RELAXED_ALLOCATION_LIMITS: 1
+      ZES_ENABLE_SYSMAN: 1
+      GGML_SYCL_ENABLE_FLASH_ATTN: 1
