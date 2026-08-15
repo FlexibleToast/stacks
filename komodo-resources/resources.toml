@@ -149,28 +149,6 @@ environment = """
 ##
 
 [[stack]]
-name = "bindery-unraid"
-description = "Automated ebook and audiobook download manager for Usenet and torrents. Modern replacement for Readarr. Github: https://github.com/vavallee/bindery"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "bindery"
-file_paths = [
-  "compose.yaml",
-  "unraid.mounts.yaml",
-  "unraid.network.yaml"
-]
-environment = """
-  CONTAINER_DATA = /mnt/user/appdata
-  BINDERY_OIDC_REDIRECT_BASE_URL = https://bindery.mcdade.app
-  BINDERY_VERSION = latest
-"""
-
-##
-
-[[stack]]
 name = "borgmatic-container-pi"
 description = "Automated backup client using BorgBackup for data protection. Docs: https://torsion.org/borgmatic"
 tags = ["container-pi4-1", "sync"]
