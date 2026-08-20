@@ -99,7 +99,7 @@ services:
       - ${QUAY_STORAGE}:/datastorage:rw
       - /etc/localtime:/etc/localtime:ro
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health/instance"]
+      test: ["CMD", "curl", "http://localhost:8080/health/instance"]
       interval: 10s
       timeout: 5s
       retries: 10
