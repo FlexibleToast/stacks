@@ -786,7 +786,7 @@ file_paths = [
 environment = """
   # VARIABLE = value
   POSTGRES_VERSION = 17-alpine
-  CLAIR_VERSION = 4.9.0-patched
+  CLAIR_VERSION = 4.9.0
   QUAY_VERSION = 3.18.0
   QUAY_STORAGE = /mnt/user/quay
   CONTAINER_DATA = /mnt/user/appdata
@@ -1079,7 +1079,7 @@ name = "clair"
 tags = ["unraid", "build", "sync"]
 [build.config]
 builder = "Unraid"
-version = "4.9.0-patched"
+version = "4.9.0"
 auto_increment_version = false
 git_account = "FlexibleToast"
 repo = "FlexibleToast/stacks"
