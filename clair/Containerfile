@@ -1,0 +1,19 @@
+FROM golang:1.24 AS build
+WORKDIR /src
+RUN git clone --depth 1 --branch v4.9.0 https://github.com/quay/clair .
+RUN go mod edit -require=github.com/quay/claircore@v1.5.49 && go mod tidy
+ENV CGO_ENABLED=0
+RUN go build -ldflags="-s -w -X 'github.com/quay/clair/v4/cmd.Version=v4.9.0-patched'" -trimpath -o /out/clair ./cmd/clair \
+ && go build -ldflags="-s -w -X 'github.com/quay/clair/v4/cmd.Version=v4.9.0-patched'" -trimpath -o /out/clairctl ./cmd/clairctl
+
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+ENTRYPOINT ["/usr/bin/clair"]
+VOLUME /config
+EXPOSE 6060
+ENV CLAIR_CONF=/config/config.yaml \
+	CLAIR_MODE=combo \
+	SSL_CERT_DIR="/etc/ssl/certs:/etc/pki/tls/certs:/var/run/certs"
+USER nobody:nobody
+WORKDIR /run
+COPY --from=build /out/clair /usr/bin/clair
+COPY --from=build /out/clairctl /usr/bin/clairctl

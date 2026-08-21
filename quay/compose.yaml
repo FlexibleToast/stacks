@@ -19,7 +19,7 @@ services:
 
   quay-clair:
     container_name: quay-clair
-    image: quay.io/projectquay/clair:${CLAIR_VERSION}
+    image: quay.mcdade.app/homeserver/clair:${CLAIR_VERSION}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-America/Chicago}
