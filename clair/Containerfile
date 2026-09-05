@@ -1,7 +1,7 @@
-FROM golang:1.24 AS build
+FROM golang:1.25 AS build
 WORKDIR /src
 RUN git clone --depth 1 --branch v4.9.0 https://github.com/quay/clair .
-RUN go mod edit -require=github.com/quay/claircore@v1.5.49 && go mod tidy
+RUN go mod edit -require=github.com/quay/claircore@v1.5.54 && go mod tidy
 ENV CGO_ENABLED=0
 RUN go build -ldflags="-s -w -X 'github.com/quay/clair/v4/cmd.Version=v4.9.0-patched'" -trimpath -o /out/clair ./cmd/clair \
  && go build -ldflags="-s -w -X 'github.com/quay/clair/v4/cmd.Version=v4.9.0-patched'" -trimpath -o /out/clairctl ./cmd/clairctl
