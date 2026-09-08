@@ -650,6 +650,28 @@ environment = """
 ##
 
 [[stack]]
+name = "olivetin-unraid"
+description = "Web-based remote control that turns predefined shell commands into simple buttons. Docs: https://docs.olivetin.app. Github: https://github.com/OliveTin/OliveTin"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "olivetin"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml"
+]
+config_files = [
+  { path = "unraid.olivetin.conf", services = ["olivetin"] }
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  OLIVETIN_VERSION = latest
+"""
+
+##
+
+[[stack]]
 name = "ollama-unraid"
 description = "Local LLM hosting with OpenWebUI for interacting with AI models. Docs: https://ollama.com. Github: https://github.com/open-webui/open-webui"
 tags = ["unraid", "sync"]

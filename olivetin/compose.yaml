@@ -1,0 +1,12 @@
+services:
+  olivetin:
+    container_name: olivetin
+    image: jamesread/olivetin:${OLIVETIN_VERSION}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+    volumes:
+      - ${CONTAINER_DATA}/olivetin:/config:rw
+      - ./unraid.olivetin.conf:/config/config.yaml:ro
+    ports:
+      - "${OLIVETIN_PORT:-1337}:1337"
+    restart: ${OLIVETIN_RESTART:-unless-stopped}
