@@ -673,7 +673,7 @@ environment = """
 
 [[stack]]
 name = "ollama-unraid"
-description = "Local LLM hosting with OpenWebUI for interacting with AI models. Docs: https://ollama.com. Github: https://github.com/open-webui/open-webui"
+description = "Local LLM runtime via Ollama. Docs: https://ollama.com"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
@@ -683,16 +683,35 @@ run_directory = "ollama"
 file_paths = [
   "compose.yaml",
   "intel.unraid.compose.yaml",
+  "unraid.network.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  OLLAMA_VERSION = latest
+  OLLAMA_KEEP_ALIVE = 10m
+"""
+
+##
+
+[[stack]]
+name = "open-webui-unraid"
+description = "Open WebUI chat frontend backed by llama.cpp via its OpenAI-compatible API, with SearXNG web search and Tika document extraction. Docs: https://docs.openwebui.com. Github: https://github.com/open-webui/open-webui"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "open-webui"
+file_paths = [
+  "compose.yaml",
   "unraid.network.yaml",
-  "openwebui.compose.yaml",
   "unraid.openwebui-oauth.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
   OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
   OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
-  OLLAMA_VERSION = latest
-  OLLAMA_KEEP_ALIVE = 10m
+  OPENAI_API_KEY = [[LLAMACPP_API_KEY]]
   OPENWEBUI_VERSION = latest
   SEARXNG_VERSION = latest
   TIKA_VERSION = latest

@@ -1,0 +1,19 @@
+services:
+  open-webui:
+    networks:
+      - ai
+      - frontend
+      - backend
+  searxng-ai:
+    networks:
+      - backend
+  tika:
+    networks:
+      - backend
+
+networks:
+  ai:
+    external: true
+  frontend:
+    external: true
+  backend:

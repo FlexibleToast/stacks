@@ -6,7 +6,10 @@ services:
     restart: ${OPENWEBUI_RESTART:-unless-stopped}
     environment:
       TZ: ${TZ:-America/Chicago}
-      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      ENABLE_PERSISTENT_CONFIG: "false"
+      ENABLE_OLLAMA_API: "false"
+      OPENAI_API_BASE_URL: ${OPENAI_API_BASE_URL:-http://llamacpp:8080/v1}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
       - "${CONTAINER_DATA}/open-webui:/app/backend/data:rw"
 
