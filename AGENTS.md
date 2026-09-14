@@ -51,6 +51,19 @@ services:
 - Container name matches service name
 - `Containerfile`, never `Dockerfile`
 
+### Unraid Container Icons
+
+Unraid's WebUI reads the docker label `net.unraid.docker.icon` (a URL) from each container's config and shows it on the Docker tab. Add it per service in stacks deployed to Unraid:
+
+```yaml
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/<ref>.svg
+```
+
+- Icon source: [selfh.st](https://selfh.st/icons/). Refs and format availability are in `https://raw.githubusercontent.com/selfhst/icons/refs/heads/main/index.json` (fields `Name`/`Reference`/`SVG`/`PNG`); SVGs live at `svg/<ref>.svg`, PNGs at `png/<ref>.png`. Some refs have no SVG (e.g. `mcphub`, `tdarr`) — use the PNG instead, and curl-verify the exact URL returns 200 before writing it.
+- Label every service in a Unraid stack, including DB sidecars (share the app icon, or use `postgresql`/`redis`/`mariadb`). Merge into an existing `labels:` block rather than adding a second one.
+- Labels only take effect when Komodo recreates the containers on the next deploy.
+
 ### Naming
 
 Stacks in `resources.toml` follow `{service}-{server}`:
