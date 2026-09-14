@@ -478,7 +478,7 @@ environment = """
   CONTAINER_DATA = /srv/container-data
   KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
   PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
-  PERIPHERY_CONNECT_AS = Bookview MicroOS
+  PERIPHERY_CONNECT_AS = Brookview MicroOS
   KOMODO_IMAGE_TAG = 2
 """
 
