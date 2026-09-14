@@ -2,6 +2,8 @@
 services:
   ddns-updater:
     container_name: ddns-updater
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/ddns-updater.svg
     image: qmcgaw/ddns-updater:${DDNS_UPDATER_VERSION}
     volumes:
       - ${CONTAINER_DATA}/ddns-updater:/updater/data:rw

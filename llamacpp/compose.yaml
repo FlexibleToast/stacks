@@ -1,6 +1,8 @@
 services:
   llamacpp:
     container_name: llamacpp
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/llama-cpp.svg
     image: ghcr.io/ggml-org/llama.cpp:${LLAMACPP_VERSION:-server-intel}
     restart: ${SVC_RESTART:-unless-stopped}
     command:

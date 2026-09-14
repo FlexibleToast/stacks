@@ -2,6 +2,8 @@ services:
   tang:
     image: git.mcdade.app/containers/tang-server:${tang_version}
     container_name: tang
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/wireguard.svg
     restart: ${tang_restart:-always}
     ports:
       - "${tang_port:-9099}:80"

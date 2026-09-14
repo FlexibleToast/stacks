@@ -1,6 +1,8 @@
 services:
   olivetin:
     container_name: olivetin
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/olivetin.svg
     image: jamesread/olivetin:${OLIVETIN_VERSION}
     environment:
       TZ: ${TZ:-America/Chicago}

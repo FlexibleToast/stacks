@@ -1,6 +1,8 @@
 services:
   on-speaches:
     container_name: on-speaches
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/speaches.svg
     image: ghcr.io/speaches-ai/speaches:${SPEACHES_VERSION}
     restart: unless-stopped
     volumes:
@@ -10,6 +12,8 @@ services:
 
   on-surrealdb:
     container_name: on-surrealdb
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/surrealdb.svg
     image: surrealdb/surrealdb:${SURREALDB_VERSION}
     user: "99:100"
     restart: unless-stopped
@@ -27,6 +31,8 @@ services:
 
   on-open-notebook:
     container_name: on-open-notebook
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/notesnook.svg
     image: lfnovo/open_notebook:${NOTEBOOK_VERSION}
     restart: unless-stopped
     networks:

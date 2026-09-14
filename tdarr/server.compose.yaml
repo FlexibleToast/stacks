@@ -1,6 +1,8 @@
 services:
   tdarr:
     container_name: tdarr
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/png/tdarr.png
     image: ghcr.io/haveagitgat/tdarr:${TDARR_VERSION}
     restart: ${TDARR_RESTART:-unless-stopped}
     cpus: ${TDARR_CPUS:-4}

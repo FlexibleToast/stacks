@@ -1,6 +1,8 @@
 services:
   immich-postgresql:
     container_name: immich-postgresql
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     image: ghcr.io/immich-app/postgres:${IMMICH_POSTGRES_VERSION}
     restart: ${IMMICH_POSTGRES_RESTART:-unless-stopped}
     environment:
@@ -19,6 +21,8 @@ services:
 
   immich:
     container_name: immich
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/immich.svg
     image: ghcr.io/imagegenius/immich:${IMMICH_VERSION}
     restart: ${IMMICH_RESTART:-unless-stopped}
     depends_on:

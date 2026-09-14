@@ -1,6 +1,8 @@
 services:
   adventurelog-postgis:
     container_name: adventurelog-postgis
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     image: postgis/postgis:${POSTGIS_VERSION}
     restart: ${ADVENTURELOG_RESTART:-unless-stopped}
     environment:
@@ -13,6 +15,8 @@ services:
 
   adventurelog-frontend:
     container_name: adventurelog-frontend
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/adventurelog.svg
     image: ghcr.io/seanmorley15/adventurelog-frontend:${ADVENTURELOG_FRONTEND_VERSION}
     restart: ${ADVENTURELOG_RESTART:-unless-stopped}
     depends_on:
@@ -28,6 +32,8 @@ services:
 
   adventurelog-backend:
     container_name: adventurelog-backend
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/adventurelog.svg
     image: ghcr.io/seanmorley15/adventurelog-backend:${ADVENTURELOG_BACKEND_VERSION}
     restart: ${ADVENTURELOG_RESTART:-unless-stopped}
     depends_on:

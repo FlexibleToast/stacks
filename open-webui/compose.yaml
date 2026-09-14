@@ -1,6 +1,8 @@
 services:
   open-webui:
     container_name: open-webui
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/open-webui.svg
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     mem_limit: ${OPENWEBUI_MEMORY:-5g}
     restart: ${OPENWEBUI_RESTART:-unless-stopped}
@@ -15,6 +17,8 @@ services:
 
   searxng-ai:
     container_name: searxng-ai
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/searxng.svg
     image: searxng/searxng:${SEARXNG_VERSION}
     restart: ${SEARXNG_RESTART:-unless-stopped}
     environment:
@@ -30,6 +34,8 @@ services:
 
   tika:
     container_name: tika
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/apache-tika.svg
     image: docker.io/apache/tika:${TIKA_VERSION}
     restart: ${TIKA_RESTART:-unless-stopped}
     environment:

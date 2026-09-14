@@ -1,6 +1,8 @@
 services:
   authentik-postgresql:
     container_name: authentik-postgresql
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     image: postgres:${POSTGRES_VERSION}
     restart: ${RESTART:-unless-stopped}
     pids_limit: 2048
@@ -14,6 +16,8 @@ services:
 
   authentik-redis:
     container_name: authentik-redis
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/redis.svg
     image: redis:${REDIS_VERSION}
     restart: ${RESTART:-unless-stopped}
     pids_limit: 2048
@@ -30,6 +34,8 @@ services:
 
   authentik:
     container_name: authentik
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/authentik.svg
     image: ghcr.io/goauthentik/server:${AUTHENTIK_VERSION}
     restart: ${RESTART:-unless-stopped}
     pids_limit: 2048
@@ -65,6 +71,8 @@ services:
 
   authentik-worker:
     container_name: authentik-worker
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/authentik.svg
     image: ghcr.io/goauthentik/server:${AUTHENTIK_VERSION}
     restart: ${RESTART:-unless-stopped}
     pids_limit: 2048

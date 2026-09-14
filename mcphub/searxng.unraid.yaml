@@ -1,6 +1,8 @@
 services:
   mcphub-searxng:
     container_name: mcphub-searxng
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/searxng.svg
     image: searxng/searxng:${SEARXNG_VERSION}
     restart: unless-stopped
     environment:

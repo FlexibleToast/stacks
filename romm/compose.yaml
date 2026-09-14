@@ -1,6 +1,8 @@
 services:
   romm:
     container_name: romm
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/romm.svg
     image: rommapp/romm:${ROMM_VERSION}
     restart: ${RESTART:-unless-stopped}
     depends_on:
@@ -47,6 +49,8 @@ services:
 
   romm-mariadb:
     container_name: romm-mariadb
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/mariadb.svg
     image: lscr.io/linuxserver/mariadb:${ROMM_MARIADB_VERSION}
     restart: ${RESTART:-unless-stopped}
     environment:

@@ -3,6 +3,8 @@ services:
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_VERSION}
     container_name: paperless-ngx
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/paperless-ngx.svg
     restart: unless-stopped
     env_file: 
       - ./paperless/.env
@@ -24,6 +26,8 @@ services:
     image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     container_name: paperless-postgres
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     env_file: 
       - ./postgres/.env
     volumes:
@@ -33,6 +37,8 @@ services:
   redis:
     image: docker.io/library/redis:${REDIS_VERSION}
     container_name: paperless-redis
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/redis.svg
     restart: unless-stopped
     env_file: 
       - ./redis/.env
@@ -62,6 +68,8 @@ services:
   paperless-ai:
     image: clusterzx/paperless-ai:${PAPERLESS_AI_VERSION}
     container_name: paperless-ai
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/png/paperless-ai.png
     restart: unless-stopped
     depends_on:
       - paperless

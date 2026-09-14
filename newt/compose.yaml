@@ -2,6 +2,8 @@ services:
   newt:
     image: fosrl/newt:${NEWT_VERSION}
     container_name: newt
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/nginx-proxy-manager.svg
     restart: ${NEWT_RESTART:-unless-stopped}
     environment:
       - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}

@@ -1,6 +1,8 @@
 services:
   grimmory:
     container_name: grimmory
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/grimmory.svg
     image: grimmory/grimmory:${GRIMMORY_VERSION}
     restart: ${GRIMMORY_RESTART:-unless-stopped}
     depends_on:
@@ -24,6 +26,8 @@ services:
 
   mariadb:
     container_name: grimmory-mariadb
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/mariadb.svg
     image: lscr.io/linuxserver/mariadb:${GRIMMORY_MARIADB_VERSION}
     restart: ${GRIMMORY_RESTART:-unless-stopped}
     environment:

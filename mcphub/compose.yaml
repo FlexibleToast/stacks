@@ -1,6 +1,8 @@
 services:
   mcphub-postgres:
     container_name: mcphub-postgres
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     environment:
@@ -13,6 +15,8 @@ services:
   mcphub:
     image: samanhappy/mcphub:${MCPHUB_VERSION}
     container_name: mcphub
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/png/mcphub.png
     restart: ${SVC_RESTART:-unless-stopped}
     depends_on:
       - mcphub-postgres
