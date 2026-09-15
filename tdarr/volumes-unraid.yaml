@@ -8,6 +8,7 @@ services:
       - "/mnt/nvme/transcoding:/temp:rw"
       - "/mnt/user/xxx/scenes:/mnt/xxx:rw"
       - "/mnt/user/xxx/galleries:/mnt/galleries:rw"
+      - "/mnt/user/xxx/:/mnt/test-xxx:rw"
   tdarr_node:
     volumes:
       - "/mnt/user/appdata/tdarr/server:/app/server:rw"
@@ -17,3 +18,4 @@ services:
       - "/mnt/nvme/transcoding:/temp:rw"
       - "/mnt/user/xxx/scenes:/mnt/xxx:rw"
       - "/mnt/user/xxx/galleries:/mnt/galleries:rw"
+      - "/mnt/user/xxx/:/mnt/test-xxx:rw"
