@@ -938,13 +938,13 @@ linked_repo = "kerbol-next"
 run_directory = "tdarr"
 file_paths = [
   "server.compose.yaml",
-  "node-nvidia.compose.yaml",
+  "node-vaapi.compose.yaml",
   "network.compose.yaml",
   "volumes-unraid.yaml"
 ]
 environment = """
-  TDARR_VERSION = 2.50.02
-  TDARR_NODE_VERSION = 2.50.02
+  TDARR_VERSION = 2.87.01
+  TDARR_NODE_VERSION = 2.87.01
 """
 
 ##

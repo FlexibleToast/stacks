@@ -72,7 +72,7 @@ Stacks in `resources.toml` follow `{service}-{server}`:
 |---|---|---|
 | Unraid | `-unraid` | `/mnt/user/appdata` |
 | Docker Oracle | `-oracle` | `/srv/container-data` |
-| Bookview MicroOS | `-brookview` | `/srv/container-data` |
+| Brookview MicroOS | `-brookview` | `/srv/container-data` |
 | Container Pi4 1 | `-container-pi` | `/srv/container-data` |
 | NAS II (TrueNAS) | `-nas-ii` | `/mnt/pool-0/container-data` |
 
@@ -83,7 +83,7 @@ Stacks in `resources.toml` follow `{service}-{server}`:
 name = "ddns-updater-brookview"
 tags = ["brookview", "sync"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "stacks"
 run_directory = "ddns-updater"
 environment = """

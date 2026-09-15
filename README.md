@@ -49,7 +49,7 @@ flowchart TB
 | **Unraid** | Unraid NAS | `unraid`, `sync` | Primary workload server, media services |
 | **NAS II** | TrueNAS SCALE | `nas-ii`, `sync`, `backup` | Backup server (Borg), storage |
 | **Container Pi4 1** | Raspberry Pi 4 | `container-pi4-1`, `sync` | Edge services, DNS, security tools |
-| **Bookview MicroOS** | Linux | `brookview`, `sync` | Primary services (Vaultwarden, Tunnel) |
+| **Brookview MicroOS** | Linux | `brookview`, `sync` | Primary services (Vaultwarden, Tunnel) |
 
 ### Network Architecture
 
@@ -268,7 +268,7 @@ tags = ["sync", "unraid"]
 name = "vaultwarden-brookview"
 tags = ["sync", "brookview"]
 [stack.config]
-server = "Bookview MicroOS"
+server = "Brookview MicroOS"
 linked_repo = "stacks"
 run_directory = "vaultwarden"
 file_paths = ["compose.yaml", "ports.compose.yaml"]
@@ -376,7 +376,7 @@ If you are an AI assistant modifying these scripts, follow these rules:
 |-----|-------------|
 | `unraid` | Deployments targeting Unraid NAS |
 | `oracle` | Deployments targeting Docker Oracle |
-| `brookview` | Deployments targeting Bookview MicroOS |
+| `brookview` | Deployments targeting Brookview MicroOS |
 | `container-pi4-1` | Deployments targeting Raspberry Pi |
 | `nas-ii` | Deployments targeting TrueNAS SCALE |
 | `sync` | Resources synced to Komodo |

@@ -9,17 +9,16 @@ services:
     mem_limit: ${TDARR_NODE_MEM_LIMIT:-8g}
     depends_on:
       - tdarr
+    devices:
+      - "/dev/dri:/dev/dri"
     environment:
       TZ: ${TZ:-America/Chicago}
       HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr_node}
       serverIP: ${SERVER_IP:-192.168.10.20}
       serverPort: ${SERVER_PORT:-8266}
       nodeIP: ${TDARR_NODE_NODE_IP:-192.168.10.20}
-      nodeID: ${TDARR_NOTE_NODE_ID:-RTX 3090}
+      nodeID: ${TDARR_NOTE_NODE_ID:-Arc Pro B70}
       PUID: ${PUID:-99}
       PGID: ${PGID:-100}
-      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-GPU-9cffc19f-d73c-b282-7200-be2d0702f446}
-      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
     ports:
       - "${TDARR_NODE_PORT_8267:-8267}:8267"
-    runtime: nvidia
