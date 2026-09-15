@@ -2,3 +2,4 @@
 *.swo
 plans/
 .opencode/
+*tdarr-flow*

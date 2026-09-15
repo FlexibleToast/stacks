@@ -27,4 +27,4 @@ services:
       - "${TDARR_PORT_8265:-8265}:8265"
       - "${TDARR_PORT_8264:-8264}:8264"
     devices:
-      - "/dev/dri:/dev/dri"
+      - "/dev/dri/renderD129:/dev/dri/renderD129"
