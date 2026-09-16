@@ -1,4 +1,8 @@
 services:
+  tdarr:
+    container_name: tdarr
+    devices:
+      - "/dev/dri/renderD129:/dev/dri/renderD129"
   tdarr_node:
     container_name: tdarr_node
     labels:
@@ -10,7 +14,7 @@ services:
     depends_on:
       - tdarr
     devices:
-      - "/dev/dri/renderD129:/dev/dri/renderD129"
+      - "/dev/dri/renderD129:/dev/dri/renderD128"
     environment:
       TZ: ${TZ:-America/Chicago}
       HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr_node}
