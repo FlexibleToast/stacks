@@ -14,7 +14,7 @@ services:
     depends_on:
       - tdarr
     devices:
-      - "/dev/dri/renderD129:/dev/dri/renderD128"
+      - "/dev/dri/renderD128:/dev/dri/renderD128"
     environment:
       TZ: ${TZ:-America/Chicago}
       HOST_CONTAINERNAME: ${HOST_CONTAINERNAME:-tdarr_node}
