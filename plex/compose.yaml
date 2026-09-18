@@ -9,6 +9,9 @@ services:
       - "/dev/dri/renderD129:/dev/dri/renderD129"
     environment:
       TZ: ${TZ:-America/Chicago}
+      PUID: ${PUID:-99}
+      PGID: ${PGID:-100}
+      UMASK: ${UMASK:-022}
     volumes:
       - /mnt/user/media/TV:/tv:rw
       - /mnt/user/media/Movies:/movies:rw
