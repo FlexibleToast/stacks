@@ -565,7 +565,7 @@ config_files = [
 environment = """
   LLAMACPP_VERSION = server-intel
   LLAMACPP_PORT = 8080
-  LLAMACPP_MEMORY = 96g
+  LLAMACPP_MEMORY = 140g
   LLAMACPP_API_KEY = [[LLAMACPP_API_KEY]]
   CONTAINER_DATA = /mnt/user/appdata
 """
@@ -737,6 +737,22 @@ environment = """
   SPEACHES_VERSION = latest-cpu
   SURREALDB_VERSION = v2
   NOTEBOOK_VERSION = v1-latest
+"""
+
+##
+
+[[stack]]
+name = "plex-unraid"
+description = "Media server for streaming movies, TV shows, music, and photos with hardware transcoding. Docs: https://support.plex.tv"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "plex"
+file_paths = ["compose.yaml"]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  PLEX_VERSION = latest
 """
 
 ##

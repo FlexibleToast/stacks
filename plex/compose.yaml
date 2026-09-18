@@ -1,0 +1,23 @@
+services:
+  plex:
+    container_name: plex
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/plex-logo.png
+    image: lscr.io/linuxserver/plex:${PLEX_VERSION}
+    network_mode: host
+    devices:
+      - "/dev/dri/renderD129:/dev/dri/renderD129"
+    environment:
+      TZ: ${TZ:-America/Chicago}
+    volumes:
+      - /mnt/user/media/TV:/tv:rw
+      - /mnt/user/media/Movies:/movies:rw
+      - /mnt/user/media/Anime:/anime:rw
+      - /mnt/user/media/Anime_Movies:/anime_movies:rw
+      - /mnt/user/media/Anime-test:/anime-test:rw
+      - /mnt/user/media/Audio_Books:/audio_books:rw
+      - /mnt/user/media/Music:/music:rw
+      - ${CONTAINER_DATA}/plex:/config:rw
+    tmpfs:
+      - /transcode:size=${PLEX_TRANSCODE_SIZE:-30g}
+    restart: ${SVC_RESTART:-unless-stopped}
