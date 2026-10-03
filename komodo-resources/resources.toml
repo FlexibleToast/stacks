@@ -138,7 +138,7 @@ environment = """
   AUTHENTIK_POSTGRESQL_DATA = /mnt/nvme/appdata
   POSTGRES_VERSION = 17-alpine
   REDIS_VERSION = 8-alpine
-  AUTHENTIK_VERSION = 2026.5
+  AUTHENTIK_VERSION = 2026.8
   AUTHENTIK_EMAIL__USERNAME = [[EMAIL]]
   AUTHENTIK_EMAIL__PASSWORD = [[EMAIL_PASS]]
   AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
@@ -694,32 +694,6 @@ environment = """
 ##
 
 [[stack]]
-name = "open-webui-unraid"
-description = "Open WebUI chat frontend backed by llama.cpp via its OpenAI-compatible API, with SearXNG web search and Tika document extraction. Docs: https://docs.openwebui.com. Github: https://github.com/open-webui/open-webui"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "open-webui"
-file_paths = [
-  "compose.yaml",
-  "unraid.network.yaml",
-  "unraid.openwebui-oauth.compose.yaml"
-]
-environment = """
-  CONTAINER_DATA = /mnt/user/appdata
-  OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
-  OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
-  OPENAI_API_KEY = [[LLAMACPP_API_KEY]]
-  OPENWEBUI_VERSION = latest
-  SEARXNG_VERSION = latest
-  TIKA_VERSION = latest
-"""
-
-##
-
-[[stack]]
 name = "open-notebook-unraid"
 description = "AI-powered personal knowledge base with speech-to-text, SurrealDB, and LLM integration. Github: https://github.com/OpenNotebook"
 tags = ["unraid", "sync"]
@@ -742,17 +716,27 @@ environment = """
 ##
 
 [[stack]]
-name = "plex-unraid"
-description = "Media server for streaming movies, TV shows, music, and photos with hardware transcoding. Docs: https://support.plex.tv"
+name = "open-webui-unraid"
+description = "Open WebUI chat frontend backed by llama.cpp via its OpenAI-compatible API, with SearXNG web search and Tika document extraction. Docs: https://docs.openwebui.com. Github: https://github.com/open-webui/open-webui"
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
+auto_update = true
 linked_repo = "kerbol-next"
-run_directory = "plex"
-file_paths = ["compose.yaml"]
+run_directory = "open-webui"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml",
+  "unraid.openwebui-oauth.compose.yaml"
+]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
-  PLEX_VERSION = latest
+  OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
+  OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
+  OPENAI_API_KEY = [[LLAMACPP_API_KEY]]
+  OPENWEBUI_VERSION = latest
+  SEARXNG_VERSION = latest
+  TIKA_VERSION = latest
 """
 
 ##
@@ -823,6 +807,22 @@ environment = """
   TIKA_VERSION = latest
   PAPERLESS_AI_VERSION = latest
   PAPERLESS_GPT_VERSION = latest
+"""
+
+##
+
+[[stack]]
+name = "plex-unraid"
+description = "Media server for streaming movies, TV shows, music, and photos with hardware transcoding. Docs: https://support.plex.tv"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "plex"
+file_paths = ["compose.yaml"]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  PLEX_VERSION = latest
 """
 
 ##
@@ -1075,6 +1075,27 @@ environment = """
 ##
 
 [[build]]
+name = "clair"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+version = "4.9.0"
+auto_increment_version = false
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "clair"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
+[[build]]
 name = "proxmoxmcp-plus"
 tags = ["build", "sync"]
 [build.config]
@@ -1126,27 +1147,6 @@ image_registry = [
 ]
 labels = """
   # your.docker.label: value
-quay.expires-after=4w
-"""
-
-##
-
-[[build]]
-name = "clair"
-tags = ["unraid", "build", "sync"]
-[build.config]
-builder = "Unraid"
-version = "4.9.0"
-auto_increment_version = false
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "kerbol-next"
-build_path = "clair"
-dockerfile_path = "Containerfile"
-image_registry = [
-  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
-]
-labels = """
 quay.expires-after=4w
 """
 
