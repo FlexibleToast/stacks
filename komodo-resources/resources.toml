@@ -229,7 +229,7 @@ description = "Dynamic DNS client supporting 70+ providers for automatic domain 
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "ddns-updater"
 file_paths = [
   "compose.yaml",
@@ -888,7 +888,7 @@ tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
 auto_update = true
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "tang"
 file_paths = [
   "compose.yaml",
