@@ -617,33 +617,6 @@ environment = """
 ##
 
 [[stack]]
-name = "open-webui-unraid"
-description = "Open WebUI chat frontend backed by llama.cpp via its OpenAI-compatible API, with SearXNG web search and Tika document extraction. Docs: https://docs.openwebui.com. Github: https://github.com/open-webui/open-webui"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "open-webui"
-file_paths = [
-  "compose.yaml",
-  "unraid.network.yaml",
-  "unraid.openwebui-oauth.compose.yaml",
-  "labels.unraid.compose.yaml"
-]
-environment = """
-  CONTAINER_DATA = /mnt/user/appdata
-  OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
-  OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
-  OPENAI_API_KEY = [[LLAMACPP_API_KEY]]
-  OPENWEBUI_VERSION = latest
-  SEARXNG_VERSION = latest
-  TIKA_VERSION = latest
-"""
-
-##
-
-[[stack]]
 name = "open-notebook-unraid"
 description = "AI-powered personal knowledge base with speech-to-text, SurrealDB, and LLM integration. Github: https://github.com/OpenNotebook"
 tags = ["unraid", "sync"]
@@ -678,7 +651,8 @@ run_directory = "open-webui"
 file_paths = [
   "compose.yaml",
   "unraid.network.yaml",
-  "unraid.openwebui-oauth.compose.yaml"
+  "unraid.openwebui-oauth.compose.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
