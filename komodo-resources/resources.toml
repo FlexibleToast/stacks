@@ -18,7 +18,6 @@ enabled = true
 name = "Docker Oracle"
 tags = ["oracle", "sync"]
 [server.config]
-address = "https://periphery:8120"
 enabled = true
 
 ##
@@ -102,7 +101,11 @@ server = "Unraid"
 auto_update = true
 linked_repo = "kerbol-next"
 run_directory = "adventurelog"
-file_paths = ["compose.yaml", "network.yaml"]
+file_paths = [
+  "compose.yaml",
+  "network.yaml",
+  "labels.unraid.compose.yaml"
+]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
   PUBLIC_SERVER_URL = http://adventurelog-backend:8000
@@ -131,7 +134,8 @@ linked_repo = "kerbol-next"
 run_directory = "authentik"
 file_paths = [
   "compose.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
@@ -227,6 +231,10 @@ tags = ["unraid", "sync"]
 server = "Unraid"
 linked_repo = "stacks"
 run_directory = "ddns-updater"
+file_paths = [
+  "compose.yaml",
+  "labels.unraid.compose.yaml"
+]
 environment = """
   # VARIABLE = value
   CONTAINER_DATA=/mnt/user/appdata
@@ -261,7 +269,8 @@ run_directory = "grimmory"
 file_paths = [
   "compose.yaml",
   "unraid.mounts.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
@@ -286,7 +295,8 @@ run_directory = "immich"
 file_paths = [
   "compose.yaml",
   "networks.yaml",
-  "intel.unraid.yaml"
+  "intel.unraid.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
@@ -348,11 +358,9 @@ environment = """
   KOMODO_HOST=[[KOMODO_HOST]]
   ## Displayed in the browser tab.
   KOMODO_TITLE=Komodo
-  ## Create a server matching this address as the "first server".
-  ## Use `https://host.docker.internal:8120` when using systemd-managed Periphery.
-  KOMODO_FIRST_SERVER=https://periphery:8120
-  ## Give the first server a custom name.
-  KOMODO_FIRST_SERVER_NAME=Local
+  ## The core-host Periphery runs under systemd on this host and phones into
+  ## Core (outbound) as the "Docker Oracle" server, so no first_server_address
+  ## or first_server_name is needed (the server already exists in the DB).
   ## Make all buttons just double-click, rather than the full confirmation dialog.
   KOMODO_DISABLE_CONFIRM_DIALOG=false
 
@@ -428,101 +436,11 @@ environment = """
   KOMODO_AWS_ACCESS_KEY_ID= # Alt: KOMODO_AWS_ACCESS_KEY_ID_FILE
   KOMODO_AWS_SECRET_ACCESS_KEY= # Alt: KOMODO_AWS_SECRET_ACCESS_KEY_FILE
 
-  #=------------------------------=#
-  #= Komodo Periphery Environment =#
-  #=------------------------------=#
-
-  ## Full variable list + descriptions are available here:
-  ## 🦎 https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml 🦎
-
-  ## Specify the root directory used by Periphery agent.
-  PERIPHERY_ROOT_DIRECTORY=/srv/container-data/komodo/periphery
-
-  ## Periphery passkeys must include KOMODO_PASSKEY to authenticate.
-  PERIPHERY_PASSKEYS=[[KOMODO_PASSKEY]]
-
-  ## Specify whether to disable the terminals feature
-  ## and disallow remote shell access (inside the Periphery container).
-  PERIPHERY_DISABLE_TERMINALS=false
-
-  ## Enable SSL using self signed certificates.
-  ## Connect to Periphery at https://address:8120.
-  PERIPHERY_SSL_ENABLED=true
-
-  ## If the disk size is overreporting, can use one of these to 
-  ## whitelist / blacklist the disks to filter them, whichever is easier.
-  ## Accepts comma separated list of paths.
-  ## Usually whitelisting just /etc/hostname gives correct size.
-  PERIPHERY_INCLUDE_DISK_MOUNTS=/etc/hostname
-  # PERIPHERY_EXCLUDE_DISK_MOUNTS=/snap,/etc/repos
-
-  ## Prettier logging with empty lines between logs
-  PERIPHERY_LOGGING_PRETTY=false
-  ## More human readable logging of startup config (multi-line)
-  PERIPHERY_PRETTY_STARTUP_CONFIG=false
-  MONGO_VERSION = latest
-"""
-
-##
-
-[[stack]]
-name = "komodo-periphery-brookview"
-description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
-tags = ["brookview", "sync"]
-[stack.config]
-server = "Brookview MicroOS"
-linked_repo = "kerbol-next"
-run_directory = "komodo-periphery"
-environment = """
-  # VARIABLE = value
-  CONTAINER_DATA = /srv/container-data
-  KOMODO_PERIPHERY_PATH=/srv/container-data/komodo-periphery
-  PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
-  PERIPHERY_CONNECT_AS = Brookview MicroOS
-  KOMODO_IMAGE_TAG = 2
-"""
-
-##
-
-[[stack]]
-name = "komodo-periphery-container-pi"
-description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
-tags = ["container-pi4-1", "sync"]
-[stack.config]
-server = "Container Pi4 1"
-linked_repo = "kerbol-next"
-run_directory = "komodo-periphery"
-environment = """
-  # VARIABLE = value
-  CONTAINER_DATA = /srv/container-data
-  KOMODO_PERIPHERY_PATH = /srv/container-data/komodo-periphery
-  PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
-  PERIPHERY_CONNECT_AS = Container Pi4 1
-  KOMODO_IMAGE_TAG = 2
-"""
-
-##
-
-[[stack]]
-name = "komodo-periphery-unraid"
-description = "Komodo agent that runs on managed servers to execute builds and deployments. Docs: https://komo.do"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-linked_repo = "kerbol-next"
-run_directory = "komodo-periphery"
-file_paths = [
-  "compose.yaml",
-  "mounts.compose.yaml"
-]
-environment = """
-  # VARIABLE = value
-  PERIPHERY_INCLUDE_DISK_MOUNTS = /mnt/user/media
-  CONTAINER_DATA = /mnt/user/appdata
-  KOMODO_PERIPHERY_PATH = /mnt/user/stacks
-  PERIPHERY_CORE_ADDRESS = https://komodo.mcdade.app
-  PERIPHERY_CONNECT_AS = Unraid
-  KOMODO_IMAGE_TAG = 2
+  ## Pinned to major 8: `latest` jumped to 9.x, which refuses to start data
+  ## written at featureCompatibilityVersion 8.2 (crash-loop, exitCode 62).
+  ## The `8` tag tracks the newest 8.x minor (currently 8.3) — safe for this
+  ## data, but it does move between minors. Use 8.2 to fully freeze.
+  MONGO_VERSION = 8
 """
 
 ##
@@ -557,7 +475,8 @@ run_directory = "llamacpp"
 file_paths = [
   "compose.yaml",
   "intel.unraid.compose.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 config_files = [
   { path = "model.ini", services = ["llamacpp"] }
@@ -584,7 +503,8 @@ run_directory = "mcphub"
 file_paths = [
   "compose.yaml",
   "unraid.network.yaml",
-  "searxng.unraid.yaml"
+  "searxng.unraid.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
 CONTAINER_DATA = /mnt/user/appdata
@@ -638,7 +558,8 @@ linked_repo = "kerbol-next"
 run_directory = "newt"
 file_paths = [
   "compose.yaml",
-  "frontend.network.compose.yaml"
+  "frontend.network.compose.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   PANGOLIN_ENDPOINT = https://pangolin.mcdade.app
@@ -659,7 +580,8 @@ linked_repo = "kerbol-next"
 run_directory = "olivetin"
 file_paths = [
   "compose.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 config_files = [
   { path = "unraid.olivetin.conf", services = ["olivetin"] }
@@ -683,12 +605,40 @@ run_directory = "ollama"
 file_paths = [
   "compose.yaml",
   "intel.unraid.compose.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
   OLLAMA_VERSION = latest
   OLLAMA_KEEP_ALIVE = 10m
+"""
+
+##
+
+[[stack]]
+name = "open-webui-unraid"
+description = "Open WebUI chat frontend backed by llama.cpp via its OpenAI-compatible API, with SearXNG web search and Tika document extraction. Docs: https://docs.openwebui.com. Github: https://github.com/open-webui/open-webui"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "open-webui"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml",
+  "unraid.openwebui-oauth.compose.yaml",
+  "labels.unraid.compose.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  OAUTH_CLIENT_ID = [[OPENWEBUI_OAUTH_CLIENT_ID]]
+  OAUTH_CLIENT_SECRET = [[OPENWEBUI_OAUTH_CLIENT_SECRET]]
+  OPENAI_API_KEY = [[LLAMACPP_API_KEY]]
+  OPENWEBUI_VERSION = latest
+  SEARXNG_VERSION = latest
+  TIKA_VERSION = latest
 """
 
 ##
@@ -703,7 +653,8 @@ linked_repo = "kerbol-next"
 run_directory = "open-notebook"
 file_paths = [
   "compose.yaml",
-  "unraid-network.yaml"
+  "unraid-network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   OPEN_NOTEBOOK_ENCRYPTION_KEY: [[OPEN_NOTEBOOK_ENCRYPTION_KEY]]
@@ -779,7 +730,8 @@ linked_repo = "kerbol-next"
 run_directory = "paperless"
 file_paths = [
   "unraid-network.yaml",
-  "compose.yaml"
+  "compose.yaml",
+  "labels.unraid.compose.yaml"
 ]
 additional_env_files = [
   { path = "gotenberg/.env", track = true },
@@ -838,7 +790,8 @@ linked_repo = "kerbol-next"
 run_directory = "quay"
 file_paths = [
   "compose.yaml",
-  "frontend-network.compose.yaml"
+  "frontend-network.compose.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   # VARIABLE = value
@@ -867,7 +820,8 @@ run_directory = "romm"
 file_paths = [
   "compose.yaml",
   "unraid.mounts.yaml",
-  "unraid.network.yaml"
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   CONTAINER_DATA = /mnt/user/appdata
@@ -936,6 +890,10 @@ server = "Unraid"
 auto_update = true
 linked_repo = "stacks"
 run_directory = "tang"
+file_paths = [
+  "compose.yaml",
+  "labels.unraid.compose.yaml"
+]
 environment = """
   # VARIABLE = value
   CONTAINER_DATA = /mnt/user/appdata
@@ -956,7 +914,8 @@ file_paths = [
   "server.compose.yaml",
   "node-vaapi.compose.yaml",
   "network.compose.yaml",
-  "volumes-unraid.yaml"
+  "volumes-unraid.yaml",
+  "labels.unraid.compose.yaml"
 ]
 environment = """
   TDARR_VERSION = 2.87.01
@@ -1031,6 +990,33 @@ environment = """
   SMTP_PASSWORD="[[EMAIL_PASS]]"
   CONTAINER_DATA=/srv/container-data
   SVC_VERSION = alpine
+"""
+
+##
+
+[[stack]]
+name = "vaultwarden-unraid"
+description = "Self-hosted Bitwarden-compatible password manager. Docs: https://github.com/dani-garcia/vaultwarden"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "vaultwarden"
+file_paths = [
+  "compose.yaml",
+  "admin.compose.yaml",
+  "external-network.compose.yaml",
+  "ports.compose.yaml",
+  "labels.unraid.compose.yaml"
+]
+environment = """
+  # VARIABLE = value
+  CONTAINER_DATA=/mnt/user/appdata
+  VAULTWARDEN_VERSION=alpine
+  ADMIN_TOKEN="[[ADMIN_TOKEN]]"
+  SMTP_FROM=[[EMAIL]]
+  SMTP_USERNAME=[[EMAIL]]
+  SMTP_PASSWORD="[[SMTP_PASSWORD]]"
 """
 
 ##

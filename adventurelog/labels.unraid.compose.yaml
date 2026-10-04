@@ -1,0 +1,10 @@
+services:
+  adventurelog-postgis:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
+  adventurelog-frontend:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/adventurelog.svg
+  adventurelog-backend:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/adventurelog.svg

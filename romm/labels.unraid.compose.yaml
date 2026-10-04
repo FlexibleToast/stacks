@@ -1,0 +1,7 @@
+services:
+  romm:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/romm.svg
+  romm-mariadb:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/mariadb.svg

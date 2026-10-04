@@ -1,8 +1,6 @@
 services:
   quay-clair-postgresql:
     container_name: quay-clair-postgresql
-    labels:
-      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     environment:
@@ -54,8 +52,6 @@ services:
 
   quay-postgresql:
     container_name: quay-postgresql
-    labels:
-      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/postgresql.svg
     image: postgres:${POSTGRES_VERSION}
     restart: unless-stopped
     environment:
@@ -74,8 +70,6 @@ services:
 
   quay-redis:
     container_name: quay-redis
-    labels:
-      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/redis.svg
     image: redis:${REDIS_VERSION}
     restart: unless-stopped
     environment:
@@ -95,8 +89,6 @@ services:
 
   quay:
     container_name: quay
-    labels:
-      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/harbor.svg
     image: quay.io/projectquay/quay:${QUAY_VERSION}
     restart: unless-stopped
     environment:

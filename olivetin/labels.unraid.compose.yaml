@@ -1,0 +1,4 @@
+services:
+  olivetin:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/olivetin.svg

@@ -8,10 +8,6 @@ services:
       - pangolin
       - backend
 
-  periphery:
-    networks:
-      - backend
-
 networks:
   pangolin:
     external: true

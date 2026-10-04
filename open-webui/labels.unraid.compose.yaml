@@ -1,0 +1,10 @@
+services:
+  open-webui:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/open-webui.svg
+  searxng-ai:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/searxng.svg
+  tika:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/apache-tika.svg

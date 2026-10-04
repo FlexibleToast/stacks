@@ -1,0 +1,10 @@
+services:
+  on-speaches:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/speaches.svg
+  on-surrealdb:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/surrealdb.svg
+  on-open-notebook:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/notesnook.svg

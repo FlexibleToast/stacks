@@ -1,8 +1,6 @@
 services:
   plex:
     container_name: plex
-    labels:
-      net.unraid.docker.icon: https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/plex-logo.png
     image: lscr.io/linuxserver/plex:${PLEX_VERSION}
     network_mode: host
     devices:

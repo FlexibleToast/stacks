@@ -21,6 +21,7 @@ stack-dir/              # One per service (e.g. adguard/, vaultwarden/)
   ports.compose.yaml    # Optional — port mappings
   mounts.compose.yaml   # Optional — volume mounts
   {server}.compose.yaml # Optional — server-specific overrides
+  labels.unraid.compose.yaml # Optional — Unraid net.unraid.docker.* labels
 komodo-resources/
   resources.toml        # Central config: servers, stacks, builds, repos, procedures
 scripts/
@@ -53,15 +54,19 @@ services:
 
 ### Unraid Container Icons
 
-Unraid's WebUI reads the docker label `net.unraid.docker.icon` (a URL) from each container's config and shows it on the Docker tab. Add it per service in stacks deployed to Unraid:
+Unraid's WebUI reads the docker label `net.unraid.docker.icon` (a URL) from each container's config and shows it on the Docker tab. Add it per service in stacks deployed to Unraid, in `labels.unraid.compose.yaml`:
 
 ```yaml
+services:
+  adguardhome:
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/<ref>.svg
 ```
 
 - Icon source: [selfh.st](https://selfh.st/icons/). Refs and format availability are in `https://raw.githubusercontent.com/selfhst/icons/refs/heads/main/index.json` (fields `Name`/`Reference`/`SVG`/`PNG`); SVGs live at `svg/<ref>.svg`, PNGs at `png/<ref>.png`. Some refs have no SVG (e.g. `mcphub`, `tdarr`) — use the PNG instead, and curl-verify the exact URL returns 200 before writing it.
-- Label every service in a Unraid stack, including DB sidecars (share the app icon, or use `postgresql`/`redis`/`mariadb`). Merge into an existing `labels:` block rather than adding a second one.
+- Label every service in a Unraid stack, including DB sidecars (share the app icon, or use `postgresql`/`redis`/`mariadb`).
+- The `labels.unraid.compose.yaml` file contains ONLY `services.<name>.labels` with `net.unraid.*` keys (docker compose merges label maps key-by-key across files). Add it to `file_paths` of the Unraid stack entry only.
+- The `net.unraid.docker.webui` and `net.unraid.docker.managed` labels are NOT used (everything is accessed via Pangolin) and should not be added.
 - Labels only take effect when Komodo recreates the containers on the next deploy.
 
 ### Naming
@@ -103,6 +108,10 @@ environment = """
 | `backend` | false | Stack-internal only |
 | `ai` | true | AI/ML services |
 | `pangolin` | true | Reverse proxy/VPN |
+
+### Server-Specific Configuration
+
+Server-specific things (Unraid labels, per-server networks, per-server mounts/ports) belong in per-server compose override files — e.g. `labels.unraid.compose.yaml`, `unraid.network.yaml`, `unraid.mounts.yaml` — listed in that server stack's `file_paths` in resources.toml. Never put them in the shared generic `compose.yaml`. For multi-server `run_directory`s (e.g. `newt`, `tang`, `ddns-updater`), only the Unraid stack entry's `file_paths` gets the unraid files. Unraid `net.unraid.docker.icon` labels go in `labels.unraid.compose.yaml`; the `net.unraid.docker.webui`/`managed` labels are not used (access is via Pangolin) and should not be added.
 
 ## Boundaries
 

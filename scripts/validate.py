@@ -108,6 +108,7 @@ def validate_compose():
             cmd.extend(["-f", str(f)])
         cmd.extend(["config", "--quiet"])
         env = os.environ.copy()
+        dummy_vars = {}
         if test_env:
             with open(test_env) as f:
                 for line in f:
@@ -115,10 +116,19 @@ def validate_compose():
                     if line and not line.startswith("#"):
                         k, _, v = line.partition("=")
                         env[k.strip()] = v.strip()
+                        dummy_vars[k.strip()] = v.strip()
         # Inject env vars from resources.toml (override .env.test)
         if d.name in stack_envs:
             for k, v in stack_envs[d.name].items():
                 env[k] = v
+                dummy_vars[k] = v
+        # Compose files may reference `env_file: ./.env`. The real file is
+        # managed by Komodo at deploy time and is never committed, so synthesize
+        # a temporary one from the dummy values for the duration of the check.
+        temp_env = d / ".env"
+        created_temp = not temp_env.exists()
+        if created_temp:
+            temp_env.write_text("".join(f"{k}={v}\n" for k, v in sorted(dummy_vars.items())))
         try:
             subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=env, check=True)
             ok(f"{d.name}/compose.yaml ({len(files)} file{'s' if len(files) > 1 else ''})")
@@ -141,6 +151,9 @@ def validate_compose():
         except subprocess.TimeoutExpired:
             warn(f"{d.name}/compose.yaml: timed out (skipped)")
             skipped += 1
+        finally:
+            if created_temp:
+                temp_env.unlink(missing_ok=True)
     if passed or skipped:
         ok(f"{passed} valid, {skipped} skipped")
 

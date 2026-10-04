@@ -1,0 +1,7 @@
+services:
+  tdarr:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/png/tdarr.png
+  tdarr_node:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/png/tdarr.png

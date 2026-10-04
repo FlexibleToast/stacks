@@ -1,0 +1,4 @@
+services:
+  komodo-periphery:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/komodo.svg
