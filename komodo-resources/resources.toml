@@ -909,12 +909,15 @@ run_directory = "trek"
 file_paths = [
  "compose.yaml",
  "network.yaml",
- "labels.unraid.compose.yaml"
+ "labels.unraid.compose.yaml",
+ "oidc.unraid.compose.yaml"
 ]
 environment = """
  CONTAINER_DATA = /mnt/user/appdata
  TREK_VERSION = 4
  TREK_ENCRYPTION_KEY = [[TREK_ENCRYPTION_KEY]]
+ OIDC_CLIENT_ID = DjD1Vnp28y4i6JJmix3v9BGkZzRXQ5gXtBwMUQZG
+ OIDC_CLIENT_SECRET = [[TREK_OIDC_CLIENT_SECRET]]
 """
 
 ##
