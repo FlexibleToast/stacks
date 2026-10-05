@@ -899,6 +899,27 @@ environment = """
 ##
 
 [[stack]]
+name = "trek-unraid"
+description = "AI-powered trip planning that turns travel ideas into detailed, shareable itineraries. Docs: https://github.com/liketrek/TREK"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "kerbol-next"
+run_directory = "trek"
+file_paths = [
+ "compose.yaml",
+ "network.yaml",
+ "labels.unraid.compose.yaml"
+]
+environment = """
+ CONTAINER_DATA = /mnt/user/appdata
+ TREK_VERSION = 4
+ TREK_ENCRYPTION_KEY = [[TREK_ENCRYPTION_KEY]]
+"""
+
+##
+
+[[stack]]
 name = "tunnel-brookview"
 description = "Cloudflare Tunnel for secure remote access without opening firewall ports. Docs: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks"
 tags = ["brookview", "sync"]

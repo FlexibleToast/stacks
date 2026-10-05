@@ -1,0 +1,29 @@
+services:
+  trek:
+    container_name: trek
+    image: mauriceboe/trek:${TREK_VERSION}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      ENCRYPTION_KEY: ${TREK_ENCRYPTION_KEY}
+    volumes:
+      - "${CONTAINER_DATA}/trek/data:/app/data:rw"
+      - "${CONTAINER_DATA}/trek/uploads:/app/uploads:rw"
+    restart: ${SVC_RESTART:-unless-stopped}
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=128m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    healthcheck:
+      test: wget -qO- http://localhost:3000/api/health
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

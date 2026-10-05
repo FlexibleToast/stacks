@@ -1,0 +1,8 @@
+services:
+  trek:
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true
