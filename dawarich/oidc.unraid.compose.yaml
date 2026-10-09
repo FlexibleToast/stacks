@@ -1,0 +1,15 @@
+services:
+  dawarich:
+    environment:
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      OIDC_ISSUER: https://auth.mcdade.app/application/o/dawarich/
+      OIDC_REDIRECT_URI: https://dawarich.mcdade.app/users/auth/openid_connect/callback
+      OIDC_PROVIDER_NAME: Authentik
+  dawarich-sidekiq:
+    environment:
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      OIDC_ISSUER: https://auth.mcdade.app/application/o/dawarich/
+      OIDC_REDIRECT_URI: https://dawarich.mcdade.app/users/auth/openid_connect/callback
+      OIDC_PROVIDER_NAME: Authentik

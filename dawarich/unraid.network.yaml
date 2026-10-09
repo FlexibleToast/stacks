@@ -1,0 +1,19 @@
+services:
+  dawarich:
+    networks:
+      - frontend
+      - backend
+  dawarich-sidekiq:
+    networks:
+      - backend
+  dawarich_db:
+    networks:
+      - backend
+  dawarich_redis:
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:

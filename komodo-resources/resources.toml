@@ -208,6 +208,35 @@ environment = """
 ##
 
 [[stack]]
+name = "dawarich-unraid"
+description = "Self-hosted Google Timeline replacement for tracking and visualizing location history on an interactive map with trips, insights, and family sharing. Docs: https://dawarich.app/docs. Github: https://github.com/Freika/dawarich"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+linked_repo = "stacks"
+run_directory = "dawarich"
+file_paths = [
+  "compose.yaml",
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml",
+  "oidc.unraid.compose.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  DAWARICH_VERSION = 1.15.3
+  DAWARICH_POSTGIS_VERSION = 17-3.5-alpine
+  DAWARICH_REDIS_VERSION = 7.4-alpine
+  DAWARICH_DB_USER = dawarich
+  DAWARICH_DB_NAME = dawarich
+  DAWARICH_DB_PASSWORD = [[DAWARICH_DB_PASSWORD]]
+  DAWARICH_SECRET_KEY_BASE = [[DAWARICH_SECRET_KEY_BASE]]
+  OIDC_CLIENT_ID = [[DAWARICH_OIDC_CLIENT_ID]]
+  OIDC_CLIENT_SECRET = [[DAWARICH_OIDC_CLIENT_SECRET]]
+"""
+
+##
+
+[[stack]]
 name = "ddns-updater-brookview"
 description = "Dynamic DNS client supporting 70+ providers for automatic domain updates. Github: https://github.com/qdm12/ddns-updater"
 tags = ["brookview", "sync"]
