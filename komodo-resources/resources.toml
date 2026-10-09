@@ -213,7 +213,7 @@ description = "Self-hosted Google Timeline replacement for tracking and visualiz
 tags = ["unraid", "sync"]
 [stack.config]
 server = "Unraid"
-linked_repo = "stacks"
+linked_repo = "kerbol-next"
 run_directory = "dawarich"
 file_paths = [
   "compose.yaml",
