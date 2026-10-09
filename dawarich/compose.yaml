@@ -34,7 +34,7 @@ services:
       - ${CONTAINER_DATA}/dawarich/watched:/var/app/tmp/imports/watched:rw
       - ${CONTAINER_DATA}/dawarich/storage:/var/app/storage:rw
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO - http://127.0.0.1:3000/api/v1/health | grep -q '\"status\"\\s*:\\s*\"ok\"'"]
+      test: ["CMD-SHELL", "wget -q --no-check-certificate -O - https://127.0.0.1:3000/api/v1/health | grep -q '\"status\"\\s*:\\s*\"ok\"'"]
       interval: 10s
       retries: 30
       start_period: 30s
