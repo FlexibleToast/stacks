@@ -14,6 +14,8 @@ services:
       - "${DAWARICH_PORT:-3000}:3000"
     environment:
       TZ: ${TZ:-America/Chicago}
+      DAWARICH_APPLICATION_HOSTS: ${DAWARICH_APPLICATION_HOSTS:-dawarich.mcdade.app}
+      DAWARICH_APPLICATION_PROTOCOL: ${DAWARICH_APPLICATION_PROTOCOL:-https}
       RAILS_ENV: ${DAWARICH_RAILS_ENV:-production}
       REDIS_URL: redis://dawarich_redis:6379
       DATABASE_HOST: dawarich_db
