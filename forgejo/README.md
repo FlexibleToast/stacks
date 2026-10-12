@@ -6,7 +6,7 @@ Self-hosted Git service with built-in CI, migrated to a Komodo stack. Three serv
 - `forgejo-runner` — standard Gitea/Forgejo runner. Shares the host Docker daemon via `/var/run/docker.sock`. Not privileged.
 - `forgejo-runner-dind` — privileged docker-in-docker runner (`gitea/runner:3-dind`). Bundles its own dockerd; job images live in `${CONTAINER_DATA}/forgejo-runner-dind/docker`.
 
-Runners register automatically on first start using the token in `GITEA_RUNNER_REGISTRATION_TOKEN` / `GITEA_RUNNER_DIND_REGISTRATION_TOKEN`. The `depends_on: service_healthy` gate waits for Forgejo's `forgejo admin ping` healthcheck before each runner attempts to register.
+Runners register automatically on first start using the token in `GITEA_RUNNER_REGISTRATION_TOKEN` / `GITEA_RUNNER_DIND_REGISTRATION_TOKEN`. The `depends_on: service_healthy` gate waits for Forgejo's `GET /api/healthz` healthcheck before each runner attempts to register.
 
 ## One-time migration
 
