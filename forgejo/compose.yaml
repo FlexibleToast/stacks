@@ -1,0 +1,57 @@
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:${FORGEJO_VERSION}
+    container_name: forgejo
+    restart: ${SVC_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      USER_UID: ${FORGEJO_USER_UID}
+      USER_GID: ${FORGEJO_USER_GID}
+    ports:
+      - "${FORGEJO_SSH_PORT}:22"
+      - "${FORGEJO_HTTP_PORT}:3000"
+    volumes:
+      - ${CONTAINER_DATA}/forgejo:/data:rw
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: ["CMD", "forgejo", "admin", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  forgejo-runner:
+    image: gitea/runner:${RUNNER_VERSION}
+    container_name: forgejo-runner
+    restart: ${SVC_RESTART:-unless-stopped}
+    depends_on:
+      forgejo:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      GITEA_INSTANCE_URL: ${GITEA_INSTANCE_URL}
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_REGISTRATION_TOKEN}
+      GITEA_RUNNER_NAME: ${GITEA_RUNNER_NAME}
+      GITEA_RUNNER_LABELS: ${GITEA_RUNNER_LABELS}
+    volumes:
+      - ${CONTAINER_DATA}/forgejo-runner:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  forgejo-runner-dind:
+    image: gitea/runner:${RUNNER_VERSION}-dind
+    container_name: forgejo-runner-dind
+    restart: ${SVC_RESTART:-unless-stopped}
+    privileged: true
+    depends_on:
+      forgejo:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      GITEA_INSTANCE_URL: ${GITEA_INSTANCE_URL}
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_DIND_REGISTRATION_TOKEN}
+      GITEA_RUNNER_NAME: ${GITEA_RUNNER_DIND_NAME}
+      GITEA_RUNNER_LABELS: ${GITEA_RUNNER_DIND_LABELS}
+    volumes:
+      - ${CONTAINER_DATA}/forgejo-runner-dind:/data:rw
+      - ${CONTAINER_DATA}/forgejo-runner-dind/docker:/var/lib/docker:rw

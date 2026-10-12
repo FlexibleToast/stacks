@@ -1,0 +1,10 @@
+services:
+  forgejo:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/forgejo.svg
+  forgejo-runner:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/gitea.svg
+  forgejo-runner-dind:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/gitea.svg

@@ -1,0 +1,16 @@
+services:
+  forgejo:
+    networks:
+      - frontend
+      - backend
+  forgejo-runner:
+    networks:
+      - backend
+  forgejo-runner-dind:
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:

@@ -288,6 +288,39 @@ environment = """
 ##
 
 [[stack]]
+name = "forgejo-unraid"
+description = "Self-hosted Git service with built-in CI. Includes a standard runner (host Docker socket) and a privileged docker-in-docker runner. Docs: https://forgejo.org. Github: https://github.com/forgejo/forgejo"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "forgejo"
+file_paths = [
+  "compose.yaml",
+  "network.yaml",
+  "labels.unraid.compose.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  FORGEJO_VERSION = 13
+  FORGEJO_USER_UID = 99
+  FORGEJO_USER_GID = 100
+  FORGEJO_SSH_PORT = 222
+  FORGEJO_HTTP_PORT = 3030
+  RUNNER_VERSION = 3
+  GITEA_INSTANCE_URL = http://forgejo:3000
+  GITEA_RUNNER_REGISTRATION_TOKEN = [[FORGEJO_RUNNER_REGISTRATION_TOKEN]]
+  GITEA_RUNNER_NAME = forgejo-unraid
+  GITEA_RUNNER_LABELS = docker
+  GITEA_RUNNER_DIND_REGISTRATION_TOKEN = [[FORGEJO_RUNNER_DIND_REGISTRATION_TOKEN]]
+  GITEA_RUNNER_DIND_NAME = forgejo-unraid-dind
+  GITEA_RUNNER_DIND_LABELS = dind
+"""
+
+##
+
+[[stack]]
 name = "grimmory-unraid"
 description = "Self-hosted ebook library manager with built-in reader, smart shelves, metadata lookup, device sync, and multi-user support. Docs: https://grimmory.org. Github: https://github.com/grimmory-tools/grimmory"
 tags = ["unraid", "sync"]
