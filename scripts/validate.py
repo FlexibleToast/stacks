@@ -73,8 +73,8 @@ def compose_files(d):
     return [d / "compose.yaml"] + sorted(files)
 
 
-def get_stack_envs():
-    """Build {run_directory: {var: val}} from resources.toml environment blocks."""
+def get_stack_configs():
+    """Build {run_directory: {env: {var: val}, file_paths: [str]}} from resources.toml stack configs."""
     if not RESOURCES_TOML.exists():
         return {}
     data = tomllib.loads(RESOURCES_TOML.read_text())
@@ -90,18 +90,29 @@ def get_stack_envs():
             if line and not line.startswith("#") and "=" in line:
                 k, _, v = line.partition("=")
                 vars[k.strip()] = v.strip().strip('"')
-        result[run_dir] = vars
+        file_paths = s.get("config", {}).get("file_paths", [])
+        result[run_dir] = {"env": vars, "file_paths": file_paths}
     return result
 
 
 def validate_compose():
     print("\n── Docker Compose validation ──")
     dirs = [d for d in STACK_DIRS if (d / "compose.yaml").exists()]
-    stack_envs = get_stack_envs()
+    stack_configs = get_stack_configs()
     passed = 0
     skipped = 0
     for d in sorted(dirs):
-        files = compose_files(d)
+        # Use file_paths from resources.toml if available, otherwise fall back to globbing
+        if d.name in stack_configs:
+            file_paths = stack_configs[d.name].get("file_paths", [])
+            if file_paths:
+                files = [d / fp for fp in file_paths]
+            else:
+                files = compose_files(d)
+            stack_env = stack_configs[d.name].get("env", {})
+        else:
+            files = compose_files(d)
+            stack_env = {}
         test_env = ENV_TEST if ENV_TEST.exists() else None
         cmd = ["docker", "compose"]
         for f in files:
@@ -118,10 +129,9 @@ def validate_compose():
                         env[k.strip()] = v.strip()
                         dummy_vars[k.strip()] = v.strip()
         # Inject env vars from resources.toml (override .env.test)
-        if d.name in stack_envs:
-            for k, v in stack_envs[d.name].items():
-                env[k] = v
-                dummy_vars[k] = v
+        for k, v in stack_env.items():
+            env[k] = v
+            dummy_vars[k] = v
         # Compose files may reference `env_file: ./.env`. The real file is
         # managed by Komodo at deploy time and is never committed, so synthesize
         # a temporary one from the dummy values for the duration of the check.
