@@ -33,10 +33,10 @@ services:
       GITEA_INSTANCE_URL: ${GITEA_INSTANCE_URL}
       GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_REGISTRATION_TOKEN}
       GITEA_RUNNER_NAME: ${GITEA_RUNNER_NAME}
-      GITEA_RUNNER_LABELS: ${GITEA_RUNNER_LABELS}
     volumes:
       - ${CONTAINER_DATA}/forgejo-runner:/data:rw
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./runner-config.yaml:/data/config.yaml:ro
 
   forgejo-runner-dind:
     image: gitea/runner:${RUNNER_VERSION}-dind
@@ -51,7 +51,7 @@ services:
       GITEA_INSTANCE_URL: ${GITEA_INSTANCE_URL}
       GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_DIND_REGISTRATION_TOKEN}
       GITEA_RUNNER_NAME: ${GITEA_RUNNER_DIND_NAME}
-      GITEA_RUNNER_LABELS: ${GITEA_RUNNER_DIND_LABELS}
     volumes:
       - ${CONTAINER_DATA}/forgejo-runner-dind:/data:rw
       - ${CONTAINER_DATA}/forgejo-runner-dind/docker:/var/lib/docker:rw
+      - ./runner-dind-config.yaml:/data/config.yaml:ro
