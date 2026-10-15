@@ -54,6 +54,6 @@ services:
       GITEA_RUNNER_NAME: ${GITEA_RUNNER_DIND_NAME}
       CONFIG_FILE: /data/config.yaml
     volumes:
-      - ${CONTAINER_DATA}/forgejo-runner-dind:/data:rw
-      - ${CONTAINER_DATA}/forgejo-runner-dind/docker:/var/lib/docker:rw
+      - ${DIND_CONTAINER_DATA}/forgejo-runner-dind:/data:rw
+      - ${DIND_CONTAINER_DATA}/forgejo-runner-dind/docker:/var/lib/docker:rw
       - ./runner-dind-config.yaml:/data/config.yaml:ro

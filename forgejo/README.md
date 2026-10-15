@@ -3,7 +3,7 @@
 Self-hosted Git service with built-in CI, migrated to a Komodo stack. Three services:
 
 - `forgejo` — the Forgejo instance (built-in SQLite, no DB sidecar). Web on `${FORGEJO_HTTP_PORT}`, SSH on `${FORGEJO_SSH_PORT}`.
-- `forgejo-runner` — standard Gitea/Forgejo runner (`gitea/runner:${RUNNER_VERSION}`). Labels `ubuntu-latest`, `ubuntu-22.04`, and `ubuntu-20.04`; jobs run in their respective Ubuntu job images on the **host** Docker daemon (socket mounted). Not privileged.
+- `forgejo-runner` — standard Gitea/Forgejo runner (`gitea/runner:${RUNNER_VERSION}`). Labels `ubuntu-latest`, `ubuntu-24.04`, and `ubuntu-22.04`; jobs run in their respective Ubuntu job images on the **host** Docker daemon (socket mounted). Not privileged.
 - `forgejo-runner-dind` — docker-in-docker runner (`gitea/runner:${RUNNER_VERSION}-dind`). Label `dind`; jobs run in the same `gitea/runner-images:ubuntu-latest` but on a **bundled** dockerd (isolated from the host daemon). Privileged.
 
 ## How the runner images work (two layers)
@@ -16,12 +16,12 @@ There are two distinct images and they are easy to confuse:
 
    ```
    ubuntu-latest:docker://gitea/runner-images:ubuntu-latest    (forgejo-runner)
+   ubuntu-24.04:docker://gitea/runner-images:ubuntu-24.04      (forgejo-runner)
    ubuntu-22.04:docker://gitea/runner-images:ubuntu-22.04      (forgejo-runner)
-   ubuntu-20.04:docker://catthehacker/ubuntu:act-20.04         (forgejo-runner)
    dind:docker://gitea/runner-images:ubuntu-latest             (forgejo-runner-dind)
    ```
 
-   `gitea/runner-images` are the official, recommended Gitea/Forgejo job images (`ubuntu-latest` is Ubuntu 24.04). The `20.04` label uses `catthehacker/ubuntu:act-20.04` because `gitea/runner-images` stopped building Ubuntu 20.04.
+   `gitea/runner-images` are the official, recommended Gitea/Forgejo job images (`ubuntu-latest` is Ubuntu 24.04). Ubuntu 20.04 is not offered: it is EOL and `gitea/runner-images` stopped building it.
 
 ## Why two runners
 
@@ -42,13 +42,13 @@ The host-daemon runner is faster and shares the host image cache; the dind runne
 
 The existing standalone `forgejo` container on Unraid uses the same data volume path, so no data migration is needed — only config:
 
-1. **Generate runner registration tokens.** In Forgejo, create two CI runners (or two registration tokens). The labels are applied by the stack via `GITEA_RUNNER_LABELS` / `GITEA_RUNNER_DIND_LABELS`, so the runners just need valid tokens.
-2. **Add the secrets to the secrets repo.** Put both tokens in the private Komodo/forgejo secrets repo: `FORGEJO_RUNNER_REGISTRATION_TOKEN` and `FORGEJO_RUNNER_DIND_REGISTRATION_TOKEN`. They are referenced in `komodo-resources/resources.toml` as `[[FORGEJO_RUNNER_REGISTRATION_TOKEN]]` / `[[FORGEJO_RUNNER_DIND_REGISTRATION_TOKEN]]`.
+1. **Generate runner registration tokens.** In Forgejo, create the CI runners with registration tokens. The labels are applied by the stack via the mounted `runner-config.yaml` / `runner-dind-config.yaml` (read at registration via the `CONFIG_FILE` env var), so the runners just need valid tokens.
+2. **Add the secret to the secrets repo.** Put the token in the private Komodo/forgejo secrets repo as `FORGEJO_RUNNER_REGISTRATION_TOKEN`, referenced in `komodo-resources/resources.toml` as `[[FORGEJO_RUNNER_REGISTRATION_TOKEN]]`. Both runners register with the same token variable but distinct names (`GITEA_RUNNER_NAME` / `GITEA_RUNNER_DIND_NAME`), so a single secret suffices.
 3. **Remove the old container.** Stop and delete the standalone `forgejo` Unraid container (do **not** delete `/mnt/user/appdata/forgejo` — the stack reuses it). Remove its `frontend` network attachment and free ports `222`/`3030`. The stack runs as `FORGEJO_USER_UID=99` / `FORGEJO_USER_GID=100`, matching the existing data ownership, so no re-owning is needed. If a previous runner registration exists under these names, delete it in Forgejo admin → CI runners first.
 4. **Deploy.** Push to `main`; CI validates, syncs, and deploys the `forgejo` run_directory.
 5. **Verify.** Confirm both runners appear under Forgejo admin → CI runners with labels `ubuntu-latest` and `dind`. Then run a throwaway workflow that, on `runs-on: ubuntu-latest` and `runs-on: dind`, runs `cat /etc/os-release` (must report Ubuntu 24.04, not Alpine) and `docker version` (proves the daemon is reachable; on the dind runner it must report the bundled daemon, not the host).
 
 ## Notes
 
-- The dind runner is `privileged: true` — required for docker-in-docker. Job images are cached in `${CONTAINER_DATA}/forgejo-runner-dind/docker` so they persist across container recreation.
+- The dind runner is `privileged: true` — required for docker-in-docker. Its bundled dockerd's state dir (`/var/lib/docker`) and runner data live under `${DIND_CONTAINER_DATA}` (a real NVMe filesystem, not the Unraid `user_share` FUSE mount) because overlayfs cannot be mounted over FUSE — job container creation fails with `invalid argument` if the daemon root is on `/mnt/user`. Job images stay cached in `${DIND_CONTAINER_DATA}/forgejo-runner-dind/docker` across container recreation.
 - A podman-in-docker runner was intentionally not included; `gitea/runner` has no first-class podman image. Revisit if/when a supported podman runner image exists.
