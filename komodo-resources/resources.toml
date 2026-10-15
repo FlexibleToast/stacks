@@ -1142,7 +1142,7 @@ quay.expires-after=4w
 
 [[build]]
 name = "proxmoxmcp-plus"
-tags = ["build", "sync"]
+tags = ["unraid", "build", "sync"]
 [build.config]
 builder = "Unraid"
 image_name = "proxmox-mcp-api"
