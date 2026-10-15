@@ -1197,6 +1197,27 @@ quay.expires-after=4w
 
 ##
 
+[[build]]
+name = "strata"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+version = "0.1.44.1"
+auto_increment_version = false
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "strata"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
 [[repo]]
 name = "forgejo-resources"
 tags = ["sync"]
