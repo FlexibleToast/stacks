@@ -897,6 +897,7 @@ environment = """
   STRATA_VERSION = latest-sycl
   STRATA_FAMILY = qwen
   STRATA_MODEL = IQ3_S
+  STRATA_MODEL_PATH = /data/Strata-data/models/IQ3_S
   STRATA_CONTEXT = 128k
   STRATA_VISION = off
   STRATA_TUNE = skip

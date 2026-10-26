@@ -7,14 +7,13 @@ services:
       TZ: ${TZ:-America/Chicago}
       FAMILY: ${STRATA_FAMILY:-qwen}
       MODEL: ${STRATA_MODEL}
-      MODEL_PATH: /models
+      MODEL_PATH: ${STRATA_MODEL_PATH:-/models}
       CONTEXT: ${STRATA_CONTEXT:-32k}
       VISION: ${STRATA_VISION:-off}
       TUNE: ${STRATA_TUNE:-skip}
       API_KEY: ${STRATA_API_KEY}
     volumes:
       - ${CONTAINER_DATA}/strata/data:/data
-      - ${CONTAINER_DATA}/strata/models:/models:ro
     ulimits:
       memlock:
         soft: -1
