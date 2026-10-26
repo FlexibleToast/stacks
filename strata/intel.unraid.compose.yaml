@@ -1,0 +1,9 @@
+services:
+  strata:
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      ONEAPI_DEVICE_SELECTOR: level_zero:0
+      UR_L0_ENABLE_RELAXED_ALLOCATION_LIMITS: 1
+      ZES_ENABLE_SYSMAN: 1
+      SYCL_CACHE_PERSISTENT: "0"

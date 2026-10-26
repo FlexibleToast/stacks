@@ -878,6 +878,34 @@ environment = """
 ##
 
 [[stack]]
+name = "strata-unraid"
+description = "Local AI server with OpenAI- and Anthropic-compatible APIs, SYCL engine for Intel Arc. Github: https://github.com/Niko1221/Strata"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "strata"
+file_paths = [
+  "compose.yaml",
+  "intel.unraid.compose.yaml",
+  "unraid.network.yaml",
+  "labels.unraid.compose.yaml"
+]
+environment = """
+  CONTAINER_DATA = /mnt/user/appdata
+  STRATA_VERSION = latest-sycl
+  STRATA_FAMILY = qwen
+  STRATA_MODEL = IQ3_S
+  STRATA_CONTEXT = 128k
+  STRATA_VISION = off
+  STRATA_TUNE = skip
+  STRATA_API_KEY = [[STRATA_API_KEY]]
+"""
+
+##
+
+[[stack]]
 name = "tang-container-pi"
 description = "Disk encryption key server for automatic LUKS volume unlocking on reboot. Docs: https://github.com/latchset/tang"
 tags = ["container-pi4-1", "sync"]

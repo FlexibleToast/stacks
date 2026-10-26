@@ -1,0 +1,4 @@
+services:
+  strata:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/Niko1221/Strata/main/apps/host/public/brand/strata-mark-dark.svg

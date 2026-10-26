@@ -1,0 +1,23 @@
+services:
+  strata:
+    image: ghcr.io/niko1221/strata:${STRATA_VERSION:-latest-sycl}
+    container_name: strata
+    restart: ${SVC_RESTART:-unless-stopped}
+    environment:
+      TZ: ${TZ:-America/Chicago}
+      FAMILY: ${STRATA_FAMILY:-qwen}
+      MODEL: ${STRATA_MODEL}
+      MODEL_PATH: /models
+      CONTEXT: ${STRATA_CONTEXT:-32k}
+      VISION: ${STRATA_VISION:-off}
+      TUNE: ${STRATA_TUNE:-skip}
+      API_KEY: ${STRATA_API_KEY}
+    volumes:
+      - ${CONTAINER_DATA}/strata/data:/data
+      - ${CONTAINER_DATA}/strata/models:/models:ro
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    shm_size: 2gb
+    stop_grace_period: 2m
