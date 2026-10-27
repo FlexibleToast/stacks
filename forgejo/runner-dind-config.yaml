@@ -1,3 +1,6 @@
 runner:
   labels:
     - "dind:docker://gitea/runner-images:ubuntu-latest"
+
+container:
+  network: host
