@@ -16,5 +16,7 @@ FROM ${LC} AS llamacpp
 FROM ${ST} AS strata
 
 FROM swap
-COPY --from=llamacpp /app/ /app/            # llama-server launcher + libggml*/libllama*/libmtmd .so set (GGML_BACKEND_DL build)
+# llama-server launcher + libggml*/libllama*/libmtmd .so set (GGML_BACKEND_DL build; no inline # on COPY lines)
+COPY --from=llamacpp /app/ /app/
+# Terminal + Python + serve + sycl engine package
 COPY --from=strata /opt/strata/ /opt/strata/
