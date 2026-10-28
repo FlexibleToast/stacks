@@ -904,6 +904,7 @@ environment = """
   STRATA_API_KEY = [[STRATA_API_KEY]]
 """
 
+
 ##
 
 [[stack]]
@@ -1226,6 +1227,28 @@ quay.expires-after=4w
 
 ##
 
+[[build]]
+name = "llama-swap"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+version = "0.0.0"
+auto_increment_version = true
+webhook_enabled = true
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "llama-swap"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
 [[repo]]
 name = "forgejo-resources"
 tags = ["sync"]
@@ -1284,6 +1307,22 @@ name = "Stage 1"
 enabled = true
 executions = [
   { execution.type = "GlobalAutoUpdate", execution.params.skip_auto_update = false, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Weekly llama-swap Rebuild"
+description = "Rebuilds the llama-swap image (llama-swap + llama.cpp SYCL + Strata sycl) once a week so upstream engine updates are picked up; each build increments the version, the stack pins a version tag for rollback."
+tags = ["llama-swap", "sync"]
+config.schedule_alert = false
+config.schedule = "Every Saturday at 03:30"
+
+[[procedure.config.stage]]
+name = "Build"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "llama-swap", enabled = true }
 ]
 
 ##

@@ -1,0 +1,13 @@
+# llama-swap + llama.cpp (SYCL) + Strata (SYCL) in one image; llama-swap is PID 1.
+# Upstream tags float on purpose: a rebuild is human-triggered (Komodo Build), and the pin that controls
+# what RUNS is the built image tag the [[stack]] references. Verified 2026-10-27: llama-swap:intel base is
+# llama.cpp server-intel (then b11913) and carries oneAPI runtime + Level Zero loader + libze_intel_gpu, which
+# both libggml-sycl (dlopened) and the Strata engine's Level Zero use need. /opt/strata = self-contained
+# Terminal + sycl engine package (engine bundles its own oneAPI SYCL runtime). If llama-server ever fails to
+# load libggml-sycl after an upstream move, that is the version-alignment symptom - pin LS/LC to matching tags then.
+ARG LS=ghcr.io/mostlygeek/llama-swap:intel
+ARG LC=ghcr.io/ggml-org/llama.cpp:server-intel
+ARG ST=ghcr.io/niko1221/strata:latest-sycl
+FROM ${LS}
+COPY --from=${LC} /app/ /app/            # llama-server launcher + libggml*/libllama*/libmtmd .so set (GGML_BACKEND_DL build)
+COPY --from=${ST} /opt/strata/ /opt/strata/
