@@ -5,9 +5,16 @@
 # both libggml-sycl (dlopened) and the Strata engine's Level Zero use need. /opt/strata = self-contained
 # Terminal + sycl engine package (engine bundles its own oneAPI SYCL runtime). If llama-server ever fails to
 # load libggml-sycl after an upstream move, that is the version-alignment symptom - pin LS/LC to matching tags then.
+# Named stages are REQUIRED: Unraid's classic docker builder rejects variable expansion in COPY --from
+# ("variable expansion is not supported for --from, define a new stage with FROM using ARG from global scope").
 ARG LS=ghcr.io/mostlygeek/llama-swap:intel
 ARG LC=ghcr.io/ggml-org/llama.cpp:server-intel
 ARG ST=ghcr.io/niko1221/strata:latest-sycl
-FROM ${LS}
-COPY --from=${LC} /app/ /app/            # llama-server launcher + libggml*/libllama*/libmtmd .so set (GGML_BACKEND_DL build)
-COPY --from=${ST} /opt/strata/ /opt/strata/
+
+FROM ${LS} AS swap
+FROM ${LC} AS llamacpp
+FROM ${ST} AS strata
+
+FROM swap
+COPY --from=llamacpp /app/ /app/            # llama-server launcher + libggml*/libllama*/libmtmd .so set (GGML_BACKEND_DL build)
+COPY --from=strata /opt/strata/ /opt/strata/
