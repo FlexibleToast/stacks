@@ -740,15 +740,17 @@ file_paths = [
   "compose.yaml",
   "network.compose.yaml"
 ]
+config_files = [
+  { path = "traefik_config.yml", services = ["traefik"] }
+]
 environment = """
   CONTAINER_DATA = /srv/container-data
   CLOUDFLARE_DNS_API_TOKEN = [[CLOUDFLARE_DNS_API_TOKEN]]
-  BADGER_VERSION = v1.6.1
   CROWDSEC_VERSION = latest
   GERBIL_VERSION = 1.5.2
   PANGOLIN_VERSION = ee-1.22
   TRAEFIK_VERSION = v3
-  # BADGER_VERSION overrides the Badger plugin version via TRAEFIK_EXPERIMENTAL_PLUGINS_* env in compose.yaml — this is the source of truth, it beats the stale block in /srv/container-data/pangolin/config/traefik/traefik_config.yml. Do not use v1.8.0 — it fails Traefik's plugin integrity check.
+  # Badger version lives in pangolin/traefik_config.yml (repo-managed, shadow-mounted over the app-data copy so Pangolin migrations cannot rewrite it). Currently v1.7.0. Do not use v1.8.0 — it fails Traefik's plugin integrity check.
 """
 
 ##

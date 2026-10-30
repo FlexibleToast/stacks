@@ -71,8 +71,6 @@ services:
   traefik:
     command:
       - --configFile=/etc/traefik/traefik_config.yml
-      - --experimental.plugins.badger.moduleName=github.com/fosrl/badger
-      - --experimental.plugins.badger.version=${BADGER_VERSION}
     container_name: traefik
     depends_on:
       crowdsec:
@@ -86,5 +84,6 @@ services:
       CLOUDFLARE_DNS_API_TOKEN: "${CLOUDFLARE_DNS_API_TOKEN}"
     volumes:
       - ${CONTAINER_DATA}/pangolin/config/traefik:/etc/traefik:ro
+      - ./traefik_config.yml:/etc/traefik/traefik_config.yml:ro
       - ${CONTAINER_DATA}/pangolin/config/letsencrypt:/letsencrypt
       - ${CONTAINER_DATA}/pangolin/config/traefik/logs:/var/log/traefik
