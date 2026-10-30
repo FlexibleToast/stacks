@@ -71,6 +71,8 @@ services:
   traefik:
     command:
       - --configFile=/etc/traefik/traefik_config.yml
+      - --experimental.plugins.badger.moduleName=github.com/fosrl/badger
+      - --experimental.plugins.badger.version=${BADGER_VERSION}
     container_name: traefik
     depends_on:
       crowdsec:
