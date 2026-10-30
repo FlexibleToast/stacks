@@ -748,7 +748,7 @@ environment = """
   CLOUDFLARE_DNS_API_TOKEN = [[CLOUDFLARE_DNS_API_TOKEN]]
   CROWDSEC_VERSION = latest
   GERBIL_VERSION = 1.5.2
-  PANGOLIN_VERSION = ee-1.22
+  PANGOLIN_VERSION = ee-1.23
   TRAEFIK_VERSION = v3
   # Badger version lives in pangolin/traefik_config.yml (repo-managed, shadow-mounted over the app-data copy so Pangolin migrations cannot rewrite it). Currently v1.7.0. Do not use v1.8.0 — it fails Traefik's plugin integrity check.
 """
