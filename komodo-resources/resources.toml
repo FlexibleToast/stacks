@@ -497,11 +497,10 @@ environment = """
   KOMODO_AWS_ACCESS_KEY_ID= # Alt: KOMODO_AWS_ACCESS_KEY_ID_FILE
   KOMODO_AWS_SECRET_ACCESS_KEY= # Alt: KOMODO_AWS_SECRET_ACCESS_KEY_FILE
 
-  ## Pinned to major 8: `latest` jumped to 9.x, which refuses to start data
-  ## written at featureCompatibilityVersion 8.2 (crash-loop, exitCode 62).
-  ## The `8` tag tracks the newest 8.x minor (currently 8.3) — safe for this
-  ## data, but it does move between minors. Use 8.2 to fully freeze.
-  MONGO_VERSION = 8
+  ## Mongo 9 (9.0.4+): 8.3.x refuses to start on Linux kernel 6.19+
+  ## (tcmalloc/rseq, SERVER-121912 / SERVER-136272); fixed in 9.0.4.
+  ## FCV was raised 8.2 -> 8.3 on 2026-10-29 to allow the 8.3 -> 9.0 step.
+  MONGO_VERSION = 9
 """
 
 ##
