@@ -1,4 +1,5 @@
 FROM golang:1.25 AS build
+RUN apt-get update -qq && apt-get install -yqq --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 RUN git clone --depth 1 --branch v4.9.0 https://github.com/quay/clair .
 RUN go mod edit -require=github.com/quay/claircore@v1.5.54 && go mod tidy
