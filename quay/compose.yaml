@@ -91,6 +91,7 @@ services:
     container_name: quay
     image: quay.io/projectquay/quay:${QUAY_VERSION}
     restart: unless-stopped
+    mem_limit: 16g
     environment:
       TZ: ${TZ:-America/Chicago}
       IGNORE_VALIDATION: ${IGNORE_VALIDATION:-true}
