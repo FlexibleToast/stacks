@@ -1,0 +1,121 @@
+{
+  "version": "1.0",
+  "log": {
+    "level": "info"
+  },
+  "storage": {
+    "rootDirectory": "/var/lib/registry",
+    "dedupe": true,
+    "gc": true,
+    "gcInterval": "168h"
+  },
+  "http": {
+    "address": "0.0.0.0",
+    "port": "8080",
+    "externalUrl": "https://zot.mcdade.app",
+    "compat": ["docker2s2"],
+    "auth": {
+      "openid": {
+        "providers": {
+          "oidc": {
+            "name": "authentik",
+            "credentialsFile": "/etc/zot/credentials.json",
+            "issuer": "https://auth.mcdade.app/application/o/zot/",
+            "keypath": "",
+            "scopes": ["openid", "email", "groups"]
+          }
+        }
+      }
+    }
+  },
+  "extensions": {
+    "ui": {},
+    "search": {
+      "cve": {
+        "updateInterval": "24h"
+      }
+    },
+    "metrics": {
+      "prometheus": {
+        "path": "/metrics"
+      }
+    },
+    "sync": {
+      "credentialsFile": "/etc/zot/sync-credentials.json",
+      "registries": [
+        {
+          "urls": ["https://quay.io"],
+          "pollInterval": "168h",
+          "content": [
+            {
+              "prefix": "/projectquay/quay",
+              "tags": { "regex": "^3\\.(18|19)" },
+              "destination": "/projectquay/quay",
+              "stripPrefix": true
+            },
+            {
+              "prefix": "/projectquay/clair",
+              "tags": { "regex": "^4\\.(8|9)" },
+              "destination": "/projectquay/clair",
+              "stripPrefix": true
+            }
+          ]
+        },
+        {
+          "urls": ["https://registry.redhat.io"],
+          "pollInterval": "168h",
+          "syncTimeout": "12h",
+          "content": [
+            {
+              "prefix": "/offline-knowledge-portal/rhokp-rhel9",
+              "tags": { "regex": "^latest$" },
+              "destination": "/offline-knowledge-portal/rhokp-rhel9",
+              "stripPrefix": true
+            }
+          ]
+        },
+        {
+          "urls": ["https://ghcr.io"],
+          "pollInterval": "168h",
+          "content": [
+            {
+              "prefix": "/goauthentik/server",
+              "tags": { "regex": "^(2025|2026)\\." },
+              "destination": "/goauthentik/server",
+              "stripPrefix": true
+            },
+            {
+              "prefix": "/sillytavern/sillytavern",
+              "tags": { "regex": "^latest$" },
+              "destination": "/sillytavern/sillytavern",
+              "stripPrefix": true
+            }
+          ]
+        },
+        {
+          "urls": ["https://git.mcdade.app"],
+          "pollInterval": "168h",
+          "content": [
+            {
+              "prefix": "/homeserver/media-downloader",
+              "destination": "/homeserver/media-downloader",
+              "stripPrefix": true
+            }
+          ]
+        },
+        {
+          "urls": ["https://docker.io"],
+          "pollInterval": "168h",
+          "content": [
+            {
+              "prefix": "/ayufan/proxmox-backup-server",
+              "tags": { "regex": "^v4(\\.|$)" },
+              "destination": "/ayufan/proxmox-backup-server",
+              "stripPrefix": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

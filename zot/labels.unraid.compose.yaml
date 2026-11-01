@@ -1,0 +1,4 @@
+services:
+  zot:
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/selfhst/icons/main/svg/zot-registry.svg

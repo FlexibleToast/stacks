@@ -846,6 +846,33 @@ environment = """
 ##
 
 [[stack]]
+name = "zot"
+description = "Lightweight OCI registry: web UI with OIDC login, Trivy CVE scanning, mirroring and pull-through caching. Docs: https://zotregistry.dev. Github: https://github.com/project-zot/zot"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "zot"
+file_paths = [
+  "compose.yaml",
+  "frontend.network.compose.yaml",
+  "labels.unraid.compose.yaml"
+]
+config_files = [
+  { path = "config.json", services = ["zot"] },
+  { path = "credentials.json", services = ["zot"] },
+  { path = "sync-credentials.json", services = ["zot"] }
+]
+environment = """
+  ZOT_VERSION = 2-ui
+  ZOT_STORAGE = /mnt/user/zot
+  ZOT_MEM_LIMIT = 4g
+"""
+
+##
+
+[[stack]]
 name = "romm-unraid"
 description = "ROM Manager (RomM) for browsing, enriching, and playing game ROM collections with metadata scraping, OIDC auth, and a clean web UI. Docs: https://docs.romm.app. Github: https://github.com/rommapp/romm"
 tags = ["unraid", "sync"]

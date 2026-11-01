@@ -1,0 +1,20 @@
+services:
+  zot:
+    container_name: zot
+    image: zotregistry/zot:${ZOT_VERSION}
+    restart: unless-stopped
+    mem_limit: ${ZOT_MEM_LIMIT:-4g}
+    command: serve /etc/zot/config.json
+    environment:
+      TZ: ${TZ:-America/Chicago}
+    volumes:
+      - ${ZOT_STORAGE}:/var/lib/registry:rw
+      - ./config.json:/etc/zot/config.json:ro
+      - ./credentials.json:/etc/zot/credentials.json:ro
+      - ./sync-credentials.json:/etc/zot/sync-credentials.json:ro
+    healthcheck:
+      test: ["CMD", "zot", "healthcheck", "/etc/zot/config.json"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
