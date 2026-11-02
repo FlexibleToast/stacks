@@ -19,13 +19,13 @@ Replaces the Quay stack with Zot: single container, file storage on the array, a
 
 | File | Purpose |
 |---|---|
-| `zot/compose.yaml` | Single `zot` service, image `zotregistry/zot:2-ui` (major-pin on the 2.x line, UI build per your preference — no fips/dev), storage at `/mnt/user/zot` (array), `mem_limit: 4g`, healthcheck via the built-in `zot healthcheck` command |
+| `zot/compose.yaml` | Single `zot` service, image `ghcr.io/project-zot/zot:v2.1.22` (the only public registry — Docker Hub `zotregistry/zot` does not exist; the `2-ui`/`2-fips` tags are Red Hat hardened-catalog images behind a subscription login. The ghcr release image is the **full build**: UI/search/sync/Trivy built in), storage at `/mnt/user/zot` (array), `mem_limit: 4g`, healthcheck via the built-in `zot healthcheck` command |
 | `zot/frontend.network.compose.yaml` | Puts zot on the external `frontend` network — the network newt (Pangolin tunnel agent) exposes to the VPS |
 | `zot/labels.unraid.compose.yaml` | selfh.st icon (`zot-registry`) for the Unraid UI |
 | `zot/config.json` | zot config: OIDC (authentik), UI, search + Trivy CVE (24h DB refresh), metrics, GC every 168h, and the **sync extension with 7 mirror rules matching Quay** |
 | `zot/credentials.json` | OIDC client id/secret — `[[ZOT_OIDC_CLIENT_ID]]` / `[[ZOT_OIDC_CLIENT_SECRET]]` placeholders |
 | `zot/sync-credentials.json` | registry.redhat.io credentials — `[[ZOT_REDHAT_USER]]` / `[[ZOT_REDHAT_PASS]]` placeholders |
-| `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 3 config files, env: `ZOT_VERSION = 2-ui`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g` |
+| `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 3 config files, env: `ZOT_VERSION = v2.1.22`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g` |
 
 Mirror rules (translated 1:1 from Quay's `repomirrorconfig` + `repomirrorrule`, 7-day poll each):
 
@@ -103,6 +103,20 @@ Push is the deploy trigger — the workflow deploys the `zot` stack to Kerbol-Ne
 
 > Note: your uncommitted `mem_limit: 16g` edit in `quay/compose.yaml` is still in the working tree — commit it with this or separately, your call.
 
+## Pangolin — expose `zot.mcdade.app` (do this right after the deploy lands)
+
+Pangolin on the VPS is the only reverse proxy in the loop: it terminates TLS and forwards through the newt agent to the `frontend` network on Unraid — the same path the `quay.mcdade.app` route already uses. The zot stack joins that network automatically (`frontend.network.compose.yaml`), so nothing on Unraid changes; you just add one resource.
+
+1. Log in at **https://pangolin.mcdade.app** (email/password or the Authentik button).
+2. Open **Resources** — the same screen where your `quay.mcdade.app` route lives — and create a **new resource**. Use the existing quay resource as the template; only these values differ:
+   - **Type:** HTTP/HTTPS (public, protocol-aware reverse proxy — same as quay)
+   - **FQDN:** `zot.mcdade.app`
+   - **Site:** `Unraid` (the site attached via newt)
+   - **Backend target:** `zot:8080` (container name on the frontend network, exactly like `quay:8080`)
+   - **TLS:** leave default — Pangolin issues the cert for the new subdomain under your existing wildcard; no DNS change needed (the CF wildcard already points `*.mcdade.app` at the VPS)
+   - **Access policy:** mirror whatever the quay resource has. Zot enforces authentik login at the app layer, so either open or restricted-to-you works.
+3. Save. No newt restart is required — it discovers the `zot` container by name on the frontend network.
+
 ## Phase 2 — Post-deploy verification
 
 1. **Interpolation check (important — new mechanism for this repo):**
@@ -115,7 +129,7 @@ Push is the deploy trigger — the workflow deploys the `zot` stack to Kerbol-Ne
 
 2. **Container health** — Unraid UI (or `docker ps`): `zot` should reach `healthy` within ~2 min. First boot also downloads the Trivy DB (tens of MB), so give it a few minutes before expecting scan results.
 
-3. **Expose it** — Pangolin UI (VPS) → add a route: domain `zot.mcdade.app` → target `zot:8080` (Unraid). DNS is already covered by the CF wildcard. This route is permanent; **the existing `quay.mcdade.app` route is never touched** — zot lives on its own domain alongside Quay until Quay is decommissioned. Then:
+3. **Confirm it's exposed** — using the Pangolin resource from the section above (the `quay.mcdade.app` route is never touched — zot lives on its own domain alongside Quay until Quay is decommissioned):
 
    ```bash
    curl -s -o /dev/null -w '%{http_code}\n' https://zot.mcdade.app/v2/

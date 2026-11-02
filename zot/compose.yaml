@@ -1,7 +1,7 @@
 services:
   zot:
     container_name: zot
-    image: zotregistry/zot:${ZOT_VERSION}
+    image: ghcr.io/project-zot/zot:${ZOT_VERSION}
     restart: unless-stopped
     mem_limit: ${ZOT_MEM_LIMIT:-4g}
     command: serve /etc/zot/config.json
