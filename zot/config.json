@@ -28,13 +28,15 @@
     }
   },
   "extensions": {
-    "ui": {},
+    "ui": {"enable": true},
     "search": {
+      "enable": true,
       "cve": {
         "updateInterval": "24h"
       }
     },
     "metrics": {
+      "enable": true,
       "prometheus": {
         "path": "/metrics"
       }
@@ -75,7 +77,8 @@
         },
         {
           "urls": ["https://ghcr.io"],
-          "pollInterval": "168h",
+          "onDemand": true,
+          "manifestCheckInterval": "168h",
           "content": [
             {
               "prefix": "/goauthentik/server",
@@ -104,7 +107,8 @@
         },
         {
           "urls": ["https://docker.io"],
-          "pollInterval": "168h",
+          "onDemand": true,
+          "manifestCheckInterval": "168h",
           "content": [
             {
               "prefix": "/ayufan/proxmox-backup-server",

@@ -27,19 +27,23 @@ Replaces the Quay stack with Zot: single container, file storage on the array, a
 | `zot/sync-credentials.json` | registry.redhat.io credentials — `[[ZOT_REDHAT_USER]]` / `[[ZOT_REDHAT_PASS]]` placeholders |
 | `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 3 config files, env: `ZOT_VERSION = v2.1.22`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g` |
 
-Mirror rules (translated 1:1 from Quay's `repomirrorconfig` + `repomirrorrule`, 7-day poll each):
+Mirror rules (translated from Quay's `repomirrorconfig` + `repomirrorrule`, 7-day refresh each). **Polled** = zot actively copies on a schedule (requires the upstream to support `_catalog`). **Pull-through** = zot fetches on first pull, then re-validates cached manifests every 168h — this mode is mandatory for ghcr.io and docker.io, which don't serve `_catalog` and will otherwise log `failed to list repositories ... unauthorized` and never mirror:
 
-| Upstream | Local destination | Tag filter (Quay rule → zot regex) |
-|---|---|---|
-| quay.io/projectquay/quay | /projectquay/quay | `3.18*, 3.19*` → `^3\.(18|19)` |
-| quay.io/projectquay/clair | /projectquay/clair | `4.8*, 4.9*` → `^4\.(8|9)` |
-| registry.redhat.io/offline-knowledge-portal/rhokp-rhel9 | same path | `latest` → `^latest$` (syncTimeout 12h, was skopeo 43200s) |
-| ghcr.io/goauthentik/server | /goauthentik/server | `2025.*, 2026.*` → `^(2025|2026)\.` |
-| ghcr.io/sillytavern/sillytavern | /sillytavern/sillytavern | `latest` → `^latest$` |
-| git.mcdade.app/homeserver/media-downloader | same path | all tags |
-| docker.io/ayufan/proxmox-backup-server | /ayufan/proxmox-backup-server | `v4, v4.*` → `^v4(\.\|$)` |
+| Upstream | Mode | Local destination | Tag filter (Quay rule → zot regex) |
+|---|---|---|---|
+| quay.io/projectquay/quay | polled (168h) | /projectquay/quay | `3.18*, 3.19*` → `^3\.(18|19)` |
+| quay.io/projectquay/clair | polled (168h) | /projectquay/clair | `4.8*, 4.9*` → `^4\.(8|9)` |
+| registry.redhat.io/offline-knowledge-portal/rhokp-rhel9 | polled (168h) | same path | `latest` → `^latest$` (syncTimeout 12h, was skopeo 43200s) |
+| ghcr.io/goauthentik/server | pull-through | /goauthentik/server | `2025.*, 2026.*` → `^(2025|2026)\.` |
+| ghcr.io/sillytavern/sillytavern | pull-through | /sillytavern/sillytavern | `latest` → `^latest$` |
+| git.mcdade.app/homeserver/media-downloader | polled (168h) | same path | all tags |
+| docker.io/ayufan/proxmox-backup-server | pull-through | /ayufan/proxmox-backup-server | `v4, v4.*` → `^v4(\.\|$)` |
+
+For the pull-through entries, clients (Komodo, compose, scripts) must pull as `zot.mcdade.app/<destination>:<tag>` once for the image to enter local storage; afterwards it stays warm and only re-checks upstream weekly.
 
 `http.compat: ["docker2s2"]` is set globally (upstreams serve Docker schema 2 images). `onlySigned` left at the default (off) — Quay's `unsigned_images: false` was evidently not blocking unsigned upstreams in practice (sillytavern mirrors fine), so parity = off. Flip `"onlySigned": true` in `config.json` if you want strict signed-only.
+
+**v2 config gotchas (all hit live, all fixed in the staged file):** no top-level `"version"` key (v2's strict loader rejects it and zot crash-loops); every extension needs explicit `"enable": true` — `"ui": {}` means *disabled* and the web UI 404s while `/v2/` works fine; image lives only on `ghcr.io/project-zot/zot` (Docker Hub `zotregistry/zot` doesn't exist; the `2-ui` tags are Docker Hardened Images at `dhi.io/zot` behind a login).
 
 ---
 
@@ -154,7 +158,7 @@ Pangolin on the VPS is the only reverse proxy in the loop: it terminates TLS and
 
 ## Phase 4 — Mirroring + build pushes
 
-1. **Sync is on a 7-day poll** (parity with Quay). The first poll can take up to ~168 h. Watch progress in the logs:
+1. **Sync starts immediately at first boot** (polled registries run their first cycle on startup, then every `pollInterval` — verified: media-downloader layers were copying seconds after the container came up). Watch progress in the logs:
 
    ```bash
    docker logs --tail 50 zot | grep -i sync
@@ -172,7 +176,7 @@ Pangolin on the VPS is the only reverse proxy in the loop: it terminates TLS and
 
    (Requires the Quay-side repos to be pullable — they are, with the existing auth.) Remove the entry and re-deploy after one full pass; the 1h interval exists only for the bootstrap.
 
-2. **Docker Hub caveat:** the `ayufan/proxmox-backup-server` entry polls `docker.io` (Quay did the same). zot's docs advise against *catalog*-wide polling of Docker Hub; a single named repo at 7-day intervals is fine, but if you see rate-limit errors in the zot logs, change that entry to `"onDemand": true` (pull-through) — one line.
+2. **ghcr.io / docker.io use pull-through, not polling** — already set in `config.json` (`"onDemand": true`, `"manifestCheckInterval": "168h"`). These registries don't serve `_catalog`, so a `pollInterval` on them fails with `failed to list repositories for ghcr.io: unauthorized` in the logs and nothing ever mirrors. After the first pull of `zot.mcdade.app/goauthentik/server:…` (or sillytavern / ayufan-pbs), the image is local and re-validates upstream weekly.
 
 3. **Komodo build pushes:** builds currently push to `quay.mcdade.app/homeserver/...`. In the zot UI, create a second API key with **write** scope (e.g. for `homeserver/**`) and point Komodo's push credential at `zot.mcdade.app` (new registry entry; the Quay robot account on `quay.mcdade.app` stays valid until Quay is decommissioned).
 
