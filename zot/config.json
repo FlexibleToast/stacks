@@ -21,7 +21,7 @@
             "credentialsFile": "/etc/zot/credentials.json",
             "issuer": "https://auth.mcdade.app/application/o/zot/",
             "keypath": "",
-            "scopes": ["openid", "email", "groups"],
+            "scopes": ["openid", "profile", "email", "groups"],
             "claimMapping": { "username": "preferred_username" }
           }
         }
@@ -55,7 +55,8 @@
       "registries": [
         {
           "urls": ["https://quay.io"],
-          "pollInterval": "168h",
+          "onDemand": true,
+          "manifestCheckInterval": "168h",
           "content": [
             {
               "prefix": "/projectquay/quay",
@@ -73,7 +74,8 @@
         },
         {
           "urls": ["https://registry.redhat.io"],
-          "pollInterval": "168h",
+          "onDemand": true,
+          "manifestCheckInterval": "168h",
           "syncTimeout": "12h",
           "content": [
             {

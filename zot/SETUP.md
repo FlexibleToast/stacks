@@ -30,9 +30,9 @@ Mirror rules (translated from Quay's `repomirrorconfig` + `repomirrorrule`, 7-da
 
 | Upstream | Mode | Local destination | Tag filter (Quay rule → zot regex) |
 |---|---|---|---|
-| quay.io/projectquay/quay | polled (168h) | /projectquay/quay | `3.18*, 3.19*` → `^3\.(18|19)` |
-| quay.io/projectquay/clair | polled (168h) | /projectquay/clair | `4.8*, 4.9*` → `^4\.(8|9)` |
-| registry.redhat.io/offline-knowledge-portal/rhokp-rhel9 | polled (168h) | same path | `latest` → `^latest$` (syncTimeout 12h, was skopeo 43200s) |
+| quay.io/projectquay/quay | pull-through | /projectquay/quay | `3.18*, 3.19*` → `^3\.(18|19)` |
+| quay.io/projectquay/clair | pull-through | /projectquay/clair | `4.8*, 4.9*` → `^4\.(8|9)` |
+| registry.redhat.io/offline-knowledge-portal/rhokp-rhel9 | pull-through | /redhat/offline-knowledge-portal/rhokp-rhel9 | `latest` → `^latest$` (syncTimeout 12h, was skopeo 43200s) |
 | ghcr.io/goauthentik/server | pull-through | /goauthentik/server | `2025.*, 2026.*` → `^(2025|2026)\.` |
 | ghcr.io/sillytavern/sillytavern | pull-through | /sillytavern/sillytavern | `latest` → `^latest$` |
 | git.mcdade.app/homeserver/media-downloader | polled (168h) | same path | all tags |
@@ -207,6 +207,10 @@ Pangolin on the VPS is the only reverse proxy in the loop: it terminates TLS and
    (Requires the Quay-side repos to be pullable — they are, with the existing auth.) Remove the entry and re-deploy after one full pass; the 1h interval exists only for the bootstrap.
 
 2. **ghcr.io / docker.io use pull-through, not polling** — already set in `config.json` (`"onDemand": true`, `"manifestCheckInterval": "168h"`). These registries don't serve `_catalog`, so a `pollInterval` on them fails with `failed to list repositories for ghcr.io: unauthorized` in the logs and nothing ever mirrors. After the first pull of `zot.mcdade.app/goauthentik/server:…` (or sillytavern / ayufan-pbs), the image is local and re-validates upstream weekly.
+
+2b. **quay.io and registry.redhat.io are ALSO pull-through-only, and polling on them fails SILENTLY (proven live 2026-11-02):** quay.io `/v2/_catalog` answers `200 {"repositories":[]}` (public Quay disables catalog), and registry.redhat.io's catalog lists internal names (`redhat-prod/ansible-tower-36----ansible-tower`) that do not map to pull paths (`ansible-tower-36/ansible-tower`) — a prefix filter matches nothing either way, producing zero images and **zero errors**. v2.1.22 removed the old `content[].repositories` explicit list, so polling cannot target specific repos on these upstreams at all. The fix in `config.json`: `"onDemand": true` + `"manifestCheckInterval"` for both registries. Consequence: mirrored repos materialize **on first authenticated pull** (`docker pull zot.mcdade.app/redhat/offline-knowledge-portal/rhokp-rhel9:latest`), not on a schedule — and for `redhat/**` that pull must be by a redhat-group member or admin, since anonymous access is denied there.
+
+2c. **`preferred_username` requires the `profile` scope** (proven live: zot logged `configured username claim missing or empty, falling back to "email" claim` at login). Authentik only puts `preferred_username` in userinfo/id_token when `profile` is among the requested scopes; `claimMapping` alone doesn't conjure it. `scopes` now includes `profile`. Sessions created before a config change carry the old identity — log out/in after deploy, and regenerate API keys bound to the old email identity.
 
 3. **Komodo build pushes:** builds currently push to `quay.mcdade.app/homeserver/...`. In the zot UI, create a second API key with **write** scope (e.g. for `homeserver/**`) and point Komodo's push credential at `zot.mcdade.app` (new registry entry; the Quay robot account on `quay.mcdade.app` stays valid until Quay is decommissioned).
 
