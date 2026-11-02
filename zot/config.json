@@ -21,9 +21,18 @@
             "credentialsFile": "/etc/zot/credentials.json",
             "issuer": "https://auth.mcdade.app/application/o/zot/",
             "keypath": "",
-            "scopes": ["openid", "email", "groups"]
+            "scopes": ["openid", "email", "groups"],
+            "claimMapping": { "username": "preferred_username" }
           }
         }
+      }
+    },
+    "accessControl": {
+      "adminPolicy": { "users": ["FlexibleToast"], "actions": ["read", "create", "update", "delete"] },
+      "repositories": {
+        "**": { "anonymousPolicy": ["read"], "defaultPolicy": ["read"] },
+        "redhat": { "anonymousPolicy": [], "policies": [{ "groups": ["redhat"], "actions": ["read", "create", "update", "delete"] }] },
+        "redhat/**": { "anonymousPolicy": [], "policies": [{ "groups": ["redhat"], "actions": ["read", "create", "update", "delete"] }] }
       }
     }
   },
@@ -70,7 +79,7 @@
             {
               "prefix": "/offline-knowledge-portal/rhokp-rhel9",
               "tags": { "regex": "^latest$" },
-              "destination": "/offline-knowledge-portal/rhokp-rhel9",
+              "destination": "/redhat/offline-knowledge-portal/rhokp-rhel9",
               "stripPrefix": true
             }
           ]

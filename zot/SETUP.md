@@ -236,3 +236,25 @@ There is no cut-over moment to roll back — zot and Quay run on separate domain
 - zot: single Go process, `mem_limit: 4g` as a hard guardrail (Quay leaked to 30 GB *uncapped*; a capped zot worst case is a restart, not an OOM chain).
 - Steady state should sit in the low hundreds of MB; Trivy background scans add transient bumps.
 - Watch for the failure mode we're escaping: monotonic RSS growth over days. If `docker stats` shows steady climb >100 MB/day, that's a zot bug to file — the 2023 analog (#2137) was fixed fast upstream.
+
+## Phase 6 — RBAC & the `redhat` namespace (2026-11-02)
+
+`config.json` now has `http.accessControl` (zot v2.1.22 schema — verified against the Go module source):
+
+- **Baseline `**`**: anonymous + any-logged-in user = `read` (pull/browse) only. Push requires an explicit grant. **Note the switch:** with `accessControl` present, repos matching no pattern are deny-for-all-except-admins, so the `**` catch-all is load-bearing.
+- **`redhat` + `redhat/**`**: only the `redhat` group gets `read/create/update/delete`. Empty anonymous/default = anonymous pull is **denied** here (401), unlike the rest of the registry. Two patterns needed because doublestar `redhat/**` does not match the bare name `redhat`.
+- **`adminPolicy`**: `FlexibleToast` = full rights everywhere (bootstrap/lockout guard).
+- **Identity = `preferred_username`** via `claimMapping.username` (was the default `email`). All identity strings in accessControl and every `docker login -u` must be the Authentik **username**. Any API key generated before this change was bound to the old email identity — regenerate.
+- **Group membership = the OIDC claim, full stop.** Zot extracts claim `groups` (config `claimMapping.groups` to rename) from userinfo/ID token at login and *overwrites* its metadb profile with exactly that set (`OAuth2Callback` + `SetUserGroups`, verified in v2.1.22 source). The static `accessControl.groups` config does NOT apply to OIDC sessions — it's only consulted for htpasswd/mTLS logins — so it is deliberately absent here. Lockout guard is `adminPolicy` (matches by username in every flow). ⚠️ Verify the Authentik scope mapping bound to the zot provider emits group **names** (a builtin-style mapping returning `group_ids` UUIDs will silently match nothing). Check after login: `docker logs zot | grep -i groups` (zot logs `no groups claim values found` when the claim is missing).
+- **registry.redhat.io mirror destination** moved to `/redhat/offline-knowledge-portal/rhokp-rhel9` — this materializes the namespace (sync writes bypass authz). The old local copy at `offline-knowledge-portal/rhokp-rhel9` is NOT auto-removed (sync is add/update-only): delete it in the UI/API after the new one lands. Re-point `redhat-knowledge/compose.yaml` at the new path.
+
+Verify after deploy:
+
+```bash
+# anonymous: public repos still read, redhat denied
+curl -s https://zot.mcdade.app/v2/_catalog                      # 200, may list redhat (catalog filter is pattern-optimistic)
+curl -s -o /dev/null -w '%{http_code}\n' https://zot.mcdade.app/v2/redhat/ # expect 401
+curl -s -o /dev/null -w '%{http_code}\n' https://zot.mcdade.app/v2/projectquay/quay/manifests/latest # 404/200 = authz passed
+```
+
+Then as a redhat member: `docker login zot.mcdade.app -u FlexibleToast` (fresh API key) and `docker pull zot.mcdade.app/redhat/offline-knowledge-portal/rhokp-rhel9:latest`; as a non-member it must 401/403.
