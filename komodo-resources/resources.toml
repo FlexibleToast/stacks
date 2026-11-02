@@ -900,10 +900,16 @@ ZOT_RAW_3
 cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
 [[ZOT_REDHAT_PASS]]
 ZOT_RAW_4
+cat > .zot_fj_user.raw <<'ZOT_RAW_5'
+[[ZOT_FORGEJO_USER]]
+ZOT_RAW_5
+cat > .zot_fj_pass.raw <<'ZOT_RAW_6'
+[[ZOT_FORGEJO_TOKEN]]
+ZOT_RAW_6
 esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' "$1" | head -n 1; }
 printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id.raw)" "$(esc .zot_oidc_secret.raw)" > credentials.json
-printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" > sync-credentials.json
-rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
+printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  },\n  "git.mcdade.app": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" "$(esc .zot_fj_user.raw)" "$(esc .zot_fj_pass.raw)" > sync-credentials.json
+rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw .zot_fj_user.raw .zot_fj_pass.raw
 chmod 600 credentials.json sync-credentials.json
 """
 

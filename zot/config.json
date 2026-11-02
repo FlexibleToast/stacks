@@ -37,7 +37,8 @@
         "redhat/**": { "anonymousPolicy": [], "policies": [{ "groups": ["redhat"], "actions": ["read", "create", "update", "delete"] }] },
         "docker/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] },
         "ghcr/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] },
-        "quay/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] }
+        "quay/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] },
+        "forgejo/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] }
       }
     }
   },
@@ -61,7 +62,7 @@
         {
           "urls": ["https://quay.io"],
           "onDemand": true,
-          "manifestCheckInterval": "168h",
+          "manifestCheckInterval": "120h",
           "content": [
             { "prefix": "/**", "destination": "/quay" }
           ]
@@ -78,26 +79,28 @@
         {
           "urls": ["https://ghcr.io"],
           "onDemand": true,
-          "manifestCheckInterval": "168h",
+          "manifestCheckInterval": "120h",
           "content": [
             { "prefix": "/**", "destination": "/ghcr" }
           ]
         },
         {
           "urls": ["https://git.mcdade.app"],
-          "pollInterval": "168h",
+          "onDemand": true,
+          "manifestCheckInterval": "24h",
           "content": [
             {
               "prefix": "/homeserver/media-downloader",
               "destination": "/homeserver/media-downloader",
               "stripPrefix": true
-            }
+            },
+            { "prefix": "/**", "destination": "/forgejo" }
           ]
         },
         {
           "urls": ["https://docker.io"],
           "onDemand": true,
-          "manifestCheckInterval": "168h",
+          "manifestCheckInterval": "120h",
           "content": [
             { "prefix": "/**", "destination": "/docker" }
           ]

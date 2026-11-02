@@ -80,6 +80,8 @@ Same scope as the existing `QUAY_POSTGRES_PASSWORD` (Unraid server):
 | `ZOT_OIDC_CLIENT_SECRET` | from 0.1 |
 | `ZOT_REDHAT_USER` | your registry.redhat.io username |
 | `ZOT_REDHAT_PASS` | your registry.redhat.io password/token |
+| `ZOT_FORGEJO_USER` | Forgejo username for registry pulls (git.mcdade.app) |
+| `ZOT_FORGEJO_TOKEN` | Forgejo access token, scope `read:package` |
 
 **Fill the credential files via the stack's `pre_deploy` hook.** Komodo copies linked-repo **files** verbatim — a live deploy proved the templates arrive literal — but it *does* interpolate `[[VAR]]` into `pre_deploy.command` (source: `lib/interpolate` covers `pre_deploy`/`post_deploy`) and runs it via `bash -c` in the run directory after the repo clone, before `compose pull/up` (`run_shell_command` passes the string verbatim). The two credential files are therefore generated at deploy time and never committed; they are also kept out of `config_files` so the pre-deploy existence check ignores them.
 
@@ -272,8 +274,11 @@ Three general-purpose pull-through namespaces so most images get a local copy vi
 - `zot.mcdade.app/docker/<repo>` → docker.io (officials: `docker/library/alpine` or `docker/alpine` — regclient normalizes)
 - `zot.mcdade.app/ghcr/<org>/<repo>` → ghcr.io
 - `zot.mcdade.app/quay/<org>/<repo>` → quay.io
+- `zot.mcdade.app/forgejo/<owner>/<repo>` → git.mcdade.app (Forgejo container registry; private packages require the `ZOT_FORGEJO_USER`/`ZOT_FORGEJO_TOKEN` sync credentials, `read:package` token — the pre_deploy hook writes them into `sync-credentials.json` under key `git.mcdade.app`)
 
-Implementation per registry: one extra content rule `{ "prefix": "/**", "destination": "/<ns>" }` (no stripPrefix). Semantics verified in `pkg/extensions/sync/content.go`: local matching pattern = `destination + prefix-metas` (e.g. `docker/**`), `getRepoSource` strips the destination → upstream path. Rule order matters (first match wins) — the narrower legacy rules stay ABOVE the `/**` catch-all so existing refs like `zot.mcdade.app/goauthentik/server` keep resolving.
+Implementation: each onDemand registry now carries a SINGLE catch-all content rule `{ "prefix": "/**", "destination": "/<ns>" }` (no stripPrefix; simplified in `e1dde5a` — the earlier narrow per-repo rules are gone). Semantics verified in `pkg/extensions/sync/content.go`: local matching pattern = `destination + prefix-metas` (e.g. `docker/**`), `getRepoSource` strips the destination → upstream path. ⚠️ The short destinations from the Phase-1 table (`/projectquay/quay`, `/goauthentik/server`, `/sillytavern/sillytavern`, `/ayufan/proxmox-backup-server`) NO LONGER resolve — zot refs are always namespaced: `ghcr.io/goauthentik/server` → `zot.mcdade.app/ghcr/goauthentik/server`, quay mirrors → `/quay/projectquay/...`, redhat.io → `zot.mcdade.app/redhat/<path>` (rhokp keeps the same path it had under the narrow rule; the catch-all just makes every other redhat.io repo pullable the same way). No compose in this repo referenced the short paths (authentik pulls `ghcr.io` directly), so nothing broke; re-point the Phase 4 image lines to the namespaced paths instead.
+
+Freshness: `manifestCheckInterval = 120h` (5 days) on docker/ghcr/quay entries — under Komodo's weekly auto-update poll, every weekly check is guaranteed to revalidate against upstream rather than be answered from the ≤120h cache (checks are lazy: the poll itself triggers the sync; the poll that discovers a new digest pays the upstream fetch). registry.redhat.io stays 168h.
 
 RBAC: `docker/**`, `ghcr/**`, `quay/**` = `anonymousPolicy: []` (anonymous 401) + `defaultPolicy: ["read"]` (any logged-in user pulls). No create/update → pushing into these namespaces is admin-only; on-demand materialization is internal and unaffected.
 
