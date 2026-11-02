@@ -22,9 +22,9 @@ Replaces the Quay stack with Zot: single container, file storage on the array, a
 | `zot/compose.yaml` | Single `zot` service, image `ghcr.io/project-zot/zot:v2.1.22` (the only public registry — Docker Hub `zotregistry/zot` does not exist; the `2-ui`/`2-fips` tags are Docker Hardened Images at `dhi.io/zot` behind a login. The ghcr release image is the **full build**: UI/search/sync/Trivy built in), storage at `/mnt/user/zot` (array), `mem_limit: 4g`, healthcheck via the built-in `zot healthcheck` command |
 | `zot/frontend.network.compose.yaml` | Puts zot on the external `frontend` network — the network newt (Pangolin tunnel agent) exposes to the VPS |
 | `zot/labels.unraid.compose.yaml` | selfh.st icon (`zot-registry`) for the Unraid UI |
-| `zot/config.json` | zot config: OIDC (authentik), UI, search + Trivy CVE (24h DB refresh), metrics, GC every 168h, and the **sync extension with 7 mirror rules matching Quay**. Credential paths point at `/run/secrets/…` (compose secrets, below) |
-| `zot/compose.yaml` `secrets:` | Top-level Compose secrets `oidc-credentials` + `sync-credentials` with `environment:` source — Docker Compose natively materializes the env var value as a tmpfs file inside the container at `/run/secrets/<name>`; the JSON content is assembled in the Komodo environment block via `[[VAR]]` interpolation. No secret files ever land on the host filesystem as files |
-| `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 1 config file (`config.json`), env: `ZOT_VERSION = v2.1.22`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g`, plus `ZOT_OIDC_CREDS_JSON` / `ZOT_REDHAT_CREDS_JSON` JSON bundles built from the four secret Variables |
+| `zot/config.json` | zot config: OIDC (authentik), UI, search + Trivy CVE (24h DB refresh), metrics, GC every 168h, and the **sync extension with 7 mirror rules matching Quay** |
+| `zot/credentials.json` / `zot/sync-credentials.json` | **Not in git.** Generated in the run directory on every deploy by the stack's interpolated `pre_deploy` hook in `resources.toml` (see Phase 0.2). Kept out of `config_files` deliberately: `validate_files` only asserts that *listed* paths exist on disk (before the hook runs — that's what failed on the listed-but-absent `entrypoint.sh`); files that exist without being listed are never checked |
+| `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 1 config file (`config.json`), env: `ZOT_VERSION = v2.1.22`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g`, plus the `pre_deploy` hook that writes the two credential files |
 
 Mirror rules (translated from Quay's `repomirrorconfig` + `repomirrorrule`, 7-day refresh each). **Polled** = zot actively copies on a schedule (requires the upstream to support `_catalog`). **Pull-through** = zot fetches on first pull, then re-validates cached manifests every 168h — this mode is mandatory for ghcr.io and docker.io, which don't serve `_catalog` and will otherwise log `failed to list repositories ... unauthorized` and never mirror:
 
@@ -81,7 +81,44 @@ Same scope as the existing `QUAY_POSTGRES_PASSWORD` (Unraid server):
 | `ZOT_REDHAT_USER` | your registry.redhat.io username |
 | `ZOT_REDHAT_PASS` | your registry.redhat.io password/token |
 
-These are referenced in the stack's `environment` block as JSON bundles — `ZOT_OIDC_CREDS_JSON = {"clientid":"[[ZOT_OIDC_CLIENT_ID]]","clientsecret":"[[ZOT_OIDC_CLIENT_SECRET]]"}` and the Red Hat equivalent (vaultwarden's `ADMIN_TOKEN="[[VAULTWARDEN_ADMIN_TOKEN]]"` is the in-repo precedent for `[[VAR]]` in `environment`). Komodo writes the interpolated `environment` block to the stack's `.env` and passes it via `docker compose --env-file` (documented in komo.do/docs/deploy/compose); the compose `secrets:` section then turns each JSON env var into a tmpfs file at `/run/secrets/<name>` inside the container, which is where zot's config reads them.
+**Fill the credential files via the stack's `pre_deploy` hook.** Komodo copies linked-repo **files** verbatim — a live deploy proved the templates arrive literal — but it *does* interpolate `[[VAR]]` into `pre_deploy.command` (source: `lib/interpolate` covers `pre_deploy`/`post_deploy`) and runs it in the run directory after the repo clone, before `compose pull/up`. The two credential files are therefore generated at deploy time and never committed; they are also kept out of `config_files` so the pre-deploy existence check ignores them:
+
+```toml
+[stack.config.pre_deploy]
+shell_mode = true
+command = '''
+cat > .zot_oidc_id.raw <<'ZOT_RAW_1'
+[[ZOT_OIDC_CLIENT_ID]]
+ZOT_RAW_1
+cat > .zot_oidc_secret.raw <<'ZOT_RAW_2'
+[[ZOT_OIDC_CLIENT_SECRET]]
+ZOT_RAW_2
+cat > .zot_rh_user.raw <<'ZOT_RAW_3'
+[[ZOT_REDHAT_USER]]
+ZOT_RAW_3
+cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
+[[ZOT_REDHAT_PASS]]
+ZOT_RAW_4
+python3 - <<'ZOT_PY'
+import json, pathlib
+def r(p): return pathlib.Path(p).read_text().rstrip("\n")
+pathlib.Path("credentials.json").write_text(json.dumps({
+    "clientid": r(".zot_oidc_id.raw"),
+    "clientsecret": r(".zot_oidc_secret.raw"),
+}, indent=2))
+pathlib.Path("sync-credentials.json").write_text(json.dumps({
+    "registry.redhat.io": {
+        "username": r(".zot_rh_user.raw"),
+        "password": r(".zot_rh_pass.raw"),
+    },
+}, indent=2))
+ZOT_PY
+rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
+chmod 600 credentials.json sync-credentials.json
+'''
+```
+
+Quirks baked into this block (all simulated end-to-end with hostile secret characters): use TOML **literal** strings (`'''`) not basic (`"""`) — backslashes in the snippet survive verbatim; heredoc bodies/terminators stay flush-left; secrets route through raw heredoc files into `json.dumps` so `"` and `\` can't corrupt the JSON; raw temps are `rm`'d and outputs get mode 600. The secrets themselves live only in Komodo Variables (marked secret) and in the two generated files on the server; git keeps only placeholders.
 
 ### 0.3 Get the Red Hat credentials (if not already on hand)
 
@@ -124,14 +161,14 @@ Pangolin on the VPS is the only reverse proxy in the loop: it terminates TLS and
 
 ## Phase 2 — Post-deploy verification
 
-1. **Secret materialization check:** compose mounts the two JSON credentials as tmpfs secrets —
+1. **Credential materialization check:** the `pre_deploy` hook must have generated the two files —
 
    ```bash
-   docker exec zot ls -l /run/secrets/
-   docker exec zot cat /run/secrets/oidc-credentials | python3 -c "import json,sys; d=json.load(sys.stdin); print('keys ok' if d.get('clientid','').startswith('[[') == False and len(d)>1 else 'PLACEHOLDER LEAKED')"
+   ls -l /mnt/user/stacks/repos/kerbol-next/zot/*.json
+   grep -c '\[\[' /mnt/user/stacks/repos/kerbol-next/zot/credentials.json /mnt/user/stacks/repos/kerbol-next/zot/sync-credentials.json
    ```
 
-   Expect `oidc-credentials` + `sync-credentials` present and `keys ok`. If you see `PLACEHOLDER LEAKED` (or the file is missing), Komodo's `.env` mangling broke the JSON — inspect `grep -o 'CREDS_JSON=.\{0,30\}' /mnt/user/stacks/repos/kerbol-next/zot/.env` and tell me what the first 30 chars after `=` look like. The stale `credentials.json`/`sync-credentials.json` in the run dir are no longer mounted — `rm /mnt/user/stacks/repos/kerbol-next/zot/{credentials,sync-credentials}.json` when convenient.
+   Expect both credential files present as regular files with mode `600` and `0` grep counts (Variables wired correctly). Check the deploy log shows a **Pre Deploy** step. If they are *missing* entirely, the hook failed — note compose will then have created a *directory* named `credentials.json` (bind-mount source auto-creation), which is the giveaway. If ResourceSync never re-applied the stack after `pre_deploy` was added to `resources.toml`, the hook doesn't exist in Komodo's stack definition yet — trigger a resource sync first.
 
 2. **Container health** — Unraid UI (or `docker ps`): `zot` should reach `healthy` within ~2 min. First boot also downloads the Trivy DB (tens of MB), so give it a few minutes before expecting scan results.
 

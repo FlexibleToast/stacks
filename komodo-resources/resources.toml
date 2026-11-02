@@ -860,16 +860,58 @@ file_paths = [
   "labels.unraid.compose.yaml"
 ]
 config_files = [
-  { path = "config.json", services = ["zot"] },
-  { path = "entrypoint.sh", services = ["zot"] }
+  { path = "config.json", services = ["zot"] }
 ]
 environment = """
   ZOT_VERSION = v2.1.22
   ZOT_STORAGE = /mnt/user/zot
   ZOT_MEM_LIMIT = 4g
-  ZOT_OIDC_CREDS_JSON = {"clientid":"[[ZOT_OIDC_CLIENT_ID]]","clientsecret":"[[ZOT_OIDC_CLIENT_SECRET]]"}
-  ZOT_REDHAT_CREDS_JSON = {"registry.redhat.io":{"username":"[[ZOT_REDHAT_USER]]","password":"[[ZOT_REDHAT_PASS]]"}}
 """
+
+# Komodo interpolates [[VAR]] into pre_deploy.command (lib/interpolate), then runs it
+# in the run_directory (zot/) after the repo is cloned, before compose pull/up.
+# It generates credentials.json + sync-credentials.json with real values on every
+# deploy. These files are NOT tracked in git and NOT listed in config_files:
+# validate_files (runs after the clone, before pre_deploy) only asserts that LISTED
+# paths exist on disk — listed-but-absent failed us on entrypoint.sh. Existing-but-
+# unlisted files are never checked, so hook-generated files belong in neither place.
+# Heredoc lines must stay flush-left (shell heredoc terminators are indent-sensitive).
+# Secrets go through raw heredoc files into json.dumps so any character (quotes,
+# backslashes) is escaped correctly.
+# NOTE: command uses TOML literal strings ('''), NOT basic (""") — shell/python
+# snippets contain backslashes and basic strings would eat them as escape sequences.
+[stack.config.pre_deploy]
+shell_mode = true
+command = '''
+cat > .zot_oidc_id.raw <<'ZOT_RAW_1'
+[[ZOT_OIDC_CLIENT_ID]]
+ZOT_RAW_1
+cat > .zot_oidc_secret.raw <<'ZOT_RAW_2'
+[[ZOT_OIDC_CLIENT_SECRET]]
+ZOT_RAW_2
+cat > .zot_rh_user.raw <<'ZOT_RAW_3'
+[[ZOT_REDHAT_USER]]
+ZOT_RAW_3
+cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
+[[ZOT_REDHAT_PASS]]
+ZOT_RAW_4
+python3 - <<'ZOT_PY'
+import json, pathlib
+def r(p): return pathlib.Path(p).read_text().rstrip("\n")
+pathlib.Path("credentials.json").write_text(json.dumps({
+    "clientid": r(".zot_oidc_id.raw"),
+    "clientsecret": r(".zot_oidc_secret.raw"),
+}, indent=2))
+pathlib.Path("sync-credentials.json").write_text(json.dumps({
+    "registry.redhat.io": {
+        "username": r(".zot_rh_user.raw"),
+        "password": r(".zot_rh_pass.raw"),
+    },
+}, indent=2))
+ZOT_PY
+rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
+chmod 600 credentials.json sync-credentials.json
+'''
 
 ##
 
