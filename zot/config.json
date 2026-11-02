@@ -12,6 +12,8 @@
     "address": "0.0.0.0",
     "port": "8080",
     "externalUrl": "https://zot.mcdade.app",
+    "readTimeout": "30m",
+    "writeTimeout": "30m",
     "compat": ["docker2s2"],
     "auth": {
       "openid": {
@@ -32,7 +34,10 @@
       "repositories": {
         "**": { "anonymousPolicy": ["read"], "defaultPolicy": ["read"] },
         "redhat": { "anonymousPolicy": [], "policies": [{ "groups": ["redhat"], "actions": ["read", "create", "update", "delete"] }] },
-        "redhat/**": { "anonymousPolicy": [], "policies": [{ "groups": ["redhat"], "actions": ["read", "create", "update", "delete"] }] }
+        "redhat/**": { "anonymousPolicy": [], "policies": [{ "groups": ["redhat"], "actions": ["read", "create", "update", "delete"] }] },
+        "docker/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] },
+        "ghcr/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] },
+        "quay/**": { "anonymousPolicy": [], "defaultPolicy": ["read"] }
       }
     }
   },
@@ -58,18 +63,7 @@
           "onDemand": true,
           "manifestCheckInterval": "168h",
           "content": [
-            {
-              "prefix": "/projectquay/quay",
-              "tags": { "regex": "^3\\.(18|19)" },
-              "destination": "/projectquay/quay",
-              "stripPrefix": true
-            },
-            {
-              "prefix": "/projectquay/clair",
-              "tags": { "regex": "^4\\.(8|9)" },
-              "destination": "/projectquay/clair",
-              "stripPrefix": true
-            }
+            { "prefix": "/**", "destination": "/quay" }
           ]
         },
         {
@@ -78,12 +72,7 @@
           "manifestCheckInterval": "168h",
           "syncTimeout": "12h",
           "content": [
-            {
-              "prefix": "/offline-knowledge-portal/rhokp-rhel9",
-              "tags": { "regex": "^latest$" },
-              "destination": "/redhat/offline-knowledge-portal/rhokp-rhel9",
-              "stripPrefix": true
-            }
+            { "prefix": "/**", "destination": "/redhat" }
           ]
         },
         {
@@ -91,18 +80,7 @@
           "onDemand": true,
           "manifestCheckInterval": "168h",
           "content": [
-            {
-              "prefix": "/goauthentik/server",
-              "tags": { "regex": "^(2025|2026)\\." },
-              "destination": "/goauthentik/server",
-              "stripPrefix": true
-            },
-            {
-              "prefix": "/sillytavern/sillytavern",
-              "tags": { "regex": "^latest$" },
-              "destination": "/sillytavern/sillytavern",
-              "stripPrefix": true
-            }
+            { "prefix": "/**", "destination": "/ghcr" }
           ]
         },
         {
@@ -121,12 +99,7 @@
           "onDemand": true,
           "manifestCheckInterval": "168h",
           "content": [
-            {
-              "prefix": "/ayufan/proxmox-backup-server",
-              "tags": { "regex": "^v4(\\.|$)" },
-              "destination": "/ayufan/proxmox-backup-server",
-              "stripPrefix": true
-            }
+            { "prefix": "/**", "destination": "/docker" }
           ]
         }
       ]

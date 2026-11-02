@@ -262,3 +262,23 @@ curl -s -o /dev/null -w '%{http_code}\n' https://zot.mcdade.app/v2/projectquay/q
 ```
 
 Then as a redhat member: `docker login zot.mcdade.app -u FlexibleToast` (fresh API key) and `docker pull zot.mcdade.app/redhat/offline-knowledge-portal/rhokp-rhel9:latest`; as a non-member it must 401/403.
+
+**HTTP timeouts (live bug, 2026-11-02):** zot's built-in HTTP server defaults are `defaultReadTimeout = defaultWriteTimeout = 60s` (pkg/cli/server/root.go). Multi-GB blobs served off the array through the Pangolin tunnel blow past 60s → `failed to copy data into http response: i/o timeout` in logs, docker stalls/retries with no progress. `http.readTimeout`/`http.writeTimeout` now set to `30m` (verified field names in `HTTPConfig`; duration strings parse via mapstructure).
+
+## Phase 7 — authenticated pull-through namespaces (docker/, ghcr/, quay/)
+
+Three general-purpose pull-through namespaces so most images get a local copy via zot:
+
+- `zot.mcdade.app/docker/<repo>` → docker.io (officials: `docker/library/alpine` or `docker/alpine` — regclient normalizes)
+- `zot.mcdade.app/ghcr/<org>/<repo>` → ghcr.io
+- `zot.mcdade.app/quay/<org>/<repo>` → quay.io
+
+Implementation per registry: one extra content rule `{ "prefix": "/**", "destination": "/<ns>" }` (no stripPrefix). Semantics verified in `pkg/extensions/sync/content.go`: local matching pattern = `destination + prefix-metas` (e.g. `docker/**`), `getRepoSource` strips the destination → upstream path. Rule order matters (first match wins) — the narrower legacy rules stay ABOVE the `/**` catch-all so existing refs like `zot.mcdade.app/goauthentik/server` keep resolving.
+
+RBAC: `docker/**`, `ghcr/**`, `quay/**` = `anonymousPolicy: []` (anonymous 401) + `defaultPolicy: ["read"]` (any logged-in user pulls). No create/update → pushing into these namespaces is admin-only; on-demand materialization is internal and unaffected.
+
+Operational consequences:
+
+1. **Consumers must authenticate to pull** (API-key `docker login` on every host/Komodo node pulling these namespaces; compose pulls from an unauthenticated node will 401).
+2. **docker.io rate limits**: zot pulls docker.io anonymously (sync-credentials.json has no docker.io entry) → shared-IP 100 pulls/6h cap applies to zot's egress. If throttled, add a `docker.io` username/password entry to the sync-credentials pre_deploy pipeline.
+3. Namespaces appear in UI/catalog only after first pull (on-demand) and only to authenticated users (catalog is permission-filtered).
