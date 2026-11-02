@@ -18,7 +18,7 @@
         "providers": {
           "oidc": {
             "name": "authentik",
-            "credentialsFile": "/etc/zot/credentials.json",
+            "credentialsFile": "/run/secrets/oidc-credentials",
             "issuer": "https://auth.mcdade.app/application/o/zot/",
             "keypath": "",
             "scopes": ["openid", "email", "groups"]
@@ -42,7 +42,7 @@
       }
     },
     "sync": {
-      "credentialsFile": "/etc/zot/sync-credentials.json",
+      "credentialsFile": "/run/secrets/sync-credentials",
       "registries": [
         {
           "urls": ["https://quay.io"],

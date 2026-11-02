@@ -19,13 +19,12 @@ Replaces the Quay stack with Zot: single container, file storage on the array, a
 
 | File | Purpose |
 |---|---|
-| `zot/compose.yaml` | Single `zot` service, image `ghcr.io/project-zot/zot:v2.1.22` (the only public registry — Docker Hub `zotregistry/zot` does not exist; the `2-ui`/`2-fips` tags are Red Hat hardened-catalog images behind a subscription login. The ghcr release image is the **full build**: UI/search/sync/Trivy built in), storage at `/mnt/user/zot` (array), `mem_limit: 4g`, healthcheck via the built-in `zot healthcheck` command |
+| `zot/compose.yaml` | Single `zot` service, image `ghcr.io/project-zot/zot:v2.1.22` (the only public registry — Docker Hub `zotregistry/zot` does not exist; the `2-ui`/`2-fips` tags are Docker Hardened Images at `dhi.io/zot` behind a login. The ghcr release image is the **full build**: UI/search/sync/Trivy built in), storage at `/mnt/user/zot` (array), `mem_limit: 4g`, healthcheck via the built-in `zot healthcheck` command |
 | `zot/frontend.network.compose.yaml` | Puts zot on the external `frontend` network — the network newt (Pangolin tunnel agent) exposes to the VPS |
 | `zot/labels.unraid.compose.yaml` | selfh.st icon (`zot-registry`) for the Unraid UI |
-| `zot/config.json` | zot config: OIDC (authentik), UI, search + Trivy CVE (24h DB refresh), metrics, GC every 168h, and the **sync extension with 7 mirror rules matching Quay** |
-| `zot/credentials.json` | OIDC client id/secret — `[[ZOT_OIDC_CLIENT_ID]]` / `[[ZOT_OIDC_CLIENT_SECRET]]` placeholders |
-| `zot/sync-credentials.json` | registry.redhat.io credentials — `[[ZOT_REDHAT_USER]]` / `[[ZOT_REDHAT_PASS]]` placeholders |
-| `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 3 config files, env: `ZOT_VERSION = v2.1.22`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g` |
+| `zot/config.json` | zot config: OIDC (authentik), UI, search + Trivy CVE (24h DB refresh), metrics, GC every 168h, and the **sync extension with 7 mirror rules matching Quay**. Credential paths point at `/run/secrets/…` (compose secrets, below) |
+| `zot/compose.yaml` `secrets:` | Top-level Compose secrets `oidc-credentials` + `sync-credentials` with `environment:` source — Docker Compose natively materializes the env var value as a tmpfs file inside the container at `/run/secrets/<name>`; the JSON content is assembled in the Komodo environment block via `[[VAR]]` interpolation. No secret files ever land on the host filesystem as files |
+| `komodo-resources/resources.toml` | `[[stack]] name = "zot"` — server Unraid, linked repo `kerbol-next`, run dir `zot`, 3 compose files + 1 config file (`config.json`), env: `ZOT_VERSION = v2.1.22`, `ZOT_STORAGE = /mnt/user/zot`, `ZOT_MEM_LIMIT = 4g`, plus `ZOT_OIDC_CREDS_JSON` / `ZOT_REDHAT_CREDS_JSON` JSON bundles built from the four secret Variables |
 
 Mirror rules (translated from Quay's `repomirrorconfig` + `repomirrorrule`, 7-day refresh each). **Polled** = zot actively copies on a schedule (requires the upstream to support `_catalog`). **Pull-through** = zot fetches on first pull, then re-validates cached manifests every 168h — this mode is mandatory for ghcr.io and docker.io, which don't serve `_catalog` and will otherwise log `failed to list repositories ... unauthorized` and never mirror:
 
@@ -40,6 +39,8 @@ Mirror rules (translated from Quay's `repomirrorconfig` + `repomirrorrule`, 7-da
 | docker.io/ayufan/proxmox-backup-server | pull-through | /ayufan/proxmox-backup-server | `v4, v4.*` → `^v4(\.\|$)` |
 
 For the pull-through entries, clients (Komodo, compose, scripts) must pull as `zot.mcdade.app/<destination>:<tag>` once for the image to enter local storage; afterwards it stays warm and only re-checks upstream weekly.
+
+**Deletion semantics (verified in v2.1.22 source):** sync is add/update-only — if an image is deleted upstream, zot never removes the local copy (upstream not-found is treated as skip-and-continue for polled sync, and pull-through keeps serving the cached manifest despite the failed upstream check). Removal is yours to drive: retention policy (`storage.retention`), manual UI/API delete, then GC reclaims the blobs.
 
 `http.compat: ["docker2s2"]` is set globally (upstreams serve Docker schema 2 images). `onlySigned` left at the default (off) — Quay's `unsigned_images: false` was evidently not blocking unsigned upstreams in practice (sillytavern mirrors fine), so parity = off. Flip `"onlySigned": true` in `config.json` if you want strict signed-only.
 
@@ -80,7 +81,7 @@ Same scope as the existing `QUAY_POSTGRES_PASSWORD` (Unraid server):
 | `ZOT_REDHAT_USER` | your registry.redhat.io username |
 | `ZOT_REDHAT_PASS` | your registry.redhat.io password/token |
 
-These are referenced as `[[ZOT_OIDC_CLIENT_ID]]` etc. inside `credentials.json` and `sync-credentials.json` — Komodo interpolates them when writing the files to the run dir (verified post-deploy in Phase 2, because no other stack in this repo uses this pattern yet).
+These are referenced in the stack's `environment` block as JSON bundles — `ZOT_OIDC_CREDS_JSON = {"clientid":"[[ZOT_OIDC_CLIENT_ID]]","clientsecret":"[[ZOT_OIDC_CLIENT_SECRET]]"}` and the Red Hat equivalent (vaultwarden's `ADMIN_TOKEN="[[VAULTWARDEN_ADMIN_TOKEN]]"` is the in-repo precedent for `[[VAR]]` in `environment`). Komodo writes the interpolated `environment` block to the stack's `.env` and passes it via `docker compose --env-file` (documented in komo.do/docs/deploy/compose); the compose `secrets:` section then turns each JSON env var into a tmpfs file at `/run/secrets/<name>` inside the container, which is where zot's config reads them.
 
 ### 0.3 Get the Red Hat credentials (if not already on hand)
 
@@ -123,13 +124,14 @@ Pangolin on the VPS is the only reverse proxy in the loop: it terminates TLS and
 
 ## Phase 2 — Post-deploy verification
 
-1. **Interpolation check (important — new mechanism for this repo):**
+1. **Secret materialization check:** compose mounts the two JSON credentials as tmpfs secrets —
 
    ```bash
-   grep -l '\[\[' /mnt/user/stacks/repos/kerbol-next/zot/*.json
+   docker exec zot ls -l /run/secrets/
+   docker exec zot cat /run/secrets/oidc-credentials | python3 -c "import json,sys; d=json.load(sys.stdin); print('keys ok' if d.get('clientid','').startswith('[[') == False and len(d)>1 else 'PLACEHOLDER LEAKED')"
    ```
 
-   Must print **nothing**. If it lists files, Komodo did not interpolate the config files: put the real values into those two run-dir files by hand (`sed -i`), run `docker compose -f compose.yaml -f frontend.network.compose.yaml -f labels.unraid.compose.yaml up -d zot` in the run dir, and tell me — I'll fix the durable mechanism.
+   Expect `oidc-credentials` + `sync-credentials` present and `keys ok`. If you see `PLACEHOLDER LEAKED` (or the file is missing), Komodo's `.env` mangling broke the JSON — inspect `grep -o 'CREDS_JSON=.\{0,30\}' /mnt/user/stacks/repos/kerbol-next/zot/.env` and tell me what the first 30 chars after `=` look like. The stale `credentials.json`/`sync-credentials.json` in the run dir are no longer mounted — `rm /mnt/user/stacks/repos/kerbol-next/zot/{credentials,sync-credentials}.json` when convenient.
 
 2. **Container health** — Unraid UI (or `docker ps`): `zot` should reach `healthy` within ~2 min. First boot also downloads the Trivy DB (tens of MB), so give it a few minutes before expecting scan results.
 

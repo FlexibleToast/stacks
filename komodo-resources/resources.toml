@@ -861,13 +861,14 @@ file_paths = [
 ]
 config_files = [
   { path = "config.json", services = ["zot"] },
-  { path = "credentials.json", services = ["zot"] },
-  { path = "sync-credentials.json", services = ["zot"] }
+  { path = "entrypoint.sh", services = ["zot"] }
 ]
 environment = """
   ZOT_VERSION = v2.1.22
   ZOT_STORAGE = /mnt/user/zot
   ZOT_MEM_LIMIT = 4g
+  ZOT_OIDC_CREDS_JSON = {"clientid":"[[ZOT_OIDC_CLIENT_ID]]","clientsecret":"[[ZOT_OIDC_CLIENT_SECRET]]"}
+  ZOT_REDHAT_CREDS_JSON = {"registry.redhat.io":{"username":"[[ZOT_REDHAT_USER]]","password":"[[ZOT_REDHAT_PASS]]"}}
 """
 
 ##

@@ -10,11 +10,21 @@ services:
     volumes:
       - ${ZOT_STORAGE}:/var/lib/registry:rw
       - ./config.json:/etc/zot/config.json:ro
-      - ./credentials.json:/etc/zot/credentials.json:ro
-      - ./sync-credentials.json:/etc/zot/sync-credentials.json:ro
+    secrets:
+      - oidc-credentials
+      - sync-credentials
     healthcheck:
       test: ["CMD", "zot", "healthcheck", "/etc/zot/config.json"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 120s
+
+# Komodo interpolates [[VAR]] into the stack environment block, which is written
+# to the .env it passes via --env-file; compose then resolves these as file-backed
+# tmpfs secrets inside the container (no secret files ever hit disk on the host).
+secrets:
+  oidc-credentials:
+    environment: ZOT_OIDC_CREDS_JSON
+  sync-credentials:
+    environment: ZOT_REDHAT_CREDS_JSON
