@@ -81,12 +81,14 @@ Same scope as the existing `QUAY_POSTGRES_PASSWORD` (Unraid server):
 | `ZOT_REDHAT_USER` | your registry.redhat.io username |
 | `ZOT_REDHAT_PASS` | your registry.redhat.io password/token |
 
-**Fill the credential files via the stack's `pre_deploy` hook.** Komodo copies linked-repo **files** verbatim — a live deploy proved the templates arrive literal — but it *does* interpolate `[[VAR]]` into `pre_deploy.command` (source: `lib/interpolate` covers `pre_deploy`/`post_deploy`) and runs it in the run directory after the repo clone, before `compose pull/up`. The two credential files are therefore generated at deploy time and never committed; they are also kept out of `config_files` so the pre-deploy existence check ignores them:
+**Fill the credential files via the stack's `pre_deploy` hook.** Komodo copies linked-repo **files** verbatim — a live deploy proved the templates arrive literal — but it *does* interpolate `[[VAR]]` into `pre_deploy.command` (source: `lib/interpolate` covers `pre_deploy`/`post_deploy`) and runs it via `bash -c` in the run directory after the repo clone, before `compose pull/up` (`run_shell_command` passes the string verbatim). The two credential files are therefore generated at deploy time and never committed; they are also kept out of `config_files` so the pre-deploy existence check ignores them.
+
+One loader quirk governs everything you write in `resources.toml` (`bin/core/src/sync/mod.rs::escape_between_triple_string`): before TOML-parsing, Komodo splits the whole file on the triple-double-quote delimiter and **doubles every backslash between pairs**. Net effect: inside triple-quoted blocks you write each backslash **exactly once** and it survives literally (preprocess-doubling + TOML-unescape cancel out). Consequences: use triple-double-quoted strings (NOT triple-single-quote literal blocks — those skip the preprocessing, and worse, one stray triple-double-quote token anywhere — even in a comment — flips the pair parity and corrupts every block after it; this shipped literally corrupted `printf` format strings, producing `\n` text instead of newlines, live 2026-11-02).
 
 ```toml
 [stack.config.pre_deploy]
 shell_mode = true
-command = '''
+command = """
 cat > .zot_oidc_id.raw <<'ZOT_RAW_1'
 [[ZOT_OIDC_CLIENT_ID]]
 ZOT_RAW_1
@@ -104,10 +106,10 @@ printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id
 printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" > sync-credentials.json
 rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
 chmod 600 credentials.json sync-credentials.json
-'''
+"""
 ```
 
-Quirks baked into this block (all simulated end-to-end with hostile secret characters): **Unraid has no `python3`** — the hook uses only shell + GNU `sed`/`printf` (a first live deploy died on `python3: command not found`); TOML **literal** strings (`'''`) not basic (`"""`) — backslashes survive verbatim; heredoc bodies/terminators stay flush-left; secrets route through raw heredoc files through `sed` JSON-escaping (`\`→`\\`, `"`→`\"`) into `printf` args so `"` and `\` can't corrupt the JSON; raw temps are `rm`'d and outputs get mode 600. Komodo also masks secret-marked Variables in deploy logs (`<ZOT_OIDC_CLIENT_SECRET>`), so keep the secret checkbox on. The secrets themselves live only in Komodo Variables and in the two generated files on the server; git keeps nothing.
+Quirks baked into this block (all validated end-to-end through a simulation of Komodo's loader with hostile secret characters): **Unraid has no `python3`** — the hook uses only shell + GNU `sed`/`printf` (a live deploy died on `python3: command not found`); backslashes are written **exactly once** inside the triple-double-quoted command because Komodo's preprocess-then-TOML round-trip preserves them; heredoc bodies/terminators stay flush-left; secrets route through raw heredoc files through `sed` JSON-escaping (`\`→`\\`, `"`→`\"`) into `printf` args so `"` and `\` can't corrupt the JSON; raw temps are `rm`'d and outputs get mode 600. Komodo also masks secret-marked Variables in deploy logs (`<ZOT_OIDC_CLIENT_SECRET>`), so keep the secret checkbox on. The secrets themselves live only in Komodo Variables and in the two generated files on the server; git keeps nothing.
 
 ### 0.3 Get the Red Hat credentials (if not already on hand)
 

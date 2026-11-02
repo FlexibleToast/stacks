@@ -876,14 +876,18 @@ environment = """
 # paths exist on disk — listed-but-absent failed us on entrypoint.sh. Existing-but-
 # unlisted files are never checked, so hook-generated files belong in neither place.
 # Heredoc lines must stay flush-left (shell heredoc terminators are indent-sensitive).
-# Secrets go through raw heredoc files into sed-escaped printf so any character
-# (quotes, backslashes) is escaped correctly. NOTE: Unraid has NO python3 — do not
-# use python/perl/jq in Unraid-side hooks; GNU coreutils/sed/printf only.
-# NOTE: command uses TOML literal strings ('''), NOT basic (""") — shell/python
-# snippets contain backslashes and basic strings would eat them as escape sequences.
+# Unraid periphery shells have NO python3/perl/jq — pure shell + GNU sed/printf only.
+# Secrets route through raw heredoc files through sed JSON-escaping into printf.
+# LOADER GOTCHA (bin/core/src/sync/mod.rs escape_between_triple_string): Komodo splits
+# this whole file on the triple-double-quote delimiter and doubles backslashes between
+# pairs before TOML-parsing, so inside triple-quoted blocks write each backslash EXACTLY
+# ONCE (the preprocess-then-unescape round-trip preserves it; single-quote-literal blocks
+# are NOT preprocessed, which caused the live 2026-11-02 backslash corruption). NEVER
+# write a triple-double-quote token in comments: it flips pair parity and backslash-
+# doubles every block after it.
 [stack.config.pre_deploy]
 shell_mode = true
-command = '''
+command = """
 cat > .zot_oidc_id.raw <<'ZOT_RAW_1'
 [[ZOT_OIDC_CLIENT_ID]]
 ZOT_RAW_1
@@ -901,7 +905,7 @@ printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id
 printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" > sync-credentials.json
 rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
 chmod 600 credentials.json sync-credentials.json
-'''
+"""
 
 ##
 
