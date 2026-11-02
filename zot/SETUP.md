@@ -99,26 +99,15 @@ ZOT_RAW_3
 cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
 [[ZOT_REDHAT_PASS]]
 ZOT_RAW_4
-python3 - <<'ZOT_PY'
-import json, pathlib
-def r(p): return pathlib.Path(p).read_text().rstrip("\n")
-pathlib.Path("credentials.json").write_text(json.dumps({
-    "clientid": r(".zot_oidc_id.raw"),
-    "clientsecret": r(".zot_oidc_secret.raw"),
-}, indent=2))
-pathlib.Path("sync-credentials.json").write_text(json.dumps({
-    "registry.redhat.io": {
-        "username": r(".zot_rh_user.raw"),
-        "password": r(".zot_rh_pass.raw"),
-    },
-}, indent=2))
-ZOT_PY
+esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' "$1" | head -n 1; }
+printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id.raw)" "$(esc .zot_oidc_secret.raw)" > credentials.json
+printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" > sync-credentials.json
 rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
 chmod 600 credentials.json sync-credentials.json
 '''
 ```
 
-Quirks baked into this block (all simulated end-to-end with hostile secret characters): use TOML **literal** strings (`'''`) not basic (`"""`) — backslashes in the snippet survive verbatim; heredoc bodies/terminators stay flush-left; secrets route through raw heredoc files into `json.dumps` so `"` and `\` can't corrupt the JSON; raw temps are `rm`'d and outputs get mode 600. The secrets themselves live only in Komodo Variables (marked secret) and in the two generated files on the server; git keeps only placeholders.
+Quirks baked into this block (all simulated end-to-end with hostile secret characters): **Unraid has no `python3`** — the hook uses only shell + GNU `sed`/`printf` (a first live deploy died on `python3: command not found`); TOML **literal** strings (`'''`) not basic (`"""`) — backslashes survive verbatim; heredoc bodies/terminators stay flush-left; secrets route through raw heredoc files through `sed` JSON-escaping (`\`→`\\`, `"`→`\"`) into `printf` args so `"` and `\` can't corrupt the JSON; raw temps are `rm`'d and outputs get mode 600. Komodo also masks secret-marked Variables in deploy logs (`<ZOT_OIDC_CLIENT_SECRET>`), so keep the secret checkbox on. The secrets themselves live only in Komodo Variables and in the two generated files on the server; git keeps nothing.
 
 ### 0.3 Get the Red Hat credentials (if not already on hand)
 

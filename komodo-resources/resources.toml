@@ -876,8 +876,9 @@ environment = """
 # paths exist on disk — listed-but-absent failed us on entrypoint.sh. Existing-but-
 # unlisted files are never checked, so hook-generated files belong in neither place.
 # Heredoc lines must stay flush-left (shell heredoc terminators are indent-sensitive).
-# Secrets go through raw heredoc files into json.dumps so any character (quotes,
-# backslashes) is escaped correctly.
+# Secrets go through raw heredoc files into sed-escaped printf so any character
+# (quotes, backslashes) is escaped correctly. NOTE: Unraid has NO python3 — do not
+# use python/perl/jq in Unraid-side hooks; GNU coreutils/sed/printf only.
 # NOTE: command uses TOML literal strings ('''), NOT basic (""") — shell/python
 # snippets contain backslashes and basic strings would eat them as escape sequences.
 [stack.config.pre_deploy]
@@ -895,20 +896,9 @@ ZOT_RAW_3
 cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
 [[ZOT_REDHAT_PASS]]
 ZOT_RAW_4
-python3 - <<'ZOT_PY'
-import json, pathlib
-def r(p): return pathlib.Path(p).read_text().rstrip("\n")
-pathlib.Path("credentials.json").write_text(json.dumps({
-    "clientid": r(".zot_oidc_id.raw"),
-    "clientsecret": r(".zot_oidc_secret.raw"),
-}, indent=2))
-pathlib.Path("sync-credentials.json").write_text(json.dumps({
-    "registry.redhat.io": {
-        "username": r(".zot_rh_user.raw"),
-        "password": r(".zot_rh_pass.raw"),
-    },
-}, indent=2))
-ZOT_PY
+esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' "$1" | head -n 1; }
+printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id.raw)" "$(esc .zot_oidc_secret.raw)" > credentials.json
+printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" > sync-credentials.json
 rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw
 chmod 600 credentials.json sync-credentials.json
 '''
