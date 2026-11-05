@@ -3,3 +3,5 @@ runner:
     - "ubuntu-latest:docker://gitea/runner-images:ubuntu-latest"
     - "ubuntu-24.04:docker://gitea/runner-images:ubuntu-24.04"
     - "ubuntu-22.04:docker://gitea/runner-images:ubuntu-22.04"
+container:
+  network: forgejo-unraid_backend
