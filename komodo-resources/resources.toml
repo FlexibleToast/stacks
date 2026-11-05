@@ -1223,6 +1223,24 @@ quay.expires-after=4w
 ##
 
 [[build]]
+name = "hermes"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+version = "1.0.0"
+auto_increment_version = true
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "hermes"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "zot.mcdade.app", account = "FlexibleToast", organization = "homeserver" }
+]
+
+##
+
+[[build]]
 name = "llama-swap"
 tags = ["unraid", "build", "sync"]
 [build.config]
@@ -1372,6 +1390,22 @@ name = "Build"
 enabled = true
 executions = [
   { execution.type = "RunBuild", execution.params.build = "llama-swap", enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Weekly Hermes Image Rebuild"
+description = "Rebuilds the derived Hermes image (upstream stable base + baked Mnemosyne side venv) once a week so upstream Hermes releases roll in on a stable cadence; each build increments the version, the deployment pins the bare major tag for rollback. Zot retention prunes hermes tags older than 4 weeks."
+tags = ["hermes", "sync"]
+config.schedule_alert = false
+config.schedule = "Every Saturday at 04:00"
+
+[[procedure.config.stage]]
+name = "Build"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "hermes", enabled = true }
 ]
 
 ##

@@ -1,0 +1,13 @@
+# Derived Hermes image: upstream stable channel + Mnemosyne native memory provider
+# baked into a side venv at image-build time, so the venv's Python is always the
+# exact interpreter this image ships (no ABI drift possible).
+# Update model: weekly Komodo rebuild (procedure "Weekly Hermes Image Rebuild")
+# FROM a floating :stable base; Zot retention prunes tags older than 4 weeks.
+
+FROM nousresearch/hermes-agent:stable
+
+USER root
+
+RUN python3 -m venv /opt/mnemosyne-venv && \
+    /opt/mnemosyne-venv/bin/python -m pip install --no-cache-dir --upgrade pip && \
+    /opt/mnemosyne-venv/bin/python -m pip install --no-cache-dir "mnemosyne-memory[embeddings]" mnemosyne-hermes
