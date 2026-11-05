@@ -6,7 +6,23 @@
     "rootDirectory": "/var/lib/registry",
     "dedupe": true,
     "gc": true,
-    "gcInterval": "168h"
+    "gcInterval": "168h",
+    "retention": {
+      "delay": "24h",
+      "policies": [
+        {
+          "repositories": ["homeserver/hermes"],
+          "deleteUntagged": true,
+          "keepTags": [
+            {
+              "patterns": ["*"],
+              "pushedWithin": "672h",
+              "mostRecentlyPushedCount": 3
+            }
+          ]
+        }
+      ]
+    }
   },
   "http": {
     "address": "0.0.0.0",
