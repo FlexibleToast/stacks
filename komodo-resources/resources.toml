@@ -1227,11 +1227,7 @@ name = "hermes"
 tags = ["unraid", "build", "sync"]
 [build.config]
 builder = "Unraid"
-version = "1.0.0"
-auto_increment_version = true
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "kerbol-next"
+linked_repo = "kerbol-next"
 build_path = "hermes"
 dockerfile_path = "Containerfile"
 image_registry = [
@@ -1379,22 +1375,6 @@ executions = [
 ##
 
 [[procedure]]
-name = "Weekly llama-swap Rebuild"
-description = "Rebuilds the llama-swap image (llama-swap + llama.cpp SYCL + Strata sycl) once a week so upstream engine updates are picked up; each build increments the version, the stack pins a version tag for rollback."
-tags = ["llama-swap", "sync"]
-config.schedule_alert = false
-config.schedule = "Every Saturday at 03:30"
-
-[[procedure.config.stage]]
-name = "Build"
-enabled = true
-executions = [
-  { execution.type = "RunBuild", execution.params.build = "llama-swap", enabled = true }
-]
-
-##
-
-[[procedure]]
 name = "Weekly Hermes Image Rebuild"
 description = "Rebuilds the derived Hermes image (upstream stable base + baked Mnemosyne side venv) once a week so upstream Hermes releases roll in on a stable cadence; each build increments the version, the deployment pins the bare major tag for rollback. Zot retention prunes hermes tags older than 4 weeks."
 tags = ["hermes", "sync"]
@@ -1406,6 +1386,22 @@ name = "Build"
 enabled = true
 executions = [
   { execution.type = "RunBuild", execution.params.build = "hermes", enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Weekly llama-swap Rebuild"
+description = "Rebuilds the llama-swap image (llama-swap + llama.cpp SYCL + Strata sycl) once a week so upstream engine updates are picked up; each build increments the version, the stack pins a version tag for rollback."
+tags = ["llama-swap", "sync"]
+config.schedule_alert = false
+config.schedule = "Every Saturday at 03:30"
+
+[[procedure.config.stage]]
+name = "Build"
+enabled = true
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "llama-swap", enabled = true }
 ]
 
 ##
