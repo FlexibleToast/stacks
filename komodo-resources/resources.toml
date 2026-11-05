@@ -846,76 +846,6 @@ environment = """
 ##
 
 [[stack]]
-name = "zot"
-description = "Lightweight OCI registry: web UI with OIDC login, Trivy CVE scanning, mirroring and pull-through caching. Docs: https://zotregistry.dev. Github: https://github.com/project-zot/zot"
-tags = ["unraid", "sync"]
-[stack.config]
-server = "Unraid"
-auto_update = true
-linked_repo = "kerbol-next"
-run_directory = "zot"
-file_paths = [
-  "compose.yaml",
-  "frontend.network.compose.yaml",
-  "labels.unraid.compose.yaml"
-]
-config_files = [
-  { path = "config.json", services = ["zot"] }
-]
-environment = """
-  ZOT_VERSION = v2.1.22
-  ZOT_STORAGE = /mnt/user/zot
-  ZOT_MEM_LIMIT = 4g
-"""
-
-# Komodo interpolates [[VAR]] into pre_deploy.command (lib/interpolate), then runs it
-# in the run_directory (zot/) after the repo is cloned, before compose pull/up.
-# It generates credentials.json + sync-credentials.json with real values on every
-# deploy. These files are NOT tracked in git and NOT listed in config_files:
-# validate_files (runs after the clone, before pre_deploy) only asserts that LISTED
-# paths exist on disk — listed-but-absent failed us on entrypoint.sh. Existing-but-
-# unlisted files are never checked, so hook-generated files belong in neither place.
-# Heredoc lines must stay flush-left (shell heredoc terminators are indent-sensitive).
-# Unraid periphery shells have NO python3/perl/jq — pure shell + GNU sed/printf only.
-# Secrets route through raw heredoc files through sed JSON-escaping into printf.
-# LOADER GOTCHA (bin/core/src/sync/mod.rs escape_between_triple_string): Komodo splits
-# this whole file on the triple-double-quote delimiter and doubles backslashes between
-# pairs before TOML-parsing, so inside triple-quoted blocks write each backslash EXACTLY
-# ONCE (the preprocess-then-unescape round-trip preserves it; single-quote-literal blocks
-# are NOT preprocessed, which caused the live 2026-11-02 backslash corruption). NEVER
-# write a triple-double-quote token in comments: it flips pair parity and backslash-
-# doubles every block after it.
-[stack.config.pre_deploy]
-shell_mode = true
-command = """
-cat > .zot_oidc_id.raw <<'ZOT_RAW_1'
-[[ZOT_OIDC_CLIENT_ID]]
-ZOT_RAW_1
-cat > .zot_oidc_secret.raw <<'ZOT_RAW_2'
-[[ZOT_OIDC_CLIENT_SECRET]]
-ZOT_RAW_2
-cat > .zot_rh_user.raw <<'ZOT_RAW_3'
-[[ZOT_REDHAT_USER]]
-ZOT_RAW_3
-cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
-[[ZOT_REDHAT_PASS]]
-ZOT_RAW_4
-cat > .zot_fj_user.raw <<'ZOT_RAW_5'
-[[ZOT_FORGEJO_USER]]
-ZOT_RAW_5
-cat > .zot_fj_pass.raw <<'ZOT_RAW_6'
-[[ZOT_FORGEJO_TOKEN]]
-ZOT_RAW_6
-esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' "$1" | head -n 1; }
-printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id.raw)" "$(esc .zot_oidc_secret.raw)" > credentials.json
-printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  },\n  "git.mcdade.app": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" "$(esc .zot_fj_user.raw)" "$(esc .zot_fj_pass.raw)" > sync-credentials.json
-rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw .zot_fj_user.raw .zot_fj_pass.raw
-chmod 600 credentials.json sync-credentials.json
-"""
-
-##
-
-[[stack]]
 name = "romm-unraid"
 description = "ROM Manager (RomM) for browsing, enriching, and playing game ROM collections with metadata scraping, OIDC auth, and a clean web UI. Docs: https://docs.romm.app. Github: https://github.com/rommapp/romm"
 tags = ["unraid", "sync"]
@@ -975,7 +905,6 @@ environment = """
   STRATA_TUNE = skip
   STRATA_API_KEY = [[STRATA_API_KEY]]
 """
-
 
 ##
 
@@ -1070,10 +999,10 @@ server = "Unraid"
 linked_repo = "kerbol-next"
 run_directory = "trek"
 file_paths = [
- "compose.yaml",
- "network.yaml",
- "labels.unraid.compose.yaml",
- "oidc.unraid.compose.yaml"
+  "compose.yaml",
+  "network.yaml",
+  "labels.unraid.compose.yaml",
+  "oidc.unraid.compose.yaml"
 ]
 environment = """
  CONTAINER_DATA = /mnt/user/appdata
@@ -1221,6 +1150,57 @@ environment = """
 
 ##
 
+[[stack]]
+name = "zot"
+description = "Lightweight OCI registry: web UI with OIDC login, Trivy CVE scanning, mirroring and pull-through caching. Docs: https://zotregistry.dev. Github: https://github.com/project-zot/zot"
+tags = ["unraid", "sync"]
+[stack.config]
+server = "Unraid"
+auto_update = true
+linked_repo = "kerbol-next"
+run_directory = "zot"
+file_paths = [
+  "compose.yaml",
+  "frontend.network.compose.yaml",
+  "labels.unraid.compose.yaml"
+]
+config_files = [
+  { path = "config.json", services = ["zot"] }
+]
+pre_deploy.command = """
+cat > .zot_oidc_id.raw <<'ZOT_RAW_1'
+[[ZOT_OIDC_CLIENT_ID]]
+ZOT_RAW_1
+cat > .zot_oidc_secret.raw <<'ZOT_RAW_2'
+[[ZOT_OIDC_CLIENT_SECRET]]
+ZOT_RAW_2
+cat > .zot_rh_user.raw <<'ZOT_RAW_3'
+[[ZOT_REDHAT_USER]]
+ZOT_RAW_3
+cat > .zot_rh_pass.raw <<'ZOT_RAW_4'
+[[ZOT_REDHAT_PASS]]
+ZOT_RAW_4
+cat > .zot_fj_user.raw <<'ZOT_RAW_5'
+[[ZOT_FORGEJO_USER]]
+ZOT_RAW_5
+cat > .zot_fj_pass.raw <<'ZOT_RAW_6'
+[[ZOT_FORGEJO_TOKEN]]
+ZOT_RAW_6
+esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' "$1" | head -n 1; }
+printf '{\n  "clientid": "%s",\n  "clientsecret": "%s"\n}\n' "$(esc .zot_oidc_id.raw)" "$(esc .zot_oidc_secret.raw)" > credentials.json
+printf '{\n  "registry.redhat.io": {\n    "username": "%s",\n    "password": "%s"\n  },\n  "git.mcdade.app": {\n    "username": "%s",\n    "password": "%s"\n  }\n}\n' "$(esc .zot_rh_user.raw)" "$(esc .zot_rh_pass.raw)" "$(esc .zot_fj_user.raw)" "$(esc .zot_fj_pass.raw)" > sync-credentials.json
+rm -f .zot_oidc_id.raw .zot_oidc_secret.raw .zot_rh_user.raw .zot_rh_pass.raw .zot_fj_user.raw .zot_fj_pass.raw
+chmod 600 credentials.json sync-credentials.json
+"""
+pre_deploy.shell_mode = true
+environment = """
+  ZOT_VERSION = v2.1.22
+  ZOT_STORAGE = /mnt/user/zot
+  ZOT_MEM_LIMIT = 4g
+"""
+
+##
+
 [[build]]
 name = "clair"
 tags = ["unraid", "build", "sync"]
@@ -1232,6 +1212,25 @@ git_account = "FlexibleToast"
 repo = "FlexibleToast/stacks"
 branch = "kerbol-next"
 build_path = "clair"
+dockerfile_path = "Containerfile"
+image_registry = [
+  { domain = "zot.mcdade.app", account = "FlexibleToast", organization = "homeserver" }
+]
+labels = """
+quay.expires-after=4w
+"""
+
+##
+
+[[build]]
+name = "llama-swap"
+tags = ["unraid", "build", "sync"]
+[build.config]
+builder = "Unraid"
+git_account = "FlexibleToast"
+repo = "FlexibleToast/stacks"
+branch = "kerbol-next"
+build_path = "llama-swap"
 dockerfile_path = "Containerfile"
 image_registry = [
   { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
@@ -1294,28 +1293,6 @@ image_registry = [
 ]
 labels = """
   # your.docker.label: value
-quay.expires-after=4w
-"""
-
-##
-
-[[build]]
-name = "llama-swap"
-tags = ["unraid", "build", "sync"]
-[build.config]
-builder = "Unraid"
-version = "0.0.0"
-auto_increment_version = true
-webhook_enabled = true
-git_account = "FlexibleToast"
-repo = "FlexibleToast/stacks"
-branch = "kerbol-next"
-build_path = "llama-swap"
-dockerfile_path = "Containerfile"
-image_registry = [
-  { domain = "quay.mcdade.app", account = "$app", organization = "homeserver" }
-]
-labels = """
 quay.expires-after=4w
 """
 
