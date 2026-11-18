@@ -11,3 +11,13 @@ USER root
 RUN python3 -m venv /opt/mnemosyne-venv && \
     /opt/mnemosyne-venv/bin/python -m pip install --no-cache-dir --upgrade pip && \
     /opt/mnemosyne-venv/bin/python -m pip install --no-cache-dir "mnemosyne-memory[embeddings]" mnemosyne-hermes
+
+RUN python3 -m pip install --no-cache-dir pyyaml && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends jq && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/local/lib/docker/cli-plugins && \
+    curl -fsSL -o /usr/local/lib/docker/cli-plugins/docker-compose \
+      https://github.com/docker/compose/releases/download/v5.8.0/docker-compose-linux-x86_64 && \
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
