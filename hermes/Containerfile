@@ -12,7 +12,13 @@ RUN python3 -m venv /opt/mnemosyne-venv && \
     /opt/mnemosyne-venv/bin/python -m pip install --no-cache-dir --upgrade pip && \
     /opt/mnemosyne-venv/bin/python -m pip install --no-cache-dir "mnemosyne-memory[embeddings]" mnemosyne-hermes
 
-RUN python3 -m pip install --no-cache-dir pyyaml && \
+# Upstream stable (2026-11-20 build) stripped pip from /opt/hermes/.venv — the
+# venv is uv-managed and `python3 -m pip` now fails in build layers. Install into
+# the Hermes venv with the bundled uv (glob so uv version bumps don't break the
+# build); the trailing import check makes a missing uv/venv fail loudly in THIS
+# layer instead of silently dropping pyyaml.
+RUN /opt/hermes/tools/uv-*/uv pip install --python /opt/hermes/.venv --no-cache pyyaml && \
+    /opt/hermes/.venv/bin/python -c "import yaml" && \
     apt-get update && \
     apt-get install -y --no-install-recommends jq && \
     rm -rf /var/lib/apt/lists/*
